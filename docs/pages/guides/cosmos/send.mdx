@@ -1,0 +1,139 @@
+# Send Tokens
+
+Transfer tokens on Cosmos chains.
+
+## Quick Commands
+
+**Basic send:**
+```
+User: Send 10 ATOM to cosmos1recipient...
+```
+
+**With chain specified:**
+```
+User: Send 100 OSMO to osmo1recipient... on Osmosis
+```
+
+## Step-by-Step Transfer
+
+### 1. Check Your Balance
+
+```
+User: Show my ATOM balance on Cosmos Hub
+```
+
+### 2. Initiate Transfer
+
+```
+User: Send 10 ATOM to cosmos1abc123...
+```
+
+### 3. Review Preview
+
+```json
+{
+  "status": "pending_confirmation",
+  "preview": {
+    "summary": "Send 10 ATOM",
+    "from": "cosmos1sender...",
+    "to": "cosmos1recipient...",
+    "amount": "10 ATOM",
+    "estimatedFee": "0.005 ATOM"
+  }
+}
+```
+
+### 4. Confirm Transaction
+
+```
+User: Yes, confirm the transaction
+```
+
+### 5. Receive Confirmation
+
+```json
+{
+  "status": "success",
+  "txHash": "ABC123...",
+  "explorerUrl": "https://mintscan.io/cosmos/txs/ABC123"
+}
+```
+
+## Transfer Options
+
+### Add Memo
+
+```
+User: Send 10 ATOM to cosmos1... with memo "Payment for services"
+```
+
+Memos are useful for:
+- Exchange deposits (often required)
+- Payment references
+- Notes to recipient
+
+### Specify Token
+
+```
+User: Send 100 USDC to cosmos1... on Noble
+```
+
+## Fee Estimation
+
+Fees depend on:
+- Chain congestion
+- Transaction complexity
+- Chain parameters
+
+Typical fees:
+
+| Chain | Typical Fee |
+|-------|-------------|
+| Cosmos Hub | 0.005-0.01 ATOM |
+| Osmosis | 0.0025 OSMO |
+| Celestia | 0.01 TIA |
+
+## Common Issues
+
+### "Insufficient funds"
+
+**Problem:** Balance too low for amount + fee.
+
+**Solution:**
+1. Check actual balance
+2. Reduce amount to leave room for fee
+3. Example: Send 99.99 ATOM instead of 100 ATOM
+
+### "Invalid address"
+
+**Problem:** Recipient address format wrong.
+
+**Solution:**
+1. Verify address prefix matches chain (cosmos1... for Cosmos Hub)
+2. Check address length
+3. No extra spaces or characters
+
+### "Account does not exist"
+
+**Problem:** Your account has never received tokens.
+
+**Solution:**
+1. Fund your account first
+2. Then try sending
+
+## Cross-Chain Transfers
+
+To send to a different chain, use IBC transfer instead:
+
+```
+User: Send ATOM from Cosmos Hub to Osmosis
+```
+
+See [IBC Transfer](/guides/cosmos/ibc) for details.
+
+---
+
+## Related
+
+- [Check Balances](/guides/cosmos/balances)
+- [IBC Transfer](/guides/cosmos/ibc)

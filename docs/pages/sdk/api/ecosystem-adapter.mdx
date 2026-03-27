@@ -1,0 +1,164 @@
+# EcosystemAdapter API
+
+Interface for blockchain ecosystem adapters.
+
+## Import
+
+```typescript
+import { EcosystemAdapter, EcosystemClient } from "@keplr-wallet/keplr-wallet-mcp/ecosystem";
+```
+
+## Interface
+
+```typescript
+interface EcosystemAdapter {
+  readonly ecosystemType: EcosystemType;
+
+  isSupported(provider: KeyProvider): boolean;
+
+  createClientWithProvider(
+    provider: KeyProvider
+  ): Promise<EcosystemClient> | EcosystemClient;
+
+  registerTools(server: McpServer, store: KeplrStore): void;
+  registerResources?(server: McpServer, store: KeplrStore): void;
+  registerPrompts?(server: McpServer, store: KeplrStore): void;
+}
+```
+
+## Properties
+
+### `ecosystemType`
+
+```typescript
+readonly ecosystemType: EcosystemType;
+```
+
+Unique identifier for this ecosystem.
+
+**Type:** `"cosmos" | string`
+
+## Methods
+
+### `isSupported`
+
+```typescript
+isSupported(provider: KeyProvider): boolean;
+```
+
+Check if a key provider is compatible with this adapter.
+
+**Parameters:**
+- `provider` - The key provider to check
+
+**Returns:** `true` if the provider supports this ecosystem
+
+**Example:**
+
+```typescript
+isSupported(provider: KeyProvider): boolean {
+  return provider.getSupportedEcosystems().includes(this.ecosystemType);
+}
+```
+
+### `createClientWithProvider`
+
+```typescript
+createClientWithProvider(
+  provider: KeyProvider
+): Promise<EcosystemClient> | EcosystemClient;
+```
+
+Create a client instance for interacting with the blockchain.
+
+**Parameters:**
+- `provider` - Key provider for signing
+
+**Returns:** `EcosystemClient` instance
+
+**Example:**
+
+```typescript
+async createClientWithProvider(provider: KeyProvider): Promise<EcosystemClient> {
+  const account = provider.getAccount();
+  if (!account) throw new Error("No account available");
+
+  return new MyChainClient(account);
+}
+```
+
+### `registerTools`
+
+```typescript
+registerTools(server: McpServer, store: KeplrStore): void;
+```
+
+Register MCP tools for this ecosystem.
+
+**Parameters:**
+- `server` - MCP server instance
+- `store` - Keplr store for state access
+
+**Example:**
+
+```typescript
+registerTools(server: McpServer, store: KeplrStore): void {
+  server.registerTool("my-get-balance", { ... }, async (params) => { ... });
+  server.registerTool("my-send", { ... }, async (params) => { ... });
+}
+```
+
+### `registerResources` (Optional)
+
+```typescript
+registerResources?(server: McpServer, store: KeplrStore): void;
+```
+
+Register MCP resources (read-only data endpoints).
+
+### `registerPrompts` (Optional)
+
+```typescript
+registerPrompts?(server: McpServer, store: KeplrStore): void;
+```
+
+Register MCP prompts (guided workflows).
+
+## EcosystemClient Interface
+
+```typescript
+interface EcosystemClient {
+  getAddress(chainId: string): Promise<string>;
+  // Additional methods specific to ecosystem
+}
+```
+
+## Built-in Implementations
+
+### CosmosAdapter
+
+```typescript
+import { CosmosAdapter } from "@keplr-wallet/keplr-wallet-mcp/adapters/cosmos";
+```
+
+Features:
+- Query tools (balances, staking, governance)
+- Transaction tools (send, stake, vote)
+- CosmWasm support
+- IBC transfers
+
+## Registration
+
+Adapters are registered via:
+
+1. **Built-in:** `packages/server/src/adapters/`
+2. **Optional packages:** `optionalDependencies`
+3. **Environment:** `KEPLR_ADAPTERS` variable
+
+```bash
+KEPLR_ADAPTERS="./my-adapter"
+```
+
+## Example Implementation
+
+See [Custom Adapter Guide](/sdk/guides/custom-adapter) for complete example.

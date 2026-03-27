@@ -1,0 +1,348 @@
+# CosmWasm Tools
+
+Tools for interacting with CosmWasm smart contracts.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `cosmwasm-query` | Query contract state | Yes |
+| `cosmwasm-contract-info` | Get contract metadata | Yes |
+| `cosmwasm-list-contracts` | List contracts by code ID | Yes |
+| `cosmwasm-execute` | Execute contract function | No |
+| `cosmwasm-instantiate` | Deploy new contract instance | No |
+
+## Supported Chains
+
+CosmWasm is supported on:
+
+- Osmosis (`osmosis-1`)
+- Neutron (`neutron-1`)
+- Juno (`juno-1`)
+- Stargaze (`stargaze-1`)
+- Injective (`injective-1`)
+- Archway (`archway-1`)
+- Terra 2 (`phoenix-1`)
+- Sei (`pacific-1`)
+
+---
+
+## `cosmwasm-query`
+
+Query contract state (read-only).
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `contract` | `string` | Yes | Contract address |
+| `query` | `object` | Yes | Query message (JSON) |
+
+### Response
+
+```json
+{
+  "result": { ... },
+  "height": 12345678
+}
+```
+
+### Example: Query CW20 Token Balance
+
+```json
+Request: {
+  "chain": "juno-1",
+  "contract": "juno1token...",
+  "query": {
+    "balance": {
+      "address": "juno1user..."
+    }
+  }
+}
+
+Response: {
+  "result": {
+    "balance": "1000000"
+  }
+}
+```
+
+### Example: Query CW721 Owner
+
+```json
+Request: {
+  "chain": "stargaze-1",
+  "contract": "stars1nft...",
+  "query": {
+    "owner_of": {
+      "token_id": "123"
+    }
+  }
+}
+
+Response: {
+  "result": {
+    "owner": "stars1...",
+    "approvals": []
+  }
+}
+```
+
+---
+
+## `cosmwasm-contract-info`
+
+Get contract metadata including code ID, admin, and label.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `contract` | `string` | Yes | Contract address |
+
+### Response
+
+```json
+{
+  "address": "juno1...",
+  "codeId": 123,
+  "creator": "juno1...",
+  "admin": "juno1...",
+  "label": "My Token Contract",
+  "ibcPortId": null
+}
+```
+
+---
+
+## `cosmwasm-list-contracts`
+
+List CosmWasm contract addresses by code ID. Use this to discover contracts deployed from a specific code.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID or name (e.g., 'osmosis-1', 'neutron-1', 'juno-1') |
+| `codeId` | `string` | Yes | Code ID to search contracts for (numeric, e.g., '1', '100') |
+
+### Response
+
+```json
+{
+  "chainId": "neutron-1",
+  "codeId": "100",
+  "totalContracts": 5,
+  "contracts": [
+    "neutron1contract1...",
+    "neutron1contract2..."
+  ],
+  "suggestedActions": [
+    { "tool": "cosmwasm-contract-info", "reason": "View metadata for a discovered contract", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `cosmwasm-execute`
+
+Execute a contract function (requires confirmation).
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `contract` | `string` | Yes | Contract address |
+| `msg` | `object` | Yes | Execute message (JSON) |
+| `funds` | `object[]` | No | Coins to send with execution |
+
+### Response (Preview)
+
+```json
+{
+  "status": "pending_confirmation",
+  "confirmationToken": "...",
+  "preview": {
+    "summary": "Execute transfer on juno1token...",
+    "contract": "juno1token...",
+    "action": "transfer",
+    "funds": [],
+    "estimatedFee": "0.05 JUNO"
+  }
+}
+```
+
+### Example: CW20 Transfer
+
+```json
+Request: {
+  "chain": "juno-1",
+  "contract": "juno1token...",
+  "msg": {
+    "transfer": {
+      "recipient": "juno1recipient...",
+      "amount": "1000000"
+    }
+  }
+}
+```
+
+### Example: CW20 Send (with contract interaction)
+
+```json
+Request: {
+  "chain": "juno-1",
+  "contract": "juno1token...",
+  "msg": {
+    "send": {
+      "contract": "juno1staking...",
+      "amount": "1000000",
+      "msg": "eyJzdGFrZSI6e319"  // base64 encoded
+    }
+  }
+}
+```
+
+### Example: Execute with Funds
+
+```json
+Request: {
+  "chain": "osmosis-1",
+  "contract": "osmo1swap...",
+  "msg": {
+    "swap": {
+      "offer_asset": {
+        "native": { "denom": "uosmo" }
+      },
+      "ask_asset": {
+        "native": { "denom": "uatom" }
+      }
+    }
+  },
+  "funds": [
+    { "denom": "uosmo", "amount": "1000000" }
+  ]
+}
+```
+
+---
+
+## `cosmwasm-instantiate`
+
+Deploy a new instance of an uploaded contract.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `codeId` | `number` | Yes | Uploaded code ID |
+| `msg` | `object` | Yes | Instantiate message |
+| `label` | `string` | Yes | Contract label |
+| `admin` | `string` | No | Admin address |
+| `funds` | `object[]` | No | Initial funds |
+
+### Response (Preview)
+
+```json
+{
+  "status": "pending_confirmation",
+  "confirmationToken": "...",
+  "preview": {
+    "summary": "Instantiate contract from code #123",
+    "codeId": 123,
+    "label": "My New Token",
+    "admin": "juno1...",
+    "estimatedFee": "0.1 JUNO"
+  }
+}
+```
+
+### Response (After Confirmation)
+
+```json
+{
+  "status": "success",
+  "txHash": "ABC123...",
+  "contractAddress": "juno1newcontract...",
+  "suggestedActions": [
+    { "tool": "cosmwasm-contract-info", "reason": "Verify contract", "priority": 1 },
+    { "tool": "cosmwasm-query", "reason": "Query initial state", "priority": 2 }
+  ]
+}
+```
+
+### Example: Instantiate CW20 Token
+
+```json
+Request: {
+  "chain": "juno-1",
+  "codeId": 1,
+  "msg": {
+    "name": "My Token",
+    "symbol": "MYT",
+    "decimals": 6,
+    "initial_balances": [
+      {
+        "address": "juno1...",
+        "amount": "1000000000000"
+      }
+    ],
+    "mint": {
+      "minter": "juno1..."
+    }
+  },
+  "label": "My Token Contract",
+  "admin": "juno1..."
+}
+```
+
+---
+
+## Common Query Patterns
+
+### CW20 Token Standard
+
+```json
+// Balance
+{ "balance": { "address": "..." } }
+
+// Token Info
+{ "token_info": {} }
+
+// All Accounts (paginated)
+{ "all_accounts": { "limit": 100 } }
+```
+
+### CW721 NFT Standard
+
+```json
+// Owner of Token
+{ "owner_of": { "token_id": "123" } }
+
+// NFT Info
+{ "nft_info": { "token_id": "123" } }
+
+// All NFT Info
+{ "all_nft_info": { "token_id": "123" } }
+
+// Tokens by Owner
+{ "tokens": { "owner": "...", "limit": 100 } }
+
+// Contract Info
+{ "contract_info": {} }
+```
+
+### CW4 Group
+
+```json
+// Member Info
+{ "member": { "addr": "..." } }
+
+// List Members
+{ "list_members": { "limit": 100 } }
+```

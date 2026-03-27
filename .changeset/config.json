@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "chainapsis/keplr-wallet-mcp"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["@keplr-wallet/keplr-wallet-mcp", "@keplr-wallet/biometric-darwin"]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

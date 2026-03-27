@@ -1,0 +1,130 @@
+{
+  "name": "@keplr-wallet/keplr-wallet-mcp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Keplr MCP Server — AI agents can interact with Cosmos chains via Model Context Protocol",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "mcpName": "io.github.chainapsis/keplr-wallet-mcp",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./sdk": {
+      "types": "./dist/sdk.d.ts",
+      "default": "./dist/sdk.js"
+    },
+    "./ecosystem": {
+      "types": "./dist/ecosystem.d.ts",
+      "default": "./dist/ecosystem.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "default": "./dist/store.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "default": "./dist/errors.js"
+    },
+    "./plugin-types": {
+      "types": "./dist/plugins/types.d.ts",
+      "default": "./dist/plugins/types.js"
+    },
+    "./protocol-types": {
+      "types": "./dist/plugins/protocol-types.d.ts",
+      "default": "./dist/plugins/protocol-types.js"
+    },
+    "./chain-storage": {
+      "types": "./dist/chains/storage.d.ts",
+      "default": "./dist/chains/storage.js"
+    },
+    "./keys": {
+      "types": "./dist/keys/index.d.ts",
+      "default": "./dist/keys/index.js"
+    },
+    "./keys/providers/mnemonic": {
+      "types": "./dist/keys/providers/mnemonic.d.ts",
+      "default": "./dist/keys/providers/mnemonic.js"
+    },
+    "./keys/providers/passkey": {
+      "types": "./dist/keys/providers/passkey.d.ts",
+      "default": "./dist/keys/providers/passkey.js"
+    },
+    "./keys/signers": {
+      "types": "./dist/keys/signers/index.d.ts",
+      "default": "./dist/keys/signers/index.js"
+    },
+    "./keys/accounts": {
+      "types": "./dist/keys/accounts/index.d.ts",
+      "default": "./dist/keys/accounts/index.js"
+    },
+    "./keys/adapter-bridge": {
+      "types": "./dist/keys/adapter-bridge.d.ts",
+      "default": "./dist/keys/adapter-bridge.js"
+    },
+    "./keys/registry": {
+      "types": "./dist/keys/registry.d.ts",
+      "default": "./dist/keys/registry.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    },
+    "./rpc": {
+      "types": "./dist/rpc/resolver.d.ts",
+      "default": "./dist/rpc/resolver.js"
+    },
+    "./utils/lcd-fetch": {
+      "types": "./dist/utils/lcd-fetch.d.ts",
+      "default": "./dist/utils/lcd-fetch.js"
+    }
+  },
+  "bin": {
+    "keplr-wallet-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "postbuild": "node scripts/build-native.js",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@babylonlabs-io/babylon-proto-ts": "^1.22.1",
+    "@cosmjs/amino": "^0.32.4",
+    "@cosmjs/crypto": "^0.32.4",
+    "@cosmjs/encoding": "^0.32.4",
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/tendermint-rpc": "^0.32.4",
+    "@keplr-wallet/cosmos": "^0.13.1",
+    "@keplr-wallet/types": "^0.13.1",
+    "@keplr-wallet/unit": "^0.13.1",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "cosmjs-types": "0.9.0",
+    "keytar": "^7.9.0",
+    "otplib": "^13.2.1",
+    "p-limit": "^7.3.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "zod": "^3.24.0",
+    "zustand": "^5.0.10"
+  },
+  "optionalDependencies": {
+    "@keplr-wallet/biometric-darwin": "workspace:*",
+    "@keplr-wallet/protocol-osmosis": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "@types/qrcode-terminal": "^0.12.2",
+    "tsx": "^4.19.0"
+  }
+}

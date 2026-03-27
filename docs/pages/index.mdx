@@ -1,0 +1,82 @@
+# Keplr Wallet MCP
+
+AI-powered wallet interface for Cosmos chains via Model Context Protocol (MCP).
+
+## What is Keplr Wallet MCP?
+
+Keplr Wallet MCP is a **Model Context Protocol** server that allows AI assistants like Claude to interact with blockchain wallets. It supports:
+
+- **Cosmos Ecosystem**: Cosmos Hub, Osmosis, Celestia, and 50+ chains
+- **DeFi Protocols**: Osmosis DEX
+
+## Key Features
+
+### Multi-Chain Support
+
+```
+Cosmos: cosmoshub-4, osmosis-1, celestia, neutron-1, ...
+```
+
+### Natural Language Wallet Operations
+
+Ask your AI assistant things like:
+- "Show my ATOM balance on Cosmos Hub"
+- "Stake 100 ATOM to a top validator"
+- "Swap 50 OSMO to ATOM on Osmosis"
+
+### Wallet Type
+
+| Type | Best For | Security |
+|------|----------|----------|
+| **Mnemonic** | Development, testing | Local storage |
+
+## Quick Start
+
+:::code-group
+
+```bash [npm]
+npm install @keplr-wallet/keplr-wallet-mcp
+```
+
+```bash [pnpm]
+pnpm add @keplr-wallet/keplr-wallet-mcp
+```
+
+:::
+
+Configure Claude Desktop (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+    }
+  }
+}
+```
+
+Then ask Claude: **"Help me set up a wallet"**
+
+## Documentation Structure
+
+| Section | Description |
+|---------|-------------|
+| [Getting Started](/getting-started/installation) | Installation and first wallet setup |
+| [Guides](/guides/wallet/account-types) | Step-by-step guides for common tasks |
+| [SDK](/sdk) | Build custom adapters and plugins |
+| [Architecture](/architecture) | Internal design and key management |
+| [Reference](/reference) | Complete tool and prompt reference |
+| [Tutorials](/tutorials/first-stake) | End-to-end tutorials |
+
+## For AI Assistants
+
+This documentation is designed for both humans and AI. Each tool reference includes:
+
+- **Input Schema**: JSON Schema for parameters
+- **Output Schema**: Response structure
+- **Examples**: Request/response pairs
+- **Suggested Actions**: Next steps after each operation
+
+A machine-readable index of tools and capabilities will be available at `/llms.txt` when vocs generates it.

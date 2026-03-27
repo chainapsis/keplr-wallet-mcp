@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'publish' to confirm"
+        required: true
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build-biometric:
+    name: Build biometric binary
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build universal binary
+        run: |
+          cd packages/server/native/macos
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Verify architectures
+        run: lipo -info packages/server/native/macos/bin/BiometricAuth.app/Contents/MacOS/biometric-auth
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: biometric-darwin
+          path: packages/server/native/macos/bin/
+
+  release:
+    name: Release
+    needs: build-biometric
+    if: github.event_name == 'push' || github.event.inputs.confirm == 'publish'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download biometric binary
+        uses: actions/download-artifact@v4
+        with:
+          name: biometric-darwin
+          path: packages/biometric-darwin/bin/
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          npm_config_ignore_scripts: true
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm version
+          publish: pnpm release
+          title: "chore: release packages"
+          commit: "chore: release packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install mcp-publisher
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          VERSION="v1.5.0"
+          EXPECTED_SHA="79bbb73ba048c5906034f73ef6286d7763bd53cf368ea0b358fc593ed360cbd5"
+          curl -fSL -o mcp-publisher.tar.gz \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${VERSION}/mcp-publisher_linux_amd64.tar.gz"
+          echo "${EXPECTED_SHA}  mcp-publisher.tar.gz" | sha256sum -c -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+
+      - name: Login to MCP Registry
+        if: steps.changesets.outputs.published == 'true'
+        run: mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        if: steps.changesets.outputs.published == 'true'
+        run: mcp-publisher publish
+
+      - name: Notify on MCP Registry failure
+        if: failure() && steps.changesets.outputs.published == 'true'
+        run: echo "::error::npm publish succeeded but MCP Registry publish failed. Manual intervention required."

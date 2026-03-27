@@ -1,0 +1,159 @@
+# Account API
+
+Interface for wallet account abstraction.
+
+## Import
+
+```typescript
+import { Account, AccountKind, EOAAccount } from "@keplr-wallet/keplr-wallet-mcp/keys";
+```
+
+## Interface
+
+```typescript
+interface Account {
+  readonly kind: AccountKind;
+  getSigners(): Signer[];
+  getAddress(ecosystem: EcosystemType, chainId: string): Promise<string>;
+}
+```
+
+## Types
+
+```typescript
+type AccountKind = "eoa";
+```
+
+## Properties
+
+### `kind`
+
+```typescript
+readonly kind: AccountKind;
+```
+
+The type of account.
+
+| Kind | Description |
+|------|-------------|
+| `eoa` | Externally Owned Account (private key controlled) |
+
+## Methods
+
+### `getSigners`
+
+```typescript
+getSigners(): Signer[];
+```
+
+Get the signers associated with this account.
+
+**Returns:** Array of `Signer` instances
+
+**Note:** Returns an array with one signer for standard EOA accounts.
+
+### `getAddress`
+
+```typescript
+getAddress(ecosystem: EcosystemType, chainId: string): Promise<string>;
+```
+
+Get the address for a specific ecosystem and chain.
+
+**Parameters:**
+- `ecosystem` - Target ecosystem (`"cosmos"`)
+- `chainId` - Chain identifier
+
+**Returns:** Address string
+
+**Example:**
+
+```typescript
+const cosmosAddr = await account.getAddress("cosmos", "cosmoshub-4");
+// "cosmos1abc..."
+```
+
+## Extended Interfaces
+
+### EOAAccount
+
+```typescript
+interface EOAAccount extends Account {
+  readonly kind: "eoa";
+}
+```
+
+Standard externally owned account.
+
+## Built-in Implementations
+
+### EOAAccountImpl
+
+```typescript
+import { EOAAccountImpl } from "@keplr-wallet/keplr-wallet-mcp/keys/accounts";
+
+const account = new EOAAccountImpl(secp256k1Signer);
+```
+
+Features:
+- secp256k1 signer
+- Cosmos address derivation
+- Standard key path support
+
+## Example Implementation
+
+```typescript
+import { Account, AccountKind, Signer, EcosystemType } from "@keplr-wallet/keplr-wallet-mcp/keys";
+
+class MultiSigAccount implements Account {
+  readonly kind: AccountKind = "eoa";
+
+  constructor(private signers: Signer[], private threshold: number) {}
+
+  getSigners(): Signer[] {
+    return this.signers;
+  }
+
+  async getAddress(ecosystem: EcosystemType, chainId: string): Promise<string> {
+    if (ecosystem !== "cosmos") {
+      throw new Error("MultiSig only supports Cosmos");
+    }
+
+    // Compute multisig address from signers and threshold
+    return this.computeMultiSigAddress(chainId);
+  }
+
+  private computeMultiSigAddress(chainId: string): string {
+    // Deterministic address computation
+  }
+}
+```
+
+## Account Type Constraints
+
+| Signer Curve | Account Kind | Ecosystems |
+|--------------|--------------|------------|
+| secp256k1 | eoa | Cosmos |
+
+## Usage with Adapters
+
+Adapters interact with accounts through KeyProviders:
+
+```typescript
+class MyAdapter implements EcosystemAdapter {
+  async createClientWithProvider(provider: KeyProvider): Promise<EcosystemClient> {
+    const account = provider.getAccount();
+    if (!account) {
+      throw new Error("No account available");
+    }
+
+    // Get address for this ecosystem
+    const address = await account.getAddress(this.ecosystemType, chainId);
+
+    // Get signers for transaction signing
+    const signers = account.getSigners();
+
+    return new MyClient(address, signers);
+  }
+}
+```

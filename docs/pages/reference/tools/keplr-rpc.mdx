@@ -1,0 +1,203 @@
+# Keplr Endpoints API Tools
+
+Tools for managing Keplr Endpoints API keys, credits, and usage analytics via `api.keplr.app`.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `kr_validate_key` | Validate an API key | Yes |
+| `kr_get_payment_link` | Get Stripe payment link to add credits | Yes |
+| `kr_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
+| `kr_get_usage_history` | Get usage history with filters | Yes |
+| `kr_list_chains` | List available chains (no auth) | Yes |
+
+## About Keplr Endpoints API
+
+Keplr Endpoints provides dedicated RPC and REST endpoints for Cosmos chains:
+
+- **Reliable infrastructure**: Dedicated endpoints instead of public fallbacks
+- **API key auth**: All requests authenticated via `X-API-Key` header
+- **Credit-based billing**: Pay-as-you-go with credit balance tracking
+- **31 supported chains**: See [Keplr Infrastructure](/reference/chains#keplr-infrastructure)
+- **Dashboard**: [api.keplr.app](https://api.keplr.app)
+
+---
+
+## `kr_validate_key`
+
+Validate an existing Keplr Endpoints API key.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key to validate |
+
+### Response
+
+```json
+{
+  "valid": true,
+  "userId": "user-1",
+  "suggestedActions": [
+    { "tool": "kr_get_usage_summary", "reason": "Check credits and usage", "priority": 1 },
+    { "tool": "kr_list_chains", "reason": "See available chains", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `kr_get_payment_link`
+
+Get a Stripe payment link to add credits.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key |
+
+### Response
+
+```json
+{
+  "paymentUrl": "https://checkout.stripe.com/...",
+  "suggestedActions": [
+    { "tool": "kr_get_usage_summary", "reason": "Check updated balance after payment", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `kr_get_usage_summary`
+
+Get balance and usage summary including requests, credits, and per-chain breakdown.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key |
+
+### Response
+
+```json
+{
+  "balance": 2000000,
+  "usage": {
+    "last7Days": { "totalRequests": 500, "totalCredits": 500 },
+    "byChain": [
+      { "chain": "cosmoshub-4", "totalRequests": 300, "totalCredits": 300 },
+      { "chain": "osmosis-1", "totalRequests": 200, "totalCredits": 200 }
+    ]
+  },
+  "suggestedActions": [
+    { "tool": "kr_get_usage_history", "reason": "View detailed usage over time", "priority": 2 }
+  ]
+}
+```
+
+When balance is low, a `kr_get_payment_link` suggestion is added at priority 1.
+
+---
+
+## `kr_get_usage_history`
+
+Get usage history with optional date, chain, and endpoint type filters.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key |
+| `startDate` | `string` | No | Start date (ISO format) |
+| `endDate` | `string` | No | End date (ISO format) |
+| `chain` | `string` | No | Filter by chain ID |
+| `endpointType` | `string` | No | Filter by endpoint type |
+
+### Response
+
+```json
+{
+  "history": [
+    { "date": "2025-01-01", "requests": 100, "credits": 10 },
+    { "date": "2025-01-02", "requests": 200, "credits": 20 }
+  ],
+  "suggestedActions": [
+    { "tool": "kr_get_usage_summary", "reason": "View aggregated usage summary", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `kr_list_chains`
+
+List all chains available on Keplr Endpoints. No authentication required.
+
+### Parameters
+
+None.
+
+### Response
+
+```json
+{
+  "chains": [
+    { "chainId": "cosmoshub-4", "chainName": "Cosmos Hub" },
+    { "chainId": "osmosis-1", "chainName": "Osmosis" }
+  ]
+}
+```
+
+---
+
+## Error Handling
+
+| HTTP Status | Behavior |
+|-------------|----------|
+| 402 | Credit error with `kr_get_payment_link` suggestion |
+| 403 | Setup guide with dashboard link (not treated as error) |
+| 404 | Resource not found |
+| 429 | Rate limit exceeded |
+| 5xx | Server error |
+
+---
+
+## Example Workflows
+
+### First-Time Setup
+
+```
+1. kr_list_chains
+   → Browse available chains (no auth needed)
+
+2. kr_validate_key
+   → Validate your API key
+
+3. kr_get_usage_summary
+   → Check credit balance and usage
+```
+
+### Monitor Usage
+
+```
+1. kr_get_usage_summary
+   → Overview of requests and credits per chain
+
+2. kr_get_usage_history
+   → Drill into specific date ranges or chains
+
+3. kr_get_payment_link
+   → Add credits if balance is low
+```
+
+---
+
+## Related
+
+- [Environment Variables](/reference/environment#keplr_rpc_api_key) - API key configuration
+- [Keplr Infrastructure Chains](/reference/chains#keplr-infrastructure) - Supported chains

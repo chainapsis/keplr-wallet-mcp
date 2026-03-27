@@ -1,0 +1,14 @@
+{
+  "name": "keplr-mcp-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vocs dev",
+    "build": "vocs build",
+    "preview": "vocs preview"
+  },
+  "devDependencies": {
+    "vocs": "^1.0.0-alpha.62"
+  }
+}

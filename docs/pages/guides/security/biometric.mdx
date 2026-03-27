@@ -1,0 +1,150 @@
+# Biometric Authentication
+
+Protect transactions with Touch ID, Face ID, or Windows Hello.
+
+## Quick Setup
+
+```
+User: Set up biometric authentication
+```
+
+## How It Works
+
+```
+Transaction Request
+       ↓
+Biometric Prompt (Touch ID / Face ID)
+       ↓
+Verification
+       ↓
+Transaction Signed
+```
+
+## Setup Guide
+
+### 1. Check Status
+
+```
+User: Check my authentication status
+```
+
+### 2. Enable Authentication System
+
+```
+User: Enable authentication
+```
+
+### 3. Set Up Biometric
+
+```
+User: Set up biometric authentication
+```
+
+System will prompt for Touch ID/Face ID enrollment.
+
+### 4. Test It
+
+```
+User: Send 0.001 ATOM to cosmos1test...
+```
+
+Should prompt for biometric before signing.
+
+## Session Authentication
+
+Avoid repeated prompts with session auth:
+
+### Enable
+
+```
+User: Enable session auth with 15 minute timeout
+```
+
+### How It Works
+
+```
+First transaction → Biometric required → Session starts
+Second transaction (within 15 min) → No auth needed
+Session expires → Biometric required again
+```
+
+### Disable
+
+```
+User: Disable session authentication
+```
+
+### Clear Session Now
+
+```
+User: Clear my auth session
+```
+
+Forces re-authentication on next transaction.
+
+## Configuration Options
+
+### Timeout Settings
+
+| Use Case | Timeout | Security |
+|----------|---------|----------|
+| High security | Disabled or 1 min | Highest |
+| Normal use | 5-15 min | Balanced |
+| Development | 30 min | Lower |
+
+### Auth Status Check
+
+```
+User: What's my authentication status?
+```
+
+Shows:
+- Auth enabled/disabled
+- Configured providers
+- Session status
+- Session expiry
+
+## Platform Support
+
+| Platform | Method | Notes |
+|----------|--------|-------|
+| macOS | Touch ID | Requires Touch ID-enabled Mac |
+| Windows | Windows Hello | Fingerprint, PIN, or face |
+| Linux | Security Key | YubiKey, etc. |
+
+## Troubleshooting
+
+### "Biometric not available"
+
+**Causes:**
+- No biometric hardware
+- Biometric not set up in system
+- Unsupported platform
+
+**Solutions:**
+1. Check system supports biometrics
+2. Set up in System Preferences (macOS) or Settings (Windows)
+3. Try security key instead
+
+### Biometric keeps failing
+
+**Solutions:**
+1. Clean fingerprint sensor
+2. Re-enroll fingerprint in system settings
+3. Try different finger
+4. Use fallback method (PIN on Windows)
+
+### Session not working
+
+**Check:**
+1. Session auth enabled: `auth-status`
+2. Session not expired
+3. Auth provider configured
+
+---
+
+## Related
+
+- [Security Overview](/guides/security/overview)
+- [Best Practices](/guides/security/best-practices)
+- [Authentication Tools](/reference/tools/authentication)

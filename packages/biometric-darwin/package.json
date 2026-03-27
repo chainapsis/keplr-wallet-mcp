@@ -1,0 +1,13 @@
+{
+  "name": "@keplr-wallet/biometric-darwin",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "macOS biometric authentication binary for Keplr MCP Server",
+  "os": ["darwin"],
+  "cpu": ["arm64", "x64"],
+  "files": ["bin"],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

@@ -1,0 +1,99 @@
+# Account Types
+
+Understanding the different wallet types in Keplr Wallet MCP.
+
+## Overview
+
+Keplr Wallet MCP supports the following account type:
+
+| Type | Key Storage | Ecosystems | Best For |
+|------|-------------|------------|----------|
+| **Mnemonic** | Local (encrypted) | Cosmos | Development, full control |
+
+## Mnemonic Accounts
+
+Traditional wallet using a 24-word seed phrase.
+
+### How It Works
+
+```
+Mnemonic (24 words)
+       ↓
+BIP44 Derivation
+       ↓
+secp256k1 Key Pair
+       ↓
+Addresses (Cosmos + EVM)
+```
+
+### Pros
+
+- **Full control**: Keys stored locally
+- **Standard**: Compatible with other wallets
+- **Portable**: Can import to any BIP39 wallet
+
+### Cons
+
+- **Security burden**: Must securely store mnemonic
+- **No hardware protection**: Keys in software
+- **Single point of failure**: Mnemonic compromise = total loss
+
+### When to Use
+
+- Development and testing
+- Full sovereignty over keys
+- Migrating from other wallets
+
+### Creating a Mnemonic Account
+
+```
+User: Create a new wallet
+AI: [Creates mnemonic account]
+```
+
+Or directly:
+
+```json
+{
+  "tool": "create-account",
+  "params": { "name": "My Wallet" }
+}
+```
+
+---
+
+## Switching Between Accounts
+
+You can have multiple accounts of different types:
+
+```
+User: List my accounts
+AI:
+1. Main Wallet (mnemonic) - active
+2. Trading Wallet (mnemonic)
+```
+
+Switch accounts:
+
+```
+User: Switch to my Trading Wallet account
+AI: [Activates Trading Wallet account]
+```
+
+---
+
+## Security Recommendations
+
+### For Mnemonic Accounts
+
+1. **Write down seed phrase** offline (paper, metal)
+2. **Never store digitally** (no photos, no cloud)
+3. **Enable authentication** (`auth-setup`)
+4. **Use session auth** for convenience with security
+
+---
+
+## Related
+
+- [Create Wallet](/guides/wallet/create-wallet)
+- [Import Wallet](/guides/wallet/import-wallet)

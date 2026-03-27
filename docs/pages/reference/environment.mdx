@@ -1,0 +1,185 @@
+# Environment Variables
+
+Configuration options for Keplr Wallet MCP.
+
+## Quick Reference
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `KEPLR_RPC_API_KEY` | Keplr infrastructure RPC/LCD API key | No |
+| `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
+| `KEPLR_MNEMONIC` | Pre-configured mnemonic (dev only) | No |
+| `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
+
+For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
+
+---
+
+## Wallet Configuration
+
+### `KEPLR_MNEMONIC`
+
+Pre-configure a mnemonic phrase (development only).
+
+```json
+{
+  "env": {
+    "KEPLR_MNEMONIC": "word1 word2 word3 ... word24"
+  }
+}
+```
+
+:::warning
+Never use this in production. The mnemonic is exposed in configuration files.
+:::
+
+### `KEPLR_TX_TTL_MINUTES`
+
+Transaction confirmation token time-to-live.
+
+```json
+{
+  "env": {
+    "KEPLR_TX_TTL_MINUTES": "5"
+  }
+}
+```
+
+Default: `5` minutes
+
+---
+
+## Price Data
+
+### `COINGECKO_API_KEY`
+
+CoinGecko Pro API key for USD price data in `get-portfolio`. Without this key, the free tier is used with automatic rate limit protection.
+
+```json
+{
+  "env": {
+    "COINGECKO_API_KEY": "CG-xxxxxxxxxxxxxxxxxxxx"
+  }
+}
+```
+
+Get an API key from [CoinGecko API](https://www.coingecko.com/en/api).
+
+| Behavior | Without Key (Free) | With Key (Pro) |
+|----------|-------------------|----------------|
+| API endpoint | `api.coingecko.com` | `pro-api.coingecko.com` |
+| Cache TTL | 5 minutes | 60 seconds |
+| Request throttle | 2s between requests | None |
+| Retry on rate limit | 3 retries with exponential backoff | 1 retry |
+
+---
+
+## RPC Configuration
+
+### `KEPLR_RPC_API_KEY`
+
+Keplr infrastructure API key. When set, routes RPC and REST requests through `api.keplr.app` for [supported chains](/reference/chains#keplr-infrastructure) with 2-tier priority:
+
+1. **Keplr infrastructure** — `api.keplr.app/rpc/{chain}` + `X-API-Key` header
+2. **Public fallback** — chain-registry endpoints (used when API key is absent or chain is unsupported)
+
+Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then add it to your config:
+
+```json
+{
+  "env": {
+    "KEPLR_RPC_API_KEY": "keplr_xxxxxxxxxxxxxxxxxxxx"
+  }
+}
+```
+
+Per-chain overrides and plugin configuration are done in the [config file](#config-file).
+
+---
+
+## Config File
+
+For plugin registration, toolset filtering, and RPC overrides, use a `keplr-mcp.config.ts` file:
+
+```typescript
+import { defineConfig } from "@keplr-wallet/keplr-wallet-mcp";
+import osmosisPlugin from "@keplr-wallet/protocol-osmosis";
+
+export default defineConfig({
+  plugins: [
+    osmosisPlugin(),
+    // "my-custom-plugin",  // string = auto-import npm package default export
+  ],
+  toolsets: {
+    default: ["cosmos-query", "cosmos-transaction"],
+  },
+  rpc: {
+    apiKey: process.env.KEPLR_RPC_API_KEY,
+    overrides: {
+      "cosmoshub-4": "https://my-own-rpc.example.com",
+    },
+  },
+});
+```
+
+See [Plugin System](/architecture/plugin-system) for details.
+
+---
+
+## Full Configuration Example
+
+### Claude Desktop (macOS)
+
+`~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"],
+      "env": {
+        "COINGECKO_API_KEY": "CG-xxxxxxxxxxxxxxxxxxxx",
+        "KEPLR_TX_TTL_MINUTES": "10"
+      }
+    }
+  }
+}
+```
+
+### Development Environment
+
+`.env` file (if using dotenv):
+
+```bash
+# Price Data (optional)
+COINGECKO_API_KEY=CG-xxxxxxxxxxxxxxxxxxxx
+
+# Development only
+KEPLR_MNEMONIC=test test test test test test test test test test test junk
+KEPLR_TX_TTL_MINUTES=30
+```
+
+---
+
+## Environment Variable Priority
+
+1. **Explicit env in config**: Highest priority
+2. **System environment**: Falls back if not in config
+3. **Defaults**: Used if not set anywhere
+
+---
+
+## Verifying Configuration
+
+After setting environment variables, verify with Claude:
+
+```
+User: Check my Keplr configuration
+AI: [Uses list-installed-adapters and list-installed-protocols]
+```
+
+This will show:
+- Installed adapters
+- Installed protocols
+- Configured features

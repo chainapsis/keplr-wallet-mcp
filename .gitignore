@@ -1,0 +1,29 @@
+node_modules/
+dist/
+.DS_Store
+
+# Native module build artifacts
+packages/server/native/macos/.build/
+packages/server/native/macos/bin/
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+.mcp.json
+
+# MCP config (contains API keys)
+.mcp.json
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+docs/plans/
+
+# Claude Code local settings
+.claude/settings.local.json
+.claude/worktrees/

@@ -1,0 +1,148 @@
+# Create Wallet
+
+Create a new mnemonic-based wallet.
+
+## Quick Start
+
+Ask Claude:
+
+> "Create a new wallet for me"
+
+Claude will:
+1. Generate a secure 24-word mnemonic
+2. Create your account
+3. Show your addresses
+4. Remind you to save the mnemonic
+
+## Step-by-Step
+
+### 1. Request Creation
+
+```
+User: Create a new wallet called "Trading"
+```
+
+### 2. Review the Response
+
+```json
+{
+  "status": "success",
+  "account": {
+    "name": "Trading",
+    "type": "mnemonic"
+  },
+  "mnemonic": "abandon abandon abandon ... about",
+  "addresses": {
+    "cosmos": "cosmos1abc...",
+    "osmosis": "osmo1abc...",
+    "ethereum": "0x123..."
+  },
+  "warning": "Save this mnemonic phrase securely. It cannot be recovered."
+}
+```
+
+### 3. Save Your Mnemonic
+
+:::warning Critical Security Step
+Write down your 24-word mnemonic phrase and store it securely:
+- Use paper or metal backup
+- Store in a safe location
+- Never take photos or screenshots
+- Never store in cloud or digital notes
+:::
+
+### 4. Verify Your Wallet
+
+```
+User: Show my accounts
+```
+
+Your new wallet should appear as the active account.
+
+## Naming Conventions
+
+Choose descriptive names:
+
+| Good Names | Why |
+|------------|-----|
+| "Main Trading" | Clear purpose |
+| "Staking Wallet" | Functional description |
+| "Test Account" | Development use |
+
+| Avoid | Why |
+|-------|-----|
+| "Account 1" | Not descriptive |
+| "wallet" | Generic |
+
+## Multiple Wallets
+
+You can create multiple wallets for different purposes:
+
+```
+User: Create a wallet called "Staking"
+User: Create a wallet called "DeFi Trading"
+User: Create a wallet called "NFT Collection"
+```
+
+Switch between them:
+
+```
+User: Switch to my Staking wallet
+```
+
+## Security Setup
+
+After creating your wallet, set up additional security:
+
+### Enable Authentication
+
+```
+User: Set up biometric authentication
+```
+
+This requires Touch ID/Face ID for transactions.
+
+### Enable Session Auth
+
+```
+User: Enable session authentication with 15 minute timeout
+```
+
+This allows multiple transactions within the timeout period without re-authenticating.
+
+## What's Next?
+
+After creating your wallet:
+
+1. **Save your mnemonic** - Most important step!
+2. **Set up authentication** - Protect your transactions
+3. **Check your addresses** - Know where to receive funds
+4. **Fund your wallet** - Transfer tokens from exchange
+5. **Start using** - Stake, swap, transfer
+
+## Common Questions
+
+### Can I recover a wallet without the mnemonic?
+
+No. The mnemonic is the only way to recover your wallet. If you lose it and lose access, your funds are permanently lost.
+
+### Are the addresses the same across chains?
+
+- **Cosmos chains**: Different addresses per chain (cosmos1..., osmo1..., etc.)
+- **EVM chains**: Same address across all EVM chains (0x...)
+
+### Can I change my mnemonic?
+
+No. The mnemonic is fixed. If compromised, create a new wallet and transfer assets.
+
+### Is my mnemonic stored securely?
+
+Keplr Wallet MCP stores your mnemonic encrypted locally. However, the best practice is to minimize digital storage entirely.
+
+---
+
+## Related
+
+- [Account Types](/guides/wallet/account-types)
+- [Import Wallet](/guides/wallet/import-wallet)
+- [Security Best Practices](/guides/security/best-practices)

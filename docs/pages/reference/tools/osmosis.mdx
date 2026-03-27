@@ -1,0 +1,183 @@
+# Osmosis Tools
+
+Tools for swapping tokens on Osmosis DEX via Skip Routes API.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `osmosis-quote` | Get swap quote | Yes |
+| `osmosis-swap` | Execute token swap | No |
+
+## About Osmosis
+
+Osmosis is the leading decentralized exchange (DEX) in the Cosmos ecosystem:
+
+- **AMM-based**: Automated Market Maker pools
+- **IBC native**: Seamless cross-chain trading
+- **Low fees**: ~0.2-0.3% swap fee
+- **Concentrated liquidity**: Supercharged pools
+- **Skip Routes**: Automatic multi-hop routing across 485+ tokens
+
+---
+
+## `osmosis-quote`
+
+Get a quote for a token swap.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tokenIn` | `string` | Yes | Input token symbol (e.g., "OSMO", "milkTIA") or denom |
+| `tokenOut` | `string` | Yes | Output token symbol (e.g., "ATOM", "USDC") or denom |
+| `amountIn` | `string` | Yes | Amount to swap in human-readable form (e.g., "10") |
+| `slippageBps` | `number` | No | Slippage tolerance in basis points (1-500, default: 50 = 0.5%) |
+
+### Response
+
+```json
+{
+  "quote": {
+    "input": "10 OSMO",
+    "output": "0.9 ATOM",
+    "minimumOutput": "0.8955 ATOM",
+    "priceImpact": "0.12%",
+    "slippage": "0.5%",
+    "usdAmountIn": "8.50",
+    "usdAmountOut": "8.40"
+  },
+  "route": ["OSMO", "osmosis-poolmanager", "ATOM"],
+  "chain": "osmosis-1",
+  "suggestedActions": [
+    { "tool": "osmosis-swap", "reason": "Execute this swap", "priority": 1 }
+  ]
+}
+```
+
+### Token Resolution
+
+Any Osmosis-listed token can be used by symbol or denom:
+
+| Input | Resolves To |
+|-------|-------------|
+| `"OSMO"` | `uosmo` |
+| `"ATOM"` | `ibc/27394F...` |
+| `"milkTIA"` | `factory/osmo1.../umilkTIA` |
+| `"NTRN"` | IBC denom for Neutron |
+| `"allBTC"` | Alloyed factory denom |
+| Full IBC denom | Used as-is |
+| Factory denom | Used as-is |
+
+:::tip
+Token resolution uses Skip's asset registry (485+ tokens). You don't need to know the full IBC denom — just use the symbol.
+:::
+
+---
+
+## `osmosis-swap`
+
+Execute a token swap on Osmosis.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tokenIn` | `string` | Yes | Input token symbol or denom |
+| `tokenOut` | `string` | Yes | Output token symbol or denom |
+| `amountIn` | `string` | Yes | Amount to swap in human-readable form |
+| `slippageBps` | `number` | No | Slippage tolerance in basis points (1-500, default: 50 = 0.5%) |
+
+### Response (Preview)
+
+```json
+{
+  "status": "pending_confirmation",
+  "confirmationToken": "...",
+  "summary": "Swap 10 OSMO → ~0.9 ATOM on Osmosis",
+  "swap": {
+    "tokenIn": { "symbol": "OSMO", "amount": "10" },
+    "tokenOut": { "symbol": "ATOM", "expectedAmount": "0.9", "minimumAmount": "0.8955" },
+    "priceImpact": "0.12%",
+    "slippage": "0.5%",
+    "route": ["OSMO", "osmosis-poolmanager", "ATOM"]
+  }
+}
+```
+
+### Response (After Confirmation)
+
+```json
+{
+  "status": "success",
+  "transactionHash": "ABC123...",
+  "swap": {
+    "tokenIn": "OSMO",
+    "tokenOut": "ATOM",
+    "amountIn": "10",
+    "expectedOutput": "0.9",
+    "minimumOutput": "0.8955"
+  },
+  "suggestedActions": [
+    { "tool": "get-transaction-status", "reason": "Check confirmation status", "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated balances", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## Slippage Protection
+
+Slippage is the difference between expected and actual price:
+
+| Setting | Risk | Use Case |
+|---------|------|----------|
+| 0.5% (50 bps) | Default | Most swaps |
+| 1% (100 bps) | Medium | Volatile pairs |
+| 3% (300 bps) | High | Low liquidity tokens |
+| 5% (500 bps) | Very High | Very low liquidity / illiquid tokens |
+
+If the price moves beyond your slippage tolerance, the transaction will fail to protect you.
+
+---
+
+## Example Workflows
+
+### Check Quote Then Swap
+
+```
+1. osmosis-quote
+   → Get exchange rate, routing, and USD values
+   → Decide if rate is acceptable
+
+2. osmosis-swap
+   → Creates preview with exact amounts
+   → Confirm to execute
+
+3. confirm-action
+   → Swap executes on-chain
+```
+
+### Multi-hop Routing
+
+Skip Routes API automatically finds the best path, including multi-hop:
+
+```
+OSMO → ATOM (direct pool)
+
+milkTIA → USDC (multi-hop via Skip)
+├─ milkTIA → OSMO (factory pool)
+└─ OSMO → USDC (concentrated liquidity)
+
+stATOM → NTRN (multi-hop)
+├─ stATOM → OSMO
+└─ OSMO → NTRN
+```
+
+---
+
+## Related
+
+- [Osmosis Guide](/guides/defi/osmosis) - Complete usage guide
+- [IBC Transfer](/reference/tools/cosmos-tx#ibc-transfer) - Cross-chain transfers

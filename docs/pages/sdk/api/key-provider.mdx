@@ -1,0 +1,206 @@
+# KeyProvider API
+
+Interface for key management providers.
+
+## Import
+
+```typescript
+import { KeyProvider, KeyProviderType } from "@keplr-wallet/keplr-wallet-mcp/keys";
+
+// Registry (plug-and-play extension)
+import { keyProviderRegistry } from "@keplr-wallet/keplr-wallet-mcp/keys";
+import { adapterBridgeRegistry } from "@keplr-wallet/keplr-wallet-mcp/keys/adapter-bridge";
+```
+
+## Interface
+
+```typescript
+interface KeyProvider {
+  readonly type: KeyProviderType;
+
+  getSupportedEcosystems(): EcosystemType[];
+  getAccount(): Account | undefined;
+}
+```
+
+## Types
+
+```typescript
+type KeyProviderType = "mnemonic" | string;
+type EcosystemType = "cosmos" | string;
+```
+
+## Properties
+
+### `type`
+
+```typescript
+readonly type: KeyProviderType;
+```
+
+Identifier for this provider type.
+
+**Built-in types:** `"mnemonic"`
+
+## Methods
+
+### `getSupportedEcosystems`
+
+```typescript
+getSupportedEcosystems(): EcosystemType[];
+```
+
+Get the list of ecosystems this provider supports.
+
+**Returns:** Array of ecosystem type strings
+
+**Example:**
+
+```typescript
+getSupportedEcosystems(): EcosystemType[] {
+  return ["cosmos"];
+}
+```
+
+### `getAccount`
+
+```typescript
+getAccount(): Account | undefined;
+```
+
+Get the current account, if one is available.
+
+**Returns:** `Account` instance or `undefined`
+
+**Example:**
+
+```typescript
+getAccount(): Account | undefined {
+  return this.account;
+}
+```
+
+## Built-in Implementations
+
+### MnemonicKeyProvider
+
+```typescript
+import { MnemonicKeyProvider } from "@keplr-wallet/keplr-wallet-mcp/keys";
+
+const provider = new MnemonicKeyProvider(mnemonic);
+```
+
+Features:
+- BIP39 mnemonic support
+- BIP44 derivation
+- Cosmos ecosystem
+
+## Usage with Store
+
+```typescript
+import { store } from "@keplr-wallet/keplr-wallet-mcp/store";
+
+// Set provider
+store.setKeyProvider(provider);
+
+// Get client for ecosystem
+const cosmosClient = await store.getClientFor("cosmos", "cosmoshub-4");
+```
+
+## Example Implementation
+
+```typescript
+import { KeyProvider, Account, EcosystemType } from "@keplr-wallet/keplr-wallet-mcp/keys";
+
+class CustomKeyProvider implements KeyProvider {
+  readonly type = "custom";
+  private account?: Account;
+
+  constructor(private config: CustomConfig) {}
+
+  getSupportedEcosystems(): EcosystemType[] {
+    return ["cosmos"];
+  }
+
+  getAccount(): Account | undefined {
+    return this.account;
+  }
+
+  async initialize(): Promise<void> {
+    // Setup account
+    this.account = new CustomAccount(this.config);
+  }
+}
+```
+
+See [Custom KeyProvider Guide](/sdk/guides/custom-provider) for complete example.
+
+## KeyProviderRegistry
+
+Registry for registering new KeyProvider types without modifying core code:
+
+```typescript
+import { keyProviderRegistry } from "@keplr-wallet/keplr-wallet-mcp/keys";
+
+// Get registered provider types
+keyProviderRegistry.getRegisteredTypes();
+// ["mnemonic", "smart-account"]
+
+// Get available types (checks isAvailable)
+await keyProviderRegistry.getAvailableTypes();
+
+// Register a new provider type
+keyProviderRegistry.register({
+  type: "my-provider",
+  displayName: "My Custom Provider",
+  configSchema: z.object({ ... }),
+  create: async (config) => new MyProvider(config),
+  isAvailable: () => true,
+});
+
+// Create a provider via registry
+const provider = await keyProviderRegistry.createProvider({
+  type: "my-provider",
+  // ... config fields
+});
+
+// Validate config
+await keyProviderRegistry.validateConfig(config);
+```
+
+### KeyProviderPlugin Interface
+
+```typescript
+interface KeyProviderPlugin<TType, TConfig> {
+  type: TType;                           // Provider type identifier
+  displayName: string;                   // Display name for UI
+  configSchema?: ZodSchema<TConfig>;     // Zod validation schema
+  create(config: TConfig): Promise<KeyProvider>;  // Factory
+  validate?(config: TConfig): boolean;   // Additional validation
+  isAvailable?(): boolean;               // Environment availability check
+}
+```
+
+## AdapterBridgeRegistry
+
+Connects KeyProvider with EcosystemAdapter:
+
+```typescript
+import { adapterBridgeRegistry } from "@keplr-wallet/keplr-wallet-mcp/keys/adapter-bridge";
+
+// Register a bridge
+adapterBridgeRegistry.register({
+  providerType: "my-provider",
+  ecosystem: "cosmos",
+  priority: 10,  // Higher value = higher priority
+  createClient: async (provider, adapter) => {
+    return adapter.createClient(provider.getCredentials());
+  },
+});
+
+// Check for bridge
+adapterBridgeRegistry.hasBridge("my-provider", "cosmos");  // true
+
+// Create client (called automatically by adapter)
+const client = await adapterBridgeRegistry.createClient(provider, adapter);
+```

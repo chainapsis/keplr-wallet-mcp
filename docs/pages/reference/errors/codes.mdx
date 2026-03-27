@@ -1,0 +1,363 @@
+# Error Codes
+
+Reference for all error categories and handling.
+
+## Error Categories
+
+| Category | Pattern | Recoverable | Description |
+|----------|---------|-------------|-------------|
+| `NETWORK` | timeout, econnrefused, fetch failed | Yes | Network/RPC issues |
+| `VALIDATION` | invalid, required, insufficient | No | Input validation |
+| `WALLET` | session expired, user rejected | Yes | Wallet/signing issues |
+| `SETUP_REQUIRED` | no mnemonic, no account | Yes | Onboarding needed |
+| `AUTH` | auth failed, biometric | No | Authentication issues |
+| `TIMEOUT` | timeout, deadline exceeded | Yes | Operation timeout |
+| `CHAIN` | gas, revert, nonce, sequence | Varies | Blockchain errors |
+| `UNKNOWN` | unrecognized | No | Unexpected errors |
+
+---
+
+## NETWORK Errors
+
+### Connection Timeout
+
+```json
+{
+  "error": {
+    "category": "NETWORK",
+    "code": "TIMEOUT",
+    "message": "RPC request timed out after 30s",
+    "recoverable": true,
+    "suggestion": "The network may be congested. Try again in a moment."
+  }
+}
+```
+
+**Causes:**
+- Network congestion
+- RPC node overload
+- Internet connectivity
+
+**Solutions:**
+- Wait and retry
+- Use different RPC endpoint
+- Check internet connection
+
+### Connection Refused
+
+```json
+{
+  "error": {
+    "category": "NETWORK",
+    "code": "ECONNREFUSED",
+    "message": "Could not connect to RPC endpoint",
+    "recoverable": true,
+    "suggestion": "RPC endpoint may be down. Try again later."
+  }
+}
+```
+
+---
+
+## VALIDATION Errors
+
+### Invalid Address
+
+```json
+{
+  "error": {
+    "category": "VALIDATION",
+    "code": "INVALID_ADDRESS",
+    "message": "Invalid Cosmos address format",
+    "details": {
+      "provided": "cosmos1invalid",
+      "expected": "Bech32 address starting with 'cosmos1'"
+    },
+    "recoverable": false
+  }
+}
+```
+
+### Missing Required Parameter
+
+```json
+{
+  "error": {
+    "category": "VALIDATION",
+    "code": "REQUIRED_PARAM",
+    "message": "Missing required parameter: chain",
+    "recoverable": false
+  }
+}
+```
+
+### Invalid Amount
+
+```json
+{
+  "error": {
+    "category": "VALIDATION",
+    "code": "INVALID_AMOUNT",
+    "message": "Amount must be a positive number",
+    "details": {
+      "provided": "-100",
+      "expected": "Positive number (e.g., '100' or '100.5')"
+    }
+  }
+}
+```
+
+---
+
+## WALLET Errors
+
+### No Wallet Configured
+
+```json
+{
+  "error": {
+    "category": "WALLET",
+    "code": "NOT_CONFIGURED",
+    "message": "No wallet is configured",
+    "recoverable": false,
+    "setupGuide": {
+      "options": [
+        { "tool": "create-account", "description": "Generate new wallet" },
+        { "tool": "import-account", "description": "Import existing" }
+      ],
+      "recommendation": "create-account"
+    }
+  }
+}
+```
+
+### Invalid Mnemonic
+
+```json
+{
+  "error": {
+    "category": "WALLET",
+    "code": "INVALID_MNEMONIC",
+    "message": "Invalid mnemonic phrase",
+    "details": {
+      "reason": "Checksum validation failed",
+      "wordCount": 23,
+      "expected": "12 or 24 words"
+    }
+  }
+}
+```
+
+---
+
+## SETUP_REQUIRED Errors
+
+### Onboarding Required
+
+```json
+{
+  "error": {
+    "category": "SETUP_REQUIRED",
+    "code": "ONBOARDING_REQUIRED",
+    "message": "Wallet setup required before this operation",
+    "attemptedAction": "get-balances",
+    "setupGuide": {
+      "prompt": "/get-started",
+      "description": "Complete the onboarding flow"
+    }
+  }
+}
+```
+
+---
+
+## AUTH Errors
+
+### Authentication Failed
+
+```json
+{
+  "error": {
+    "category": "AUTH",
+    "code": "AUTH_FAILED",
+    "message": "Biometric authentication failed",
+    "recoverable": false,
+    "suggestion": "Try authenticating again"
+  }
+}
+```
+
+### Authentication Required
+
+```json
+{
+  "error": {
+    "category": "AUTH",
+    "code": "AUTH_REQUIRED",
+    "message": "This operation requires authentication",
+    "suggestion": "Use auth-setup to configure authentication"
+  }
+}
+```
+
+---
+
+## INSUFFICIENT_FUNDS Errors
+
+### Not Enough Balance
+
+```json
+{
+  "error": {
+    "category": "INSUFFICIENT_FUNDS",
+    "code": "INSUFFICIENT_BALANCE",
+    "message": "Insufficient balance for this transaction",
+    "details": {
+      "required": {
+        "amount": "100 ATOM",
+        "fee": "0.01 ATOM",
+        "total": "100.01 ATOM"
+      },
+      "available": "50 ATOM"
+    },
+    "suggestion": "Reduce the amount or add more funds"
+  }
+}
+```
+
+### Insufficient Gas
+
+```json
+{
+  "error": {
+    "category": "INSUFFICIENT_FUNDS",
+    "code": "INSUFFICIENT_GAS",
+    "message": "Not enough funds to pay for gas",
+    "details": {
+      "estimatedGas": "0.005 ATOM",
+      "available": "0.001 ATOM"
+    }
+  }
+}
+```
+
+---
+
+## Transaction Warnings
+
+Warnings included in transaction previews. These are non-blocking — transactions can still proceed.
+
+| Code | Level | Trigger |
+|------|-------|---------|
+| `INSUFFICIENT_FOR_FEE` | critical | Balance < amount + estimated fee |
+| `LARGE_AMOUNT` | warning | Amount > 90% of balance |
+| `LOW_BALANCE_AFTER` | warning | Remaining balance < 10% after transaction |
+| `UNSTAKING_PERIOD` | info | Undelegate operation (21-day unbonding) |
+| `GAS_TOKEN_EXHAUSTION` | warning/critical | Remaining gas token balance < 3× estimated fee after transfer |
+
+### GAS_TOKEN_EXHAUSTION
+
+Triggered when a `send-tokens` or `ibc-transfer` would leave insufficient gas tokens for future transactions.
+
+```json
+{
+  "preview": {
+    "warnings": [{
+      "level": "warning",
+      "code": "GAS_TOKEN_EXHAUSTION",
+      "message": "After this transaction, remaining 0.005 ATOM may not cover fees for future transactions (estimated 0.015 ATOM needed for ~3 transactions)."
+    }]
+  },
+  "suggestedActions": [
+    {
+      "tool": "send-tokens",
+      "reason": "Reduce amount to 0.98 ATOM to reserve gas for future transactions",
+      "params": { "amount": "980000", "denom": "uatom" },
+      "priority": 1
+    }
+  ]
+}
+```
+
+**Level escalation:**
+- `warning` — remaining balance is positive but below the reserve threshold
+- `critical` — remaining balance would be zero or negative (subsequent transactions will fail)
+
+---
+
+## TRANSACTION Errors
+
+### Transaction Failed
+
+```json
+{
+  "error": {
+    "category": "TRANSACTION",
+    "code": "TX_FAILED",
+    "message": "Transaction failed",
+    "details": {
+      "txHash": "ABC123...",
+      "reason": "out of gas",
+      "gasUsed": "100000",
+      "gasLimit": "80000"
+    },
+    "suggestion": "Increase gas limit and retry"
+  }
+}
+```
+
+### Transaction Rejected
+
+```json
+{
+  "error": {
+    "category": "TRANSACTION",
+    "code": "TX_REJECTED",
+    "message": "Transaction rejected by user",
+    "recoverable": false
+  }
+}
+```
+
+### Confirmation Expired
+
+```json
+{
+  "error": {
+    "category": "TRANSACTION",
+    "code": "CONFIRMATION_EXPIRED",
+    "message": "Confirmation token expired",
+    "details": {
+      "ttl": "5 minutes",
+      "expiredAt": "2024-01-01T00:05:00Z"
+    },
+    "suggestion": "Re-initiate the transaction"
+  }
+}
+```
+
+---
+
+## Error Handling in Code
+
+```typescript
+import { classifyError, isSetupRequiredError, createSetupRequiredResponse } from "@keplr-wallet/keplr-wallet-mcp/errors";
+
+try {
+  // Operation
+} catch (error) {
+  if (isSetupRequiredError(error.message)) {
+    return createSetupRequiredResponse({ attemptedAction: "tool-name" });
+  }
+
+  const classified = classifyError(error);
+  return {
+    error: {
+      category: classified.category,
+      message: classified.message,
+      recoverable: classified.recoverable,
+      suggestion: classified.suggestion
+    }
+  };
+}
+```

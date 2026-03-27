@@ -1,0 +1,350 @@
+# Authentication Tools
+
+Tools for managing authentication including biometric and TOTP (Google Authenticator) 2FA.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `auth-status` | Check authentication configuration and all providers | Yes |
+| `auth-enable` | Enable authentication system | No |
+| `auth-disable` | Disable authentication system | No |
+| `auth-setup` | Configure authentication provider (biometric or TOTP) | No |
+| `auth-verify-setup` | Complete TOTP setup with verification code | No |
+| `auth-available-methods` | Check available auth methods for an action | Yes |
+| `auth-provider-disable` | Disable specific auth provider | No |
+
+---
+
+## `auth-status`
+
+Check the current authentication configuration including all providers (biometric, TOTP).
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "enabled": true,
+  "providers": {
+    "biometric": {
+      "available": true,
+      "configured": true,
+      "note": "Ready to use"
+    },
+    "totp": {
+      "available": true,
+      "configured": true,
+      "setupInProgress": false,
+      "authenticatorType": "google",
+      "note": "Ready to use"
+    }
+  },
+}
+```
+
+---
+
+## `auth-enable`
+
+Enable the authentication system for destructive actions (e.g., account deletion).
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Authentication system enabled",
+  "status": { ... }
+}
+```
+
+---
+
+## `auth-disable`
+
+Disable the authentication system.
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Authentication system disabled"
+}
+```
+
+:::warning
+Disabling authentication reduces security. Only recommended for development.
+:::
+
+---
+
+## `auth-setup`
+
+Configure an authentication provider. Supports biometric (Touch ID/Face ID) and TOTP (Google Authenticator).
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `provider` | `"biometric" \| "totp"` | Yes | Auth provider type |
+| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
+| `accountLabel` | `string` | No | For TOTP: Label shown in authenticator app (default: "keplr-wallet") |
+
+### Response (Biometric)
+
+Biometric setup completes immediately:
+
+```json
+{
+  "success": true,
+  "setupPending": false,
+  "provider": "biometric",
+  "message": "Authentication provider 'biometric' enabled for 'delete_account'"
+}
+```
+
+### Response (TOTP)
+
+TOTP requires a two-step setup:
+
+The response includes two content blocks:
+
+**Block 1**: ASCII QR code for terminal display (scannable with authenticator app)
+
+**Block 2**: Setup metadata as JSON:
+
+```json
+{
+  "success": true,
+  "setupPending": true,
+  "provider": "totp",
+  "manualEntryKey": "JBSWY3DPEHPK3PXP...",
+  "expiresIn": "10 minutes",
+  "nextStep": {
+    "tool": "auth-verify-setup",
+    "params": {
+      "provider": "totp",
+      "code": "<6-digit code from app>"
+    }
+  }
+}
+```
+
+### Response (TOTP — Already Configured)
+
+When TOTP is already set up and you call `auth-setup` to add it to additional actions, the existing secret is reused. No QR code or verification step is needed:
+
+```json
+{
+  "success": true,
+  "setupPending": false,
+  "provider": "totp",
+  "message": "TOTP already configured. Enabled for: delete_account"
+}
+```
+
+---
+
+## `auth-verify-setup`
+
+Complete the two-step TOTP setup by verifying a code from the authenticator app.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `provider` | `"totp"` | Yes | Currently only "totp" is supported |
+| `code` | `string` | Yes | 6-digit verification code from authenticator app |
+| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
+
+### Response (Success)
+
+```json
+{
+  "success": true,
+  "provider": "totp",
+  "message": "TOTP (Google Authenticator) setup complete and enabled for 'delete_account'",
+  "verifiedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### Response (Failure)
+
+```json
+{
+  "success": false,
+  "error": "Invalid code. Please check Google Authenticator and try again.",
+  "suggestedActions": [
+    { "tool": "auth-verify-setup", "reason": "Retry with correct code", "priority": 1 },
+    { "tool": "auth-setup", "reason": "Start over with new QR code", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `auth-available-methods`
+
+Check which authentication methods are available and configured for a specific action.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `action` | `string` | No | Action to check (default: "delete_account") |
+
+### Response
+
+```json
+{
+  "authRequired": true,
+  "action": "delete_account",
+  "methods": [
+    {
+      "id": "totp",
+      "name": "Google Authenticator",
+      "available": true,
+      "configured": true,
+      "requiresCode": true,
+      "note": "TOTP code collected via elicitation"
+    },
+    {
+      "id": "biometric",
+      "name": "Touch ID / Face ID",
+      "available": true,
+      "configured": true,
+      "requiresCode": false,
+      "note": "Will prompt for biometric scan automatically"
+    }
+  ],
+  "usage": {
+    "note": "Authentication is handled automatically when calling tools that require it (e.g., delete-account, auth-disable). Biometric is attempted first, with TOTP fallback via elicitation."
+  }
+}
+```
+
+---
+
+## `auth-provider-disable`
+
+Disable a specific authentication provider.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `provider` | `"biometric" \| "totp"` | Yes | Provider to disable |
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Authentication provider 'totp' disabled",
+  "hint": "Use auth-setup --provider totp to set up again"
+}
+```
+
+---
+
+## Authentication Flow
+
+### Destructive Actions (delete-account, auth-disable)
+
+Authentication is handled at the tool layer, not at `confirm-action`:
+
+```
+1. User requests destructive action (e.g., delete-account)
+2. Tool confirms intent via elicitation (or confirmation token for unsupported clients)
+3. Tool authenticates: biometric attempted first, TOTP fallback via elicitation
+4. Action executes after successful authentication
+5. Result returned to user
+```
+
+### Transaction Signing
+
+Regular transactions (send, delegate, swap, etc.) use `confirm-action` without authentication:
+
+```
+1. User requests transaction (e.g., send tokens)
+2. System creates pending transaction with confirmationToken
+3. User calls confirm-action with the token
+4. Transaction is signed and broadcast
+5. Result returned to user
+```
+
+### TOTP Lockout Protection
+
+- **Max attempts**: 5 consecutive failures
+- **Lockout duration**: 5 minutes
+- **Behavior**: During lockout, TOTP fails as a hard error, allowing fallback to other methods (e.g., biometric)
+
+---
+
+## Setting Up TOTP (Google Authenticator)
+
+### Step 1: Start Setup
+
+```
+Request: auth-setup --provider totp
+Response: [ASCII QR Code] + { "manualEntryKey": "ABC123...", "expiresIn": "10 minutes", ... }
+```
+
+### Step 2: Add to Authenticator App
+
+**Option A: Scan QR Code (Recommended)**
+1. Open Google Authenticator (or compatible app)
+2. Tap "+" → "Scan a QR code"
+3. Scan the QR code displayed in the terminal
+
+**Option B: Manual Entry (Fallback)**
+1. Open Google Authenticator (or compatible app)
+2. Tap "+" → "Enter a setup key"
+3. Enter name: `Keplr`
+4. Enter key: `<manualEntryKey from step 1>`
+5. Select "Time based"
+6. Tap "Add"
+
+### Step 3: Verify Setup
+
+```
+Request: auth-verify-setup --provider totp --code 123456
+Response: { "success": true, "message": "TOTP setup complete" }
+```
+
+---
+
+## Recommended Settings
+
+| Use Case | Auth Enabled | Provider |
+|----------|--------------|----------|
+| Production | Yes | TOTP or Biometric |
+| Development | Optional | Biometric |
+| High Security | Yes | Both |
+
+---
+
+## Supported Authenticator Apps
+
+| App | Status |
+|-----|--------|
+| Google Authenticator | ✅ Fully supported |
+| Authy | ✅ Supported |
+| Microsoft Authenticator | ✅ Supported |
+| 1Password | ✅ Supported |
+| Any RFC 6238 compatible app | ✅ Supported |

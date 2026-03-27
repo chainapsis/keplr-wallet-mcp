@@ -1,0 +1,379 @@
+# Cosmos Query Tools
+
+Read-only tools for querying Cosmos blockchain state.
+
+## Overview
+
+| Tool | Description |
+|------|-------------|
+| `list-cosmos-chains` | List supported Cosmos chains |
+| `get-cosmos-address` | Get address for specific chain |
+| `get-balances` | Get token balances |
+| `get-staking-info` | Get staking delegations and rewards |
+| `list-validators` | List validators |
+| `get-unbonding` | Get unbonding delegations |
+| `list-proposals` | List governance proposals |
+| `get-proposal` | Get proposal details |
+| `list-fee-tokens` | List fee token options |
+| `get-transaction-status` | Check transaction status |
+| `list-ibc-channels` | List IBC channels |
+| `list-transaction-history` | Get transaction history |
+
+---
+
+## `list-cosmos-chains`
+
+List all supported Cosmos chains.
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "chains": [
+    {
+      "chainId": "cosmoshub-4",
+      "chainName": "Cosmos Hub",
+      "nativeToken": "ATOM",
+      "bech32Prefix": "cosmos"
+    },
+    {
+      "chainId": "osmosis-1",
+      "chainName": "Osmosis",
+      "nativeToken": "OSMO",
+      "bech32Prefix": "osmo"
+    }
+  ]
+}
+```
+
+---
+
+## `get-cosmos-address`
+
+Get the wallet address for a specific Cosmos chain.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID (e.g., "cosmoshub-4") |
+
+### Response
+
+```json
+{
+  "chain": "cosmoshub-4",
+  "address": "cosmos1abc123..."
+}
+```
+
+---
+
+## `get-balances`
+
+Get token balances for a chain.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `address` | `string` | No | Address (default: active wallet) |
+
+### Response
+
+```json
+{
+  "chain": "cosmoshub-4",
+  "address": "cosmos1...",
+  "balances": [
+    {
+      "denom": "uatom",
+      "amount": "150500000",
+      "formatted": "150.5 ATOM",
+      "valueUsd": "1,505.00"
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "delegate", "reason": "Stake tokens to earn rewards", "priority": 1 },
+    { "tool": "send-tokens", "reason": "Send tokens", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `get-staking-info`
+
+Get staking delegations and pending rewards.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+
+### Response
+
+```json
+{
+  "chain": "cosmoshub-4",
+  "address": "cosmos1...",
+  "totalDelegated": {
+    "amount": "1000000000",
+    "formatted": "1,000 ATOM"
+  },
+  "totalRewards": {
+    "amount": "15000000",
+    "formatted": "15 ATOM"
+  },
+  "delegations": [
+    {
+      "validator": {
+        "address": "cosmosvaloper1...",
+        "name": "Coinbase Custody",
+        "commission": "0.10"
+      },
+      "amount": "500 ATOM",
+      "rewards": "7.5 ATOM"
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "claim-all-rewards", "reason": "Claim 15 ATOM in rewards", "priority": 1 },
+    { "tool": "delegate", "reason": "Stake more tokens", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `list-validators`
+
+List validators with commission and voting power.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `status` | `string` | No | Filter: "bonded", "unbonding", "unbonded" |
+| `limit` | `number` | No | Max results (default: 100) |
+
+### Response
+
+```json
+{
+  "validators": [
+    {
+      "operatorAddress": "cosmosvaloper1...",
+      "name": "Coinbase Custody",
+      "commission": "0.10",
+      "votingPower": "5.2%",
+      "jailed": false,
+      "uptime": "99.9%"
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "delegate", "reason": "Stake to a validator", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `get-unbonding`
+
+Get unbonding delegations (tokens being unstaked).
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+
+### Response
+
+```json
+{
+  "unbonding": [
+    {
+      "validator": "cosmosvaloper1...",
+      "validatorName": "Validator X",
+      "entries": [
+        {
+          "amount": "100 ATOM",
+          "completionTime": "2024-01-22T00:00:00Z",
+          "remainingDays": 14
+        }
+      ]
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "cancel-unbonding", "reason": "Cancel unbonding", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `list-proposals`
+
+List governance proposals.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `status` | `string` | No | Filter: "voting", "passed", "rejected", "all" |
+
+### Response
+
+```json
+{
+  "proposals": [
+    {
+      "id": "123",
+      "title": "Parameter Change Proposal",
+      "status": "voting",
+      "votingEndTime": "2024-01-15T00:00:00Z",
+      "tally": {
+        "yes": "45%",
+        "no": "10%",
+        "abstain": "5%",
+        "noWithVeto": "2%"
+      }
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "vote-governance", "reason": "Vote on active proposals", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `get-proposal`
+
+Get detailed information about a specific proposal.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `proposalId` | `string` | Yes | Proposal ID |
+
+### Response
+
+```json
+{
+  "id": "123",
+  "title": "Parameter Change Proposal",
+  "description": "This proposal changes...",
+  "type": "ParameterChangeProposal",
+  "status": "voting",
+  "submitTime": "2024-01-01T00:00:00Z",
+  "votingStartTime": "2024-01-03T00:00:00Z",
+  "votingEndTime": "2024-01-17T00:00:00Z",
+  "tally": { ... },
+  "myVote": null
+}
+```
+
+---
+
+## `list-fee-tokens`
+
+List available fee token options for a chain.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+
+### Response
+
+```json
+{
+  "feeTokens": [
+    {
+      "denom": "uatom",
+      "symbol": "ATOM",
+      "gasPrice": {
+        "low": "0.01",
+        "average": "0.025",
+        "high": "0.04"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## `get-transaction-status`
+
+Check the status of a submitted transaction.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID |
+| `txHash` | `string` | Yes | Transaction hash |
+
+### Response
+
+```json
+{
+  "txHash": "ABC123...",
+  "status": "success | pending | failed",
+  "height": 12345678,
+  "gasUsed": "80000",
+  "gasWanted": "100000",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "events": [ ... ]
+}
+```
+
+---
+
+## `list-ibc-channels`
+
+List IBC channels to other chains.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Source chain ID |
+| `destination` | `string` | No | Filter by destination chain |
+
+### Response
+
+```json
+{
+  "channels": [
+    {
+      "channelId": "channel-0",
+      "portId": "transfer",
+      "counterparty": {
+        "chainId": "osmosis-1",
+        "channelId": "channel-141"
+      },
+      "state": "open"
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "ibc-transfer", "reason": "Transfer tokens via IBC", "priority": 1 }
+  ]
+}
+```
+
+---

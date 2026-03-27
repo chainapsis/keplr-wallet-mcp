@@ -1,0 +1,144 @@
+# Architecture Overview
+
+Technical architecture of Keplr Wallet MCP.
+
+## Package Structure
+
+```
+packages/
+├── server/           # Core MCP server + Cosmos
+└── protocol-osmosis/ # Osmosis DEX protocol
+```
+
+## Core Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **KeyProvider** | Key management abstraction (Layer 3) |
+| **Account** | Account type abstraction (Layer 2) |
+| **Signer** | Cryptographic primitives (Layer 1) |
+| **EcosystemAdapter** | Blockchain ecosystem support |
+| **EcosystemClient** | Chain operations |
+| **KeplrPlugin** | MCP tool/resource registration |
+| **ProtocolPlugin** | DeFi protocol integration |
+
+## System Diagram
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    MCP Client (Claude)                   │
+└─────────────────────────────┬───────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────┐
+│                     Keplr Wallet MCP                     │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │                   Tool Layer                     │   │
+│  │  ┌─────────┐ ┌─────────┐                        │   │
+│  │  │ Cosmos  │ │Protocol │                        │   │
+│  │  │  Tools  │ │  Tools  │                        │   │
+│  │  └────┬────┘ └────┬────┘                        │   │
+│  └───────┼───────────┼─────────────────────────────┘   │
+│          │           │                                  │
+│  ┌───────▼───────────▼──────────────────────────────┐   │
+│  │              Ecosystem Adapters                  │   │
+│  │  ┌─────────────┐                                 │   │
+│  │  │CosmosAdapter│                                 │   │
+│  │  └──────┬──────┘                                 │   │
+│  └─────────┼────────────────────────────────────────┘   │
+│            │                                            │
+│  ┌─────────▼───────────────────────────────────────┐   │
+│  │              RpcResolver                        │   │
+│  │  Override → Keplr Infra → Public Fallback       │   │
+│  └─────────┬───────────────────────────────────────┘   │
+│            │                                            │
+│  ┌─────────▼───────────────────────────────────────┐   │
+│  │                Key Management                    │   │
+│  │  ┌────────────────────────────────────────────┐ │   │
+│  │  │ Layer 3: KeyProvider                       │ │   │
+│  │  │   MnemonicKeyProvider                      │ │   │
+│  │  └─────────────────┬──────────────────────────┘ │   │
+│  │                    ▼                            │   │
+│  │  ┌────────────────────────────────────────────┐ │   │
+│  │  │ Layer 2: Account                           │ │   │
+│  │  │   EOAAccountImpl                           │ │   │
+│  │  └─────────────────┬──────────────────────────┘ │   │
+│  │                    ▼                            │   │
+│  │  ┌────────────────────────────────────────────┐ │   │
+│  │  │ Layer 1: Signer                            │ │   │
+│  │  │   Secp256k1Signer                          │ │   │
+│  │  └────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                        ┌─────────┐
+                        │ Cosmos  │
+                        │  Chains │
+                        └─────────┘
+```
+
+## Data Flow
+
+### Query Operation
+
+```
+1. User: "Show my ATOM balance"
+2. Claude → get-balances tool
+3. Tool → store.getClientFor("cosmos", "cosmoshub-4")
+4. Store → KeyProvider → Account → Signer (get address)
+5. CosmosClient → RpcResolver → RPC query
+6. Response with balances + suggestedActions
+```
+
+### Transaction Operation
+
+```
+1. User: "Send 10 ATOM"
+2. Claude → send-tokens tool
+3. Tool → create preview + confirmation token
+4. User confirms → confirm-action tool
+5. Store → execute pending transaction
+6. KeyProvider → Account → Signer (sign)
+7. CosmosClient → broadcast
+8. Response with txHash + suggestedActions
+```
+
+## Key Architecture Decisions
+
+### Layered Key Management
+
+Three layers for flexibility:
+- **Signer**: Raw cryptographic operations
+- **Account**: Address derivation, multi-ecosystem
+- **KeyProvider**: Orchestration, lifecycle
+
+### Adapter Pattern
+
+Ecosystems are pluggable:
+- Core server defines interfaces
+- Adapters implement per-ecosystem
+- Auto-discovery via optionalDependencies
+
+### Endpoint Resolution
+
+`RpcResolver` manages RPC/LCD endpoint selection as a singleton with 3-tier priority:
+1. **Per-chain override** (`config.rpc.overrides`) — RPC only
+2. **Keplr infrastructure** (`KEPLR_RPC_API_KEY` + [supported chains](/reference/chains#keplr-infrastructure)) — RPC and REST via `api.keplr.app`
+3. **Public fallback** — chain-registry endpoints
+
+### Confirmation Flow
+
+All state changes require explicit confirmation:
+- Prevents accidental transactions
+- Provides preview before execution
+- Token-based for security
+
+---
+
+## Related
+
+- [Key Management](/architecture/key-management)
+- [Plugin System](/architecture/plugin-system)
+- [Confirmation Flow](/architecture/confirmation-flow)
+- [State Management](/architecture/state-management)

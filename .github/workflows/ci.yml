@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          # Skip native module build in CI (keytar requires system deps)
+          npm_config_ignore_scripts: true
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run linter
+        run: pnpm lint
+
+      - name: Run tests
+        run: pnpm test
+
+  probe:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    # Only run when server code changes (not docs, configs, etc.)
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout wallet-mcp-bench
+        uses: actions/checkout@v4
+        with:
+          repository: chainapsis/wallet-mcp-bench
+          ref: main
+          token: ${{ secrets.BENCH_PAT }}
+          path: bench
+          submodules: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            bench/pnpm-lock.yaml
+
+      - name: Install demo dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          npm_config_ignore_scripts: true
+
+      - name: Build demo server
+        run: pnpm build
+
+      - name: Install bench dependencies
+        run: cd bench && pnpm install --frozen-lockfile
+
+      - name: Run probe
+        run: cd bench && pnpm probe keplr --bio skip --ci --command "node ${{ github.workspace }}/packages/server/dist/index.js"
+        env:
+          PROBE_MNEMONIC: ${{ secrets.PROBE_MNEMONIC }}
+          KEPLR_RPC_API_KEY: ${{ secrets.KEPLR_RPC_API_KEY }}
+
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          npm_config_ignore_scripts: true
+
+      - name: Type check
+        run: pnpm build

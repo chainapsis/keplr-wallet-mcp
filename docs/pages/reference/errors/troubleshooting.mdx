@@ -1,0 +1,212 @@
+# Troubleshooting
+
+Common issues and their solutions.
+
+## Setup Issues
+
+### "No wallet configured"
+
+**Problem:** Operations fail with "setup required" error.
+
+**Solution:**
+1. Run `/get-started` or use `onboarding-status` to check status
+2. Create a wallet with `create-account` or `import-account`
+3. Verify with `list-accounts`
+
+### Claude doesn't see Keplr tools
+
+**Problem:** Claude says "I don't have access to wallet tools."
+
+**Solution:**
+1. Check `claude_desktop_config.json` configuration
+2. Restart Claude Desktop after config changes
+3. Verify the MCP server is running:
+   ```bash
+   npx @keplr-wallet/keplr-wallet-mcp --version
+   ```
+4. Check Claude Desktop logs for errors
+
+---
+
+## Transaction Issues
+
+### "Insufficient funds"
+
+**Problem:** Transaction fails with insufficient balance.
+
+**Solution:**
+1. Check balance: `get-balances` for the specific chain
+2. Account for gas/fees in your transaction
+3. Ensure you're using the correct denom
+
+```
+Example:
+- Want to send: 100 ATOM
+- Fee: ~0.01 ATOM
+- Need: 100.01 ATOM minimum
+```
+
+### Transaction pending forever
+
+**Problem:** Transaction submitted but not confirming.
+
+**Solution:**
+1. Check status: `get-transaction-status` with tx hash
+2. Network may be congested - wait a few blocks
+
+### "Confirmation token expired"
+
+**Problem:** Took too long to confirm, token expired.
+
+**Solution:**
+1. Re-initiate the transaction
+2. Default TTL is 5 minutes (configurable via `KEPLR_TX_TTL_MINUTES`)
+
+---
+
+## Network Issues
+
+### "RPC request timed out"
+
+**Problem:** Network requests fail with timeout.
+
+**Solution:**
+1. Wait and retry - network may be congested
+2. Check internet connection
+3. Try a different time (avoid peak hours)
+
+### "Could not connect to RPC"
+
+**Problem:** Can't reach blockchain node.
+
+**Solution:**
+1. Check internet connection
+2. RPC endpoint may be down temporarily
+3. If using custom chain, verify RPC URL
+
+---
+
+## Authentication Issues
+
+### Touch ID not working
+
+**Problem:** Biometric authentication fails or isn't prompted.
+
+**Solution:**
+1. Check system supports biometrics:
+   - macOS: System Preferences → Touch ID
+   - Windows: Settings → Accounts → Sign-in options
+2. Re-setup auth: `auth-setup`
+3. Verify auth is enabled: `auth-status`
+
+### "Authentication required" but auth disabled
+
+**Problem:** Tool requires auth but you disabled it.
+
+**Solution:**
+1. Enable auth: `auth-enable`
+2. Set up provider: `auth-setup`
+3. Or, ensure you're using the correct account type
+
+---
+
+## Swap Issues
+
+### "Slippage exceeded"
+
+**Problem:** Swap fails due to price movement.
+
+**Solution:**
+1. Increase slippage tolerance
+2. Try smaller amounts
+3. Wait for less volatile market
+
+### "No route found"
+
+**Problem:** DEX can't find swap path.
+
+**Solution:**
+1. Check if token pair has liquidity
+2. Try intermediate token (e.g., OSMO or ETH)
+3. Verify token addresses are correct
+
+---
+
+## IBC Issues
+
+### IBC transfer stuck
+
+**Problem:** Cross-chain transfer not completing.
+
+**Solution:**
+1. Check source chain tx: `get-transaction-status`
+2. IBC typically takes 30s-2min
+3. If stuck >10min, may need manual relay
+4. Check destination chain for tokens
+
+### "Channel not found"
+
+**Problem:** IBC channel doesn't exist.
+
+**Solution:**
+1. List channels: `list-ibc-channels`
+2. Verify chain pair is supported
+3. Use correct destination chain ID
+
+---
+
+## Portfolio & Price Issues
+
+### "Price data unavailable"
+
+**Problem:** `get-portfolio` shows no USD values, with message about rate limiting.
+
+**Solution:**
+1. **Wait and retry**: Free tier has rate limits. Wait 1-2 minutes and try again
+2. **Skip prices**: Use `get-portfolio` with `includePrices: false` to see balances without prices
+3. **Add API key**: Set `COINGECKO_API_KEY` in your MCP config for higher rate limits:
+   ```json
+   {
+     "env": {
+       "COINGECKO_API_KEY": "CG-xxxxxxxxxxxxxxxxxxxx"
+     }
+   }
+   ```
+4. The free tier automatically applies 5-minute caching and request throttling. Repeated calls within 5 minutes use cached prices
+
+### Portfolio shows partial data
+
+**Problem:** Some chains show balances but others are missing.
+
+**Solution:**
+1. Check if the missing chain's adapter is installed: `list-installed-adapters`
+2. Use `chains` parameter to query specific chains: `get-portfolio` with `chains: ["osmosis-1"]`
+3. Some chain RPCs may be temporarily unavailable. Check the `errors` field in the response
+
+---
+
+## Common Error Messages
+
+| Message | Meaning | Fix |
+|---------|---------|-----|
+| "No mnemonic" | Wallet not set up | Create/import account |
+| "Invalid chain" | Chain ID not recognized | Check `list-cosmos-chains` |
+| "Account does not exist" | Address has no on-chain activity | Fund the address first |
+| "Sequence mismatch" | Nonce issue, likely pending tx | Wait for pending tx |
+| "Gas estimation failed" | Contract will likely revert | Check parameters |
+
+---
+
+## Getting Help
+
+If issues persist:
+
+1. **Check logs:** Claude Desktop → Help → Show Logs
+2. **Update:** Ensure latest version of `@keplr-wallet/keplr-wallet-mcp`
+3. **Report:** File issue at [GitHub](https://github.com/chainapsis/keplr-wallet-mcp/issues)
+
+Include:
+- Error message (full text)
+- Tool/operation attempted
+- Chain being used
+- Steps to reproduce

@@ -1,0 +1,34 @@
+{
+  "name": "@keplr-wallet/protocol-osmosis",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Osmosis DEX protocol plugin for Keplr MCP Server",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "peerDependencies": {
+    "@keplr-wallet/keplr-wallet-mcp": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@keplr-wallet/keplr-wallet-mcp": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
+}

@@ -1,0 +1,103 @@
+# DeFi Overview
+
+Decentralized finance operations with Keplr Wallet MCP.
+
+## Supported Protocols
+
+| Protocol | Ecosystem | Operations |
+|----------|-----------|------------|
+| Osmosis | Cosmos | Quote, Swap |
+
+## Quick Commands
+
+**Osmosis swap:**
+```
+User: Swap 100 OSMO for ATOM on Osmosis
+```
+
+## How DEX Swaps Work
+
+### 1. Get Quote
+
+See exchange rate and fees before committing:
+
+```
+User: How much ATOM would I get for 100 OSMO?
+```
+
+### 2. Review Terms
+
+- Exchange rate
+- Price impact
+- Minimum received (slippage protection)
+- Fees
+
+### 3. Execute Swap
+
+```
+User: Execute the swap
+```
+
+### 4. Confirm
+
+Review preview and confirm transaction.
+
+## Key Concepts
+
+### Slippage
+
+The difference between expected and actual price:
+
+| Setting | Use Case |
+|---------|----------|
+| 0.5% | Stable pairs, high liquidity |
+| 1% | Most swaps (default) |
+| 3% | Volatile pairs |
+| 5%+ | Very volatile or low liquidity |
+
+### Price Impact
+
+How your trade affects the pool price:
+
+| Impact | Meaning |
+|--------|---------|
+| < 0.1% | Negligible |
+| 0.1-1% | Normal |
+| 1-5% | Significant |
+| > 5% | Consider smaller trade |
+
+### Minimum Received
+
+Worst-case amount you'll receive:
+
+```
+Expected: 8.5 ATOM
+Slippage: 1%
+Minimum: 8.415 ATOM
+```
+
+If price moves beyond slippage, transaction fails (protecting you).
+
+## Choosing Between DEXes
+
+### Osmosis (Cosmos)
+
+- **Best for**: Cosmos tokens (ATOM, OSMO, TIA)
+- **Fees**: ~0.2-0.3%
+- **Speed**: Fast (~6 seconds)
+- **Liquidity**: Deep for Cosmos assets
+
+## Common Workflows
+
+### ATOM → USDC
+
+```
+1. Swap ATOM → OSMO on Osmosis
+2. Swap OSMO → USDC on Osmosis
+```
+
+---
+
+## Related
+
+- [Osmosis Guide](/guides/defi/osmosis)

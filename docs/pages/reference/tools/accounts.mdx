@@ -1,0 +1,488 @@
+# Account Management Tools
+
+Tools for creating, managing, and switching between wallet accounts.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `onboarding-status` | Check wallet setup progress | Yes |
+| `create-account` | Generate new wallet with mnemonic | No |
+| `import-account` | Import existing mnemonic | No |
+| `list-accounts` | List all accounts | Yes |
+| `switch-account` | Change active account | No |
+| `rename-account` | Rename an account | No |
+| `delete-account` | Remove an account | No |
+| `export-mnemonic` | Export recovery phrase | No |
+| `get-account-addresses` | Get all chain addresses | Yes |
+| `list-pending-actions` | List pending confirmations | Yes |
+| `cancel-pending-action` | Cancel pending transaction | No |
+| `check-vault-health` | Check vault integrity and repair anomalies | No |
+| `get-portfolio` | Get all balances across chains | Yes |
+
+---
+
+## `onboarding-status`
+
+Check wallet setup progress and get guidance on next steps. Tracks first-run status persistently across sessions.
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "status": "not_started | in_progress | complete",
+  "progress": "2/6 steps completed",
+  "activeAccount": "main",
+  "totalAccounts": 1,
+  "welcomeMessage": {
+    "title": "Welcome to Keplr Wallet MCP!",
+    "description": "...",
+    "tips": ["Security tip 1", "Security tip 2"]
+  },
+  "supportedEcosystems": [
+    { "ecosystem": "cosmos", "name": "Cosmos", "features": ["Staking", "IBC"] }
+  ],
+  "checklist": [
+    { "step": "Create Wallet", "status": "✓ Done", "required": "Required" },
+    { "step": "Set Up Security", "status": "○ Pending", "required": "Optional" }
+  ],
+  "setupOptions": [
+    { "tool": "create-account", "description": "Generate new wallet", "security": "Keys in OS Keychain" },
+    { "tool": "import-account", "description": "Import mnemonic", "security": "⚠️ Visible in chat" }
+  ]
+}
+```
+
+### Features
+
+- **First-run detection**: Tracks onboarding completion in `~/.keplr-mcp/preferences.json`
+- **Welcome message**: Shows security tips for first-time users
+- **Ecosystem discovery**: Lists available Cosmos chains and their features
+
+### Example
+
+```
+Request: { }
+Response: {
+  "status": "not_started",
+  "welcomeMessage": {
+    "title": "Welcome to Keplr Wallet MCP! 🎉",
+    "tips": [
+      "📝 Write down your recovery phrase"
+    ]
+  },
+  "setupOptions": [
+    { "tool": "create-account", "description": "Generate a new wallet" }
+  ]
+}
+```
+
+---
+
+## `create-account`
+
+Generate a new wallet with a BIP39 mnemonic phrase.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | No | Account name (default: "Account N") |
+
+### Response
+
+```json
+{
+  "status": "success",
+  "account": {
+    "name": "My Wallet",
+    "type": "mnemonic",
+    "addresses": {
+      "cosmos": "cosmos1..."
+    }
+  },
+  "mnemonic": "word1 word2 ... word24",
+  "warning": "Save this mnemonic securely"
+}
+```
+
+:::warning
+The mnemonic is only shown once. Store it securely offline.
+:::
+
+### Example
+
+```
+Request: { "name": "Trading Wallet" }
+Response: {
+  "status": "success",
+  "account": {
+    "name": "Trading Wallet",
+    "type": "mnemonic"
+  },
+  "mnemonic": "abandon abandon ... about",
+  "suggestedActions": [
+    { "tool": "get-balances", "reason": "Check your balances", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `import-account`
+
+Import an existing wallet using a mnemonic phrase. Includes security confirmation.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | Unique account name |
+| `mnemonic` | `string` | Yes | BIP39 mnemonic (12/15/18/21/24 words) |
+| `description` | `string` | No | Optional description |
+| `setActive` | `boolean` | No | Set as active account (default: true) |
+| `skipSecurityWarning` | `boolean` | No | Skip confirmation (not recommended) |
+
+### Security Confirmation
+
+Before import, the tool prompts for confirmation via elicitation:
+
+```
+⚠️ Security Warning - Mnemonic Import
+
+You are about to import a mnemonic phrase. Please understand:
+• Your mnemonic phrase is visible in this AI conversation
+
+Do you want to proceed?
+```
+
+If declined, the response includes alternatives:
+
+```json
+{
+  "status": "cancelled",
+  "alternatives": [
+    { "tool": "import-account", "description": "Import existing mnemonic" }
+  ]
+}
+```
+
+### Response
+
+```json
+{
+  "status": "success",
+  "account": {
+    "name": "Imported Wallet",
+    "type": "mnemonic",
+    "wordCount": 24
+  },
+  "addresses": { "Cosmos": "cosmos1..." },
+  "security": {
+    "storage": "OS Keychain (secure)",
+    "warnings": [
+      "🚨 Your mnemonic was visible in this conversation"
+    ],
+    "recommendation": "Enable biometric auth with 'auth-setup'"
+  },
+  "nextSteps": [
+    { "step": 1, "action": "Set up biometric security", "priority": "high" },
+    { "step": 2, "action": "Check your balances" }
+  ]
+}
+```
+
+:::warning
+Your mnemonic phrase is visible in AI conversation history.
+:::
+
+---
+
+## `list-accounts`
+
+List all configured accounts.
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "accounts": [
+    {
+      "name": "Main Wallet",
+      "type": "mnemonic",
+      "active": true,
+      "ecosystems": ["cosmos"]
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "switch-account", "reason": "Change active account", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `switch-account`
+
+Change the active account.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | Account name to activate |
+
+### Response
+
+```json
+{
+  "status": "success",
+  "activeAccount": "Keplr Mobile"
+}
+```
+
+---
+
+## `rename-account`
+
+Rename an existing account.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `oldName` | `string` | Yes | Current account name |
+| `newName` | `string` | Yes | New account name |
+
+---
+
+## `delete-account`
+
+Delete an account. Requires confirmation flow.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | Account name to delete |
+
+### Response
+
+```json
+{
+  "status": "pending_confirmation",
+  "confirmationToken": "...",
+  "preview": {
+    "action": "Delete account 'Old Wallet'",
+    "warning": "This action cannot be undone"
+  }
+}
+```
+
+---
+
+## `export-mnemonic`
+
+Export the mnemonic (recovery phrase) for an account. Requires confirmation and authentication when auth is enabled.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | No | Account name (defaults to active account) |
+| `totpCode` | `string` | No | 6-digit TOTP code from authenticator app. Required when TOTP authentication is enabled. |
+
+### Response
+
+```json
+{
+  "success": true,
+  "mnemonic": "word1 word2 ... word24",
+  "accountName": "My Wallet",
+  "wordCount": 24,
+  "securityWarnings": [
+    "This mnemonic gives full access to all derived accounts and assets.",
+    "Never share it digitally — store it offline in a secure location.",
+    "If compromised, immediately transfer all assets to a new wallet.",
+    "Consider deleting this conversation after noting the mnemonic."
+  ]
+}
+```
+
+### Security Considerations
+
+:::warning
+The mnemonic (recovery phrase) provides **full, irrevocable access** to all accounts
+and assets derived from it. Unlike passwords, a compromised mnemonic cannot be changed.
+:::
+
+- This tool requires authentication when auth is enabled
+- The mnemonic is returned in the tool response — avoid storing conversation logs containing it
+- If you suspect the mnemonic has been exposed, transfer all assets to a new wallet immediately
+- Only mnemonic-based accounts support export — passkey accounts will return an error
+
+---
+
+## `get-account-addresses`
+
+Get all blockchain addresses for the active account.
+
+### Parameters
+
+None required.
+
+### Response
+
+```json
+{
+  "account": "Main Wallet",
+  "addresses": {
+    "cosmos": {
+      "cosmoshub-4": "cosmos1...",
+      "osmosis-1": "osmo1...",
+      "celestia": "celestia1..."
+    }
+  }
+}
+```
+
+---
+
+## `check-vault-health`
+
+Check vault integrity and diagnose anomalies. Detects orphaned accounts, missing keys, dangling vault files, and corrupt vaults — then auto-repairs from backup when possible.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `repair` | `boolean` | No | Attempt automatic repair (default: true) |
+| `deleteDangling` | `boolean` | No | Delete dangling `.enc` files without matching config (default: false) |
+
+### Response
+
+```json
+{
+  "summary": {
+    "healthy": 2,
+    "repaired": 0,
+    "unrecoverable": 0,
+    "issues": 0
+  },
+  "details": {
+    "healthy": ["main", "trading"],
+    "orphaned": [],
+    "keyMissing": [],
+    "dangling": [],
+    "skipped": ["env"],
+    "corrupt": [],
+    "repaired": [],
+    "unrecoverable": [],
+    "keychainError": []
+  },
+  "suggestedActions": [
+    { "tool": "import-account", "reason": "Account \"lost\" needs mnemonic re-import", "priority": 1 }
+  ]
+}
+```
+
+### Anomaly Types
+
+| Type | Description | Repair Action |
+|------|-------------|---------------|
+| `orphaned` | Config entry without `.enc` vault file | Restore from backup |
+| `keyMissing` | Vault file exists but no keychain key | Marked unrecoverable |
+| `dangling` | `.enc` file without matching config entry | Delete orphan file |
+| `corrupt` | Vault file exists but is unreadable | Restore from backup |
+| `keychainError` | Vault file exists but keychain access failed (e.g. locked) | Retry when keychain is unlocked |
+
+### Features
+
+- **Startup guard**: Runs automatically with `repair: true` on server startup
+- **Diagnosis mode**: Use `repair: false` to audit without making changes
+- **Suggested actions**: Recommends `import-account` for unrecoverable accounts
+
+---
+
+## `get-portfolio`
+
+Get a unified portfolio summary across all Cosmos chains with USD values.
+Queries balances, staking info, and current market prices in a single call.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chains` | `string[]` | No | Chain IDs/names to query (default: all). e.g. `["osmosis-1", "cosmoshub-4"]` |
+| `includeStaking` | `boolean` | No | Include staking delegations and rewards for Cosmos chains (default: true) |
+| `includePrices` | `boolean` | No | Include USD price data from CoinGecko (default: true) |
+
+### Response
+
+```json
+{
+  "summary": {
+    "totalValueUsd": 552.00,
+    "liquidValueUsd": 178.25,
+    "stakedValueUsd": 345.00,
+    "rewardsValueUsd": 28.75,
+    "cosmosChains": 1,
+    "chainsSuccessful": 1,
+    "chainsFailed": 0
+  },
+  "totals": [
+    { "symbol": "ATOM", "totalAmount": "15.500000", "priceUsd": 11.5, "valueUsd": 178.25, "ecosystem": "cosmos" }
+  ],
+  "cosmos": [
+    {
+      "chainId": "cosmoshub-4",
+      "chainName": "cosmoshub",
+      "address": "cosmos1...",
+      "balances": [
+        { "denom": "uatom", "amount": "15500000", "displayAmount": "15.5", "displayDenom": "ATOM", "priceUsd": 11.5, "valueUsd": 178.25 }
+      ],
+      "staking": {
+        "delegations": [ { "validatorAddress": "cosmosvaloper1...", "displayAmount": "30.0", "displayDenom": "ATOM", "priceUsd": 11.5, "valueUsd": 345.00 } ],
+        "rewards": [ { "validatorAddress": "cosmosvaloper1...", "displayAmount": "2.5", "displayDenom": "ATOM", "priceUsd": 11.5, "valueUsd": 28.75 } ],
+        "totalStakedValueUsd": 345.00,
+        "totalRewardsValueUsd": 28.75
+      },
+      "chainValueUsd": 552.00
+    }
+  ],
+  "priceNote": "Prices from CoinGecko (300s cache). 1 token(s) priced.",
+  "suggestedActions": [
+    { "tool": "delegate", "reason": "Stake tokens on cosmoshub to earn rewards", "priority": 1 },
+    { "tool": "claim-all-rewards", "reason": "Claim pending rewards on cosmoshub", "priority": 2 }
+  ]
+}
+```
+
+### Price Data
+
+Prices are fetched from CoinGecko with automatic tier handling:
+
+| Tier | Cache TTL | Throttle | Retries | Trigger |
+|------|-----------|----------|---------|---------|
+| **Free** (default) | 5 minutes | 2s between requests | 3 retries with backoff | No `COINGECKO_API_KEY` |
+| **Pro** | 60 seconds | None | 1 retry | `COINGECKO_API_KEY` set |
+
+When rate-limited, the response includes a `priceNote` with recovery guidance and a suggested action to retry without prices.
+
+See [Environment Variables](/reference/environment#coingecko_api_key) for API key configuration.
+
+### Features
+
+- **Cosmos coverage**: Queries all configured Cosmos chains in parallel
+- **Graceful degradation**: Skips unavailable chains without error
+- **Staking summary**: Aggregates delegations and unclaimed rewards
+- **Rate limit protection**: Exponential backoff retry on CoinGecko 429 responses
+```

@@ -1,0 +1,199 @@
+# Prompts Reference
+
+Guided workflows accessible via slash commands.
+
+## Overview
+
+Prompts provide step-by-step guidance for common operations. Use them by typing the command in your conversation with Claude.
+
+## Onboarding & Setup
+
+| Prompt | Description |
+|--------|-------------|
+| `/get-started` | New user onboarding guide |
+| `/create-account` | Create a new wallet |
+| `/import-account` | Import existing mnemonic |
+| `/setup-authentication` | Configure biometric auth |
+| `/security-check` | Security audit and recommendations |
+
+### `/get-started`
+
+Complete onboarding flow for new users:
+
+1. Explains wallet types
+2. Helps choose the right type
+3. Guides through creation
+4. Sets up authentication
+5. Shows first operations
+
+### `/create-account`
+
+Guided wallet creation:
+
+1. Generates secure mnemonic
+2. Shows important security warnings
+3. Provides address for all chains
+4. Suggests next steps (check balance, stake)
+
+### `/setup-authentication`
+
+Biometric authentication setup:
+
+1. Checks available auth methods
+2. Configures Touch ID/Face ID
+3. Sets session timeout
+4. Tests authentication
+
+### `/security-check`
+
+Security audit:
+
+1. Checks authentication status
+2. Reviews account settings
+3. Identifies potential risks
+4. Provides recommendations
+
+---
+
+## Cosmos Operations
+
+| Prompt | Description |
+|--------|-------------|
+| `/check-balances` | Check token balances |
+| `/stake` | Staking walkthrough |
+| `/claim-rewards` | Claim staking rewards |
+| `/governance` | Governance participation |
+| `/redelegate` | Move stake between validators |
+| `/ibc-transfer` | Cross-chain IBC transfer |
+| `/bridge` | Cross-chain bridging guide |
+
+### `/stake`
+
+Complete staking guide:
+
+1. Checks available balance
+2. Lists top validators
+3. Explains selection criteria
+4. Creates delegation
+5. Shows expected rewards
+
+### `/claim-rewards`
+
+Reward claiming guide:
+
+1. Shows all pending rewards
+2. Explains options (claim one vs all)
+3. Estimates fees
+4. Executes claim
+5. Suggests re-staking
+
+### `/governance`
+
+Governance participation:
+
+1. Lists active proposals
+2. Explains voting options
+3. Shows your voting power
+4. Guides through voting
+5. Confirms submission
+
+### `/ibc-transfer`
+
+Cross-chain transfer guide:
+
+1. Selects source chain
+2. Selects destination chain
+3. Shows available channels
+4. Estimates transfer time
+5. Executes transfer
+
+---
+
+## Smart Contracts
+
+| Prompt | Description |
+|--------|-------------|
+| `/cosmwasm-interact` | CosmWasm contract interaction |
+
+### `/cosmwasm-interact`
+
+Smart contract guide:
+
+1. Enters contract address
+2. Shows available methods
+3. Explains query vs execute
+4. Guides through interaction
+
+---
+
+## DeFi Protocols
+
+| Prompt | Description |
+|--------|-------------|
+| `/osmosis-swap` | Osmosis DEX swap |
+
+### `/osmosis-swap`
+
+Osmosis swap guide:
+
+1. Checks balances
+2. Selects tokens
+3. Gets quote
+4. Explains slippage
+5. Executes swap
+
+---
+
+## Using Prompts
+
+### Basic Usage
+
+Simply type the prompt in your conversation:
+
+```
+User: /stake
+AI: I'll help you stake your tokens...
+    [Guided flow begins]
+```
+
+### With Context
+
+Prompts work with existing conversation context:
+
+```
+User: I have 500 ATOM on Cosmos Hub
+User: /stake
+AI: I see you have 500 ATOM. Let me show you the best validators...
+```
+
+### Prompt Parameters
+
+Some prompts accept additional parameters:
+
+```
+User: /stake cosmoshub-4
+AI: [Starts staking flow for Cosmos Hub specifically]
+```
+
+---
+
+## Prompt vs Direct Commands
+
+| Approach | When to Use |
+|----------|-------------|
+| Prompts | Learning, complex flows, step-by-step guidance |
+| Direct | Experienced users, specific operations |
+
+**Prompt approach:**
+```
+User: /stake
+AI: [Multi-step guided flow with explanations]
+```
+
+**Direct approach:**
+```
+User: Stake 100 ATOM to Coinbase Custody
+AI: [Creates transaction immediately]
+```
+
+Both approaches are valid - prompts provide more guidance, direct commands are faster.

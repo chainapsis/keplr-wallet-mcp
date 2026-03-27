@@ -1,0 +1,333 @@
+# Tool Development
+
+Build MCP tools for Keplr Wallet MCP.
+
+## Overview
+
+Tools are the primary way users interact with the wallet. Each tool:
+- Has a unique name
+- Accepts typed parameters (Zod schema)
+- Returns structured JSON responses
+- Includes suggested next actions
+
+## Basic Tool
+
+```typescript
+import { z } from "zod";
+
+server.registerTool(
+  "my-tool",
+  {
+    description: "What this tool does",
+    inputSchema: {
+      param1: z.string().describe("First parameter"),
+      param2: z.number().optional().describe("Optional number"),
+    },
+    annotations: {
+      readOnlyHint: true, // No state changes
+    },
+  },
+  async ({ param1, param2 }) => {
+    // Implementation
+    const result = await doSomething(param1, param2);
+
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify({
+          result,
+          suggestedActions: [
+            { tool: "next-tool", reason: "What to do next", priority: 1 }
+          ]
+        }, null, 2)
+      }]
+    };
+  }
+);
+```
+
+## Tool Patterns
+
+### Query Tool (Read-Only)
+
+```typescript
+server.registerTool(
+  "get-something",
+  {
+    description: "Get something from chain",
+    inputSchema: {
+      chain: z.string().describe("Chain ID"),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  async ({ chain }) => {
+    const client = await store.getClientFor("cosmos", chain);
+    const data = await client.getSomething();
+
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify({
+          chain,
+          data,
+          suggestedActions: [
+            { tool: "do-action", reason: "Take action on this", priority: 1 }
+          ]
+        }, null, 2)
+      }]
+    };
+  }
+);
+```
+
+### Transaction Tool (State-Changing)
+
+```typescript
+server.registerTool(
+  "do-action",
+  {
+    description: "Perform an action",
+    inputSchema: {
+      chain: z.string().describe("Chain ID"),
+      amount: z.string().describe("Amount"),
+    },
+    annotations: { readOnlyHint: false },
+  },
+  async ({ chain, amount }) => {
+    const client = await store.getClientFor("cosmos", chain);
+
+    // Create pending transaction
+    const preview = await client.buildTransaction(amount);
+    const confirmationToken = store.createPendingAction({
+      type: "do-action",
+      params: { chain, amount },
+      execute: async () => {
+        return client.executeTransaction(preview.tx);
+      },
+    });
+
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify({
+          status: "pending_confirmation",
+          confirmationToken,
+          preview: {
+            summary: `Do action with ${amount}`,
+            estimatedFee: preview.fee,
+          }
+        }, null, 2)
+      }]
+    };
+  }
+);
+```
+
+## Input Schema
+
+Use Zod for validation:
+
+```typescript
+inputSchema: {
+  // Required string
+  chain: z.string().describe("Chain ID"),
+
+  // Optional with default
+  limit: z.number().default(100).describe("Max results"),
+
+  // Enum
+  status: z.enum(["active", "inactive"]).describe("Filter status"),
+
+  // Array
+  validators: z.array(z.string()).describe("Validator addresses"),
+
+  // Cosmos address
+  recipient: z.string().regex(/^cosmos1/).describe("Cosmos address"),
+}
+```
+
+## Response Patterns
+
+### Success Response
+
+```typescript
+return {
+  content: [{
+    type: "text",
+    text: JSON.stringify({
+      status: "success",
+      data: { ... },
+      suggestedActions: [
+        { tool: "...", reason: "...", priority: 1 }
+      ]
+    }, null, 2)
+  }]
+};
+```
+
+### Pending Confirmation
+
+```typescript
+return {
+  content: [{
+    type: "text",
+    text: JSON.stringify({
+      status: "pending_confirmation",
+      confirmationToken: "...",
+      preview: {
+        summary: "...",
+        details: { ... },
+        warnings: []
+      }
+    }, null, 2)
+  }]
+};
+```
+
+### Setup Required
+
+```typescript
+import { isSetupRequiredError, createSetupRequiredResponse } from "../../errors.js";
+
+if (isSetupRequiredError(error.message)) {
+  return createSetupRequiredResponse({ attemptedAction: "my-tool" });
+}
+```
+
+### Error Response
+
+```typescript
+import { classifyError } from "../../errors.js";
+
+try {
+  // ...
+} catch (error) {
+  const classified = classifyError(error);
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify({
+        error: {
+          category: classified.category,
+          message: classified.message,
+          recoverable: classified.recoverable,
+          suggestion: classified.suggestion,
+        }
+      }, null, 2)
+    }]
+  };
+}
+```
+
+## Suggested Actions
+
+Always include relevant next steps:
+
+```typescript
+suggestedActions: [
+  {
+    tool: "primary-action",
+    reason: "Most likely next step",
+    priority: 1
+  },
+  {
+    tool: "secondary-action",
+    reason: "Alternative option",
+    priority: 2
+  },
+  {
+    tool: "tertiary-action",
+    reason: "Less common but relevant",
+    priority: 3
+  }
+]
+```
+
+Priority guidelines:
+- 1: Immediate next step
+- 2: Related important action
+- 3: Optional related action
+- 4: Less urgent
+- 5: Advanced/rare actions
+
+## Testing Tools
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+
+describe("my-tool", () => {
+  it("should return expected result", async () => {
+    // Mock store
+    const mockStore = {
+      getClientFor: vi.fn().mockResolvedValue({
+        getSomething: vi.fn().mockResolvedValue({ data: "test" }),
+      }),
+    };
+
+    // Call tool handler
+    const result = await myToolHandler(
+      { chain: "cosmoshub-4" },
+      { store: mockStore }
+    );
+
+    // Parse response
+    const response = JSON.parse(result.content[0].text);
+    expect(response.data).toBeDefined();
+    expect(response.suggestedActions).toHaveLength(1);
+  });
+
+  it("should handle setup required error", async () => {
+    const mockStore = {
+      getClientFor: vi.fn().mockRejectedValue(new Error("No mnemonic")),
+    };
+
+    const result = await myToolHandler(
+      { chain: "cosmoshub-4" },
+      { store: mockStore }
+    );
+
+    const response = JSON.parse(result.content[0].text);
+    expect(response.status).toBe("setup_required");
+  });
+});
+```
+
+## Best Practices
+
+### Naming
+
+```
+get-<thing>     # Query single item
+list-<things>   # Query multiple items
+<action>        # State-changing operation
+```
+
+### Descriptions
+
+Be concise but complete:
+
+```typescript
+description: "Get token balances for a chain"  // Good
+description: "Gets balances"                    // Too vague
+description: "This tool retrieves all token balances including native and IBC tokens for a specified Cosmos chain" // Too long
+```
+
+### Error Messages
+
+Provide actionable information:
+
+```typescript
+// Good
+throw new Error("Chain 'invalid-chain' not supported. Use list-cosmos-chains to see available chains.");
+
+// Bad
+throw new Error("Invalid chain");
+```
+
+---
+
+## Related
+
+- [Custom Adapter](/sdk/guides/custom-adapter)
+- [Custom Protocol](/sdk/guides/custom-protocol)
+- [Error Codes](/reference/errors/codes)

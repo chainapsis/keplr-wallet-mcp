@@ -1,0 +1,71 @@
+# Reference
+
+Complete reference documentation for Keplr Wallet MCP.
+
+## Tools Overview
+
+Keplr Wallet MCP provides tools across multiple categories:
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| [Account Management](/reference/tools/accounts) | 17 | Wallet creation, switching, sessions |
+| [Authentication](/reference/tools/authentication) | 8 | Biometric auth, sessions |
+| [Cosmos Query](/reference/tools/cosmos-query) | 14 | Balances, staking, governance |
+| [Cosmos Transaction](/reference/tools/cosmos-tx) | 13 | Send, stake, vote, IBC |
+| [CosmWasm](/reference/tools/cosmwasm) | 4 | Smart contract interaction |
+| [Cosmos Signing](/reference/tools/cosmos-signing) | 2 | Arbitrary signing & verification |
+| [Osmosis](/reference/tools/osmosis) | 2 | DEX swap |
+
+## Prompts
+
+[View all prompts](/reference/prompts) - Guided workflows for common operations.
+
+## Error Handling
+
+- [Error Codes](/reference/errors/codes) - All error categories and codes
+- [Troubleshooting](/reference/errors/troubleshooting) - Common issues and solutions
+
+## Configuration
+
+- [Supported Chains](/reference/chains) - All supported blockchains
+- [Environment Variables](/reference/environment) - Server configuration
+- [Glossary](/reference/glossary) - Blockchain and MCP terminology
+
+## Tool Documentation Format
+
+Each tool reference includes:
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `param` | `string` | Yes | Parameter description |
+
+### Response
+
+```json
+{
+  "result": "...",
+  "suggestedActions": [
+    { "tool": "next-tool", "reason": "...", "priority": 1 }
+  ]
+}
+```
+
+### Examples
+
+Request and response pairs for common use cases.
+
+## For AI Integration
+
+### llms.txt
+
+A machine-readable index is available at `/llms.txt` containing:
+
+- All tool names and descriptions
+- Input/output schemas
+- Example requests
+
+### JSON Schema
+
+Each tool has a complete JSON Schema definition for input validation.

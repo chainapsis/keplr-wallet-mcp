@@ -1,0 +1,271 @@
+# Cosmos Signing Tools
+
+Tools for arbitrary message signing using ADR-36 standard.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `cosmos-sign-arbitrary` | Sign arbitrary message (ADR-36) | No |
+| `cosmos-verify-signature` | Verify ADR-36 signature | Yes |
+
+---
+
+## ADR-36 Standard
+
+ADR-36 (Arbitrary Data Signing) is the Cosmos ecosystem standard for signing arbitrary messages to prove address ownership without broadcasting a transaction.
+
+### Key Features
+
+- **Off-chain**: No gas fees, no on-chain transaction
+- **Human-readable**: Message displayed for user verification
+- **Verifiable**: Anyone can verify the signature
+- **Universal**: Works across all Cosmos chains
+
+### Use Cases
+
+- **Authentication**: Sign-in with Cosmos address
+- **Off-chain voting**: Governance without gas fees
+- **Message verification**: Proving address ownership
+- **dApp authorization**: Wallet connection verification
+
+---
+
+## `cosmos-sign-arbitrary`
+
+Sign an arbitrary message using ADR-36 standard.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `message` | `string` | Yes | Message to sign |
+| `chain` | `string` | No | Chain ID or name for address prefix (default: "cosmoshub-4") |
+
+### Supported Chains
+
+| Chain | Prefix | Chain ID |
+|-------|--------|----------|
+| Cosmos Hub | cosmos | cosmoshub-4 |
+| Osmosis | osmo | osmosis-1 |
+| Juno | juno | juno-1 |
+| Stargaze | stars | stargaze-1 |
+| Akash | akash | akashnet-2 |
+| Injective | inj | injective-1 |
+| Celestia | celestia | celestia |
+| dYdX | dydx | dydx-mainnet-1 |
+
+### Response
+
+```json
+{
+  "status": "success",
+  "signer": "cosmos1abc...",
+  "message": "Hello Cosmos!",
+  "signature": {
+    "pub_key": {
+      "type": "tendermint/PubKeySecp256k1",
+      "value": "A1B2C3..."
+    },
+    "signature": "xyz123..."
+  },
+  "signDoc": {
+    "chain_id": "",
+    "account_number": "0",
+    "sequence": "0",
+    "fee": { "gas": "0", "amount": [] },
+    "msgs": [{
+      "type": "sign/MsgSignData",
+      "value": {
+        "signer": "cosmos1abc...",
+        "data": "SGVsbG8gQ29zbW9zIQ=="
+      }
+    }],
+    "memo": ""
+  }
+}
+```
+
+### Example: Sign Authentication Message
+
+```json
+Request: {
+  "message": "Sign in to MyDApp\n\nNonce: abc123\nTimestamp: 2024-01-01T00:00:00Z",
+  "chain": "cosmos"
+}
+
+Response: {
+  "status": "success",
+  "signer": "cosmos19p85t8g8th4xawg8357jjmcvp62jf7ve8lfc8u",
+  "message": "Sign in to MyDApp...",
+  "signature": {
+    "pub_key": { ... },
+    "signature": "um6hrhGyfzkYOzrbdgLDl6w3j+D40YpWztYAw678DQt2z6ccisVGwFOp0lLpgbdSp134d4y/BB7yMzcM3PEuOg=="
+  }
+}
+```
+
+### Example: Sign with Different Chain Prefix
+
+```json
+Request: {
+  "message": "Verify ownership",
+  "chain": "osmosis"
+}
+
+Response: {
+  "status": "success",
+  "signer": "osmo19p85t8g8th4xawg8357jjmcvp62jf7ve0y6g3w",
+  ...
+}
+```
+
+---
+
+## `cosmos-verify-signature`
+
+Verify an ADR-36 signature to confirm it was created by the owner of a specific address.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `signer` | `string` | Yes | Bech32 address that signed the message |
+| `message` | `string` | Yes | Original message that was signed |
+| `signature` | `string` | Yes | Base64-encoded signature |
+| `pubKey` | `string` | Yes | Base64-encoded public key |
+
+### Response (Valid)
+
+```json
+{
+  "status": "valid",
+  "valid": true,
+  "signer": "cosmos1abc...",
+  "message": "Hello Cosmos!"
+}
+```
+
+### Response (Invalid)
+
+```json
+{
+  "status": "invalid",
+  "valid": false,
+  "reason": "Public key does not match signer address",
+  "expectedAddress": "cosmos1xyz...",
+  "providedAddress": "cosmos1abc..."
+}
+```
+
+### Example: Verify a Signature
+
+```json
+Request: {
+  "signer": "cosmos19p85t8g8th4xawg8357jjmcvp62jf7ve8lfc8u",
+  "message": "Hello Keplr!",
+  "signature": "um6hrhGyfzkYOzrbdgLDl6w3j+D40YpWztYAw678DQt2z6ccisVGwFOp0lLpgbdSp134d4y/BB7yMzcM3PEuOg==",
+  "pubKey": "AgmraQuSUO9evf75JoYrTBzydv9SJhnuWKv+qySQuJVw"
+}
+
+Response: {
+  "status": "valid",
+  "valid": true,
+  "signer": "cosmos19p85t8g8th4xawg8357jjmcvp62jf7ve8lfc8u",
+  "message": "Hello Keplr!"
+}
+```
+
+---
+
+## ADR-36 Sign Document Format
+
+The ADR-36 standard uses a special amino sign document format:
+
+```json
+{
+  "chain_id": "",           // Always empty
+  "account_number": "0",    // Always "0"
+  "sequence": "0",          // Always "0"
+  "fee": {
+    "gas": "0",             // Always "0"
+    "amount": []            // Always empty
+  },
+  "msgs": [{
+    "type": "sign/MsgSignData",
+    "value": {
+      "signer": "<bech32 address>",
+      "data": "<base64 encoded message>"
+    }
+  }],
+  "memo": ""                // Always empty
+}
+```
+
+### Why This Format?
+
+- **Empty chain_id**: Makes signature valid across all chains
+- **Zero fee**: No actual transaction, no fees
+- **Single message**: Exactly one `MsgSignData` message
+- **Base64 data**: Message encoded for consistent serialization
+
+---
+
+## Integration Example
+
+### Backend Verification (TypeScript)
+
+```typescript
+import { Secp256k1, Secp256k1Signature, sha256 } from "@cosmjs/crypto";
+import { fromBase64, toBech32, fromBech32 } from "@cosmjs/encoding";
+import { rawSecp256k1PubkeyToRawAddress, serializeSignDoc } from "@cosmjs/amino";
+
+async function verifyAdr36Signature(
+  signer: string,
+  message: string,
+  signature: string,
+  pubKey: string
+): Promise<boolean> {
+  const pubKeyBytes = fromBase64(pubKey);
+  const signatureBytes = fromBase64(signature);
+
+  // Verify public key matches signer address
+  const rawAddress = rawSecp256k1PubkeyToRawAddress(pubKeyBytes);
+  const { prefix } = fromBech32(signer);
+  const derivedAddress = toBech32(prefix, rawAddress);
+
+  if (derivedAddress !== signer) {
+    return false;
+  }
+
+  // Create ADR-36 sign doc
+  const signDoc = {
+    chain_id: "",
+    account_number: "0",
+    sequence: "0",
+    fee: { gas: "0", amount: [] },
+    msgs: [{
+      type: "sign/MsgSignData",
+      value: {
+        signer,
+        data: Buffer.from(message).toString("base64")
+      }
+    }],
+    memo: ""
+  };
+
+  // Hash and verify
+  const messageHash = sha256(serializeSignDoc(signDoc));
+  return Secp256k1.verifySignature(
+    Secp256k1Signature.fromFixedLength(signatureBytes),
+    messageHash,
+    pubKeyBytes
+  );
+}
+```
+
+---
+
+## Related
+
+- [Cosmos Query](/reference/tools/cosmos-query) - Balance and staking queries
