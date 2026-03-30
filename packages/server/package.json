@@ -87,7 +87,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "postbuild": "node scripts/build-native.js",
+    "postbuild": "node ../../scripts/inject-build-env.cjs && node scripts/build-native.js",
     "prepack": "node scripts/verify-pack-native.js",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
