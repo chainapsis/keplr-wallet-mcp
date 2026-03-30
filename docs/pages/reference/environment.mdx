@@ -10,6 +10,8 @@ Configuration options for Keplr Wallet MCP.
 | `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
 | `KEPLR_MNEMONIC` | Pre-configured mnemonic (dev only) | No |
 | `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
+| `SKIP_API_KEY` | Skip Routes API key for IBC channel resolution | No |
+| `SKIP_API_URL` | Skip Routes API endpoint override | No |
 
 For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
 
@@ -118,6 +120,10 @@ export default defineConfig({
     overrides: {
       "cosmoshub-4": "https://my-own-rpc.example.com",
     },
+  },
+  skip: {
+    apiKey: process.env.SKIP_API_KEY,
+    apiUrl: "https://api.skip.build", // optional override
   },
 });
 ```

@@ -46,6 +46,9 @@ async function main() {
   console.error(
     `[keplr] RPC mode: ${apiKey ? "Keplr infrastructure (API key configured)" : "public endpoints (no KEPLR_RPC_API_KEY)"}`,
   );
+  console.error(
+    `[keplr] Skip API: ${config.skip?.apiKey ? "API key configured" : "public (no SKIP_API_KEY)"}`,
+  );
 
   // Resolve external plugins from config
   const externalPlugins: KeplrMcpPlugin[] = [];

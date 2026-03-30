@@ -95,6 +95,8 @@ Configuration is stored in `~/.keplr-mcp/`.
 | `KEPLR_ADAPTERS` | No | Additional adapter packages to load |
 | `KEPLR_PROTOCOLS` | No | Additional protocol plugins to load |
 | `KEPLR_RPC_API_KEY` | No | Keplr RPC API key for premium endpoints (falls back to public RPC if unset) |
+| `SKIP_API_KEY` | No | Skip Routes API key for IBC channel resolution (also via `skip.apiKey` in config) |
+| `SKIP_API_URL` | No | Skip Routes API endpoint override (also via `skip.apiUrl` in config) |
 
 ## Supported Chains
 
