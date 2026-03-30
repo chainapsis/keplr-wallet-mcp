@@ -19,7 +19,9 @@
     "docs:preview": "pnpm --filter keplr-mcp-docs preview"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["keytar"],
+    "onlyBuiltDependencies": [
+      "keytar"
+    ],
     "overrides": {
       "@noble/hashes": "1.8.0"
     }
@@ -27,7 +29,10 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
     "@types/node": "^22.0.0",
+    "lerna": "^9.0.7",
+    "semver": "^7.7.4",
     "typescript": "^5.6.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "zx": "^8.8.5"
   }
 }

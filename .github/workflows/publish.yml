@@ -1,14 +1,12 @@
-name: Release
+name: Publish
 
 on:
   push:
     tags:
-      - "v*"
-  workflow_dispatch:
-    inputs:
-      confirm:
-        description: "Type 'publish' to confirm"
-        required: true
+      - v*
+
+permissions:
+  contents: read
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -36,10 +34,9 @@ jobs:
           path: packages/server/native/macos/bin/
 
   publish:
-    name: Publish to npm
+    name: Publish to npm and create release
     needs: build-biometric
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
       id-token: write
@@ -79,14 +76,8 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Publish to npm
-        run: pnpm --filter @keplr-wallet/keplr-wallet-mcp publish --no-git-checks --access public --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: "true"
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: gh release create "${{ github.ref_name }}" --generate-notes
+      - name: Publish
+        run: npx zx ./scripts/publish.mjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
