@@ -1,6 +1,6 @@
 import "zx/globals";
-import semver from "semver";
 import fs from "fs";
+import semver from "semver";
 
 const lernaFile = fs.readFileSync("./lerna.json", "utf8");
 const lerna = JSON.parse(lernaFile);
@@ -20,14 +20,14 @@ const lerna = JSON.parse(lernaFile);
       if (semantic) {
         if (lerna.version !== semantic.version) {
           console.log(
-            `WARNING: ${semantic.version} found. But, it is different from lerna's package version.`
+            `WARNING: ${semantic.version} found. But, it is different from lerna's package version.`,
           );
           continue;
         }
 
         if (foundedVersion) {
           console.log(
-            `WARNING: ${foundedVersion} already published. Only one tag can be published at once.`
+            `WARNING: ${foundedVersion} already published. Only one tag can be published at once.`,
           );
           continue;
         }
