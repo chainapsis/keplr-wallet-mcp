@@ -76,6 +76,18 @@ export interface ToolsetConfig {
   default: string[];
 }
 
+/** Skip Routes API configuration */
+export interface SkipApiConfig {
+  /**
+   * Skip Routes API key. Sent as `authorization` header (no Bearer prefix).
+   * Currently only read from SKIP_API_KEY env var at runtime.
+   * Config file value will be used in a future release.
+   */
+  apiKey?: string;
+  /** Skip Routes API base URL. Defaults to "https://api.skip.build". */
+  apiUrl?: string;
+}
+
 /** Top-level config for keplr-mcp.config.ts */
 export interface KeplrMcpConfig {
   /**
@@ -92,4 +104,7 @@ export interface KeplrMcpConfig {
 
   /** RPC endpoint configuration */
   rpc?: RpcConfig;
+
+  /** Skip Routes API configuration */
+  skip?: SkipApiConfig;
 }

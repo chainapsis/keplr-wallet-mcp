@@ -81,6 +81,7 @@ export type {
   KeplrMcpConfig,
   KeplrMcpPlugin,
   RpcConfig,
+  SkipApiConfig,
   ToolsetConfig,
 } from "./config/index.js";
 // ============================================

@@ -12,5 +12,6 @@ export type {
   KeplrMcpConfig,
   KeplrMcpPlugin,
   RpcConfig,
+  SkipApiConfig,
   ToolsetConfig,
 } from "./types.js";

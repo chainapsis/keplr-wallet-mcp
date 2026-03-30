@@ -4,7 +4,8 @@
       "command": "node",
       "args": ["packages/server/dist/index.js"],
       "env": {
-        "KEPLR_RPC_API_KEY": "<your-keplr-rpc-api-key>"
+        "KEPLR_RPC_API_KEY": "<your-keplr-rpc-api-key>",
+        "SKIP_API_KEY": "<your-skip-api-key>"
       }
     }
   }

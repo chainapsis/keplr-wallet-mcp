@@ -45,15 +45,29 @@ export const loadConfig = async (
 
 /**
  * Merge environment variables into the loaded config.
- * KEPLR_RPC_API_KEY → config.rpc.apiKey (if not already set by config file)
+ * Config file values take precedence over env vars.
+ *
+ * KEPLR_RPC_API_KEY → config.rpc.apiKey
+ * SKIP_API_KEY      → config.skip.apiKey
+ * SKIP_API_URL      → config.skip.apiUrl
  */
 const mergeEnvVars = (config: KeplrMcpConfig): KeplrMcpConfig => {
-  const envApiKey = process.env.KEPLR_RPC_API_KEY;
-  if (envApiKey && !config.rpc?.apiKey) {
-    return {
-      ...config,
-      rpc: { ...config.rpc, apiKey: envApiKey },
-    };
+  let merged = config;
+
+  const envRpcApiKey = process.env.KEPLR_RPC_API_KEY;
+  if (envRpcApiKey && !merged.rpc?.apiKey) {
+    merged = { ...merged, rpc: { ...merged.rpc, apiKey: envRpcApiKey } };
   }
-  return config;
+
+  const envSkipApiKey = process.env.SKIP_API_KEY;
+  if (envSkipApiKey && !merged.skip?.apiKey) {
+    merged = { ...merged, skip: { ...merged.skip, apiKey: envSkipApiKey } };
+  }
+
+  const envSkipApiUrl = process.env.SKIP_API_URL;
+  if (envSkipApiUrl && !merged.skip?.apiUrl) {
+    merged = { ...merged, skip: { ...merged.skip, apiUrl: envSkipApiUrl } };
+  }
+
+  return merged;
 };

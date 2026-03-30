@@ -191,4 +191,9 @@ import { KeplrPlugin, pluginRegistry, createPluginContext } from "@keplr-wallet/
 // Balance Enricher
 import { balanceEnricherRegistry } from "@keplr-wallet/keplr-wallet-mcp/sdk";
 import type { BalanceEnricher } from "@keplr-wallet/keplr-wallet-mcp/sdk";
+
+// Configuration & Infrastructure
+import { loadConfig } from "@keplr-wallet/keplr-wallet-mcp/config";
+import type { SkipApiConfig } from "@keplr-wallet/keplr-wallet-mcp/config";
+import { getRpcResolver, RpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 ```
