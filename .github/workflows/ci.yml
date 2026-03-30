@@ -123,5 +123,3 @@ jobs:
 
       - name: Type check
         run: pnpm build
-        env:
-          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
