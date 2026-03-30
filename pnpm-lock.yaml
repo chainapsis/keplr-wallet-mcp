@@ -121,9 +121,6 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
     optionalDependencies:
-      '@keplr-wallet/biometric-darwin':
-        specifier: workspace:*
-        version: link:../biometric-darwin
       '@keplr-wallet/protocol-osmosis':
         specifier: workspace:*
         version: link:../protocol-osmosis
