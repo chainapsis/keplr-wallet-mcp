@@ -1,16 +1,13 @@
 {
   "name": "@keplr-wallet/protocol-osmosis",
   "version": "0.1.0",
+  "private": true,
   "license": "MIT",
   "description": "Osmosis DEX protocol plugin for Keplr MCP Server",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE"],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

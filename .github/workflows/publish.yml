@@ -1,9 +1,10 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       confirm:
@@ -15,6 +16,9 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-biometric:
     name: Build biometric binary
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: macos-14
     steps:
       - name: Checkout repository
@@ -37,8 +41,10 @@ jobs:
 
   release:
     name: Release
-    needs: build-biometric
-    if: github.event_name == 'push' || github.event.inputs.confirm == 'publish'
+    needs: [build-biometric]
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish')
     runs-on: ubuntu-latest
 
     permissions:
@@ -73,14 +79,6 @@ jobs:
         env:
           npm_config_ignore_scripts: true
 
-      - name: Build all packages
-        run: pnpm build
-        env:
-          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
-
-      - name: Run tests
-        run: pnpm test
-
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
@@ -92,6 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
+          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
 
       - name: Install mcp-publisher
         if: steps.changesets.outputs.published == 'true'

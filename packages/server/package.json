@@ -103,6 +103,7 @@
     "@cosmjs/stargate": "^0.32.4",
     "@cosmjs/tendermint-rpc": "^0.32.4",
     "@keplr-wallet/cosmos": "^0.13.1",
+    "@keplr-wallet/protocol-osmosis": "workspace:*",
     "@keplr-wallet/types": "^0.13.1",
     "@keplr-wallet/unit": "^0.13.1",
     "@modelcontextprotocol/sdk": "^1.12.1",
@@ -115,9 +116,9 @@
     "zod": "^3.24.0",
     "zustand": "^5.0.10"
   },
-  "optionalDependencies": {
-    "@keplr-wallet/protocol-osmosis": "workspace:*"
-  },
+  "bundledDependencies": [
+    "@keplr-wallet/protocol-osmosis"
+  ],
   "devDependencies": {
     "@types/qrcode": "^1.5.5",
     "@types/qrcode-terminal": "^0.12.2",
