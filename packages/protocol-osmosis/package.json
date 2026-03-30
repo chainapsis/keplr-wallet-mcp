@@ -18,7 +18,8 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "postbuild": "node ../../scripts/inject-build-env.cjs"
   },
   "dependencies": {
     "zod": "^3.24.0"
