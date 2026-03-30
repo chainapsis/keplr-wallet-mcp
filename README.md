@@ -128,31 +128,53 @@ Custom chains can be added dynamically via the `add-cosmos-chain` tool.
 - `rename-account` — Rename an account
 - `delete-account` — Delete account (requires confirmation)
 - `get-account-addresses` — Get all addresses for active account
+- `export-mnemonic` — Export recovery phrase for an account (requires confirmation)
+- `check-vault-health` — Check vault integrity and repair if needed
 
 ### Chain Management
 - `list-cosmos-chains` — List all supported Cosmos chains
 - `add-cosmos-chain` — Add custom Cosmos chain
 - `remove-cosmos-chain` — Remove custom Cosmos chain
 
-### Cosmos Operations
+### Cosmos Query
 - `get-cosmos-address` — Get wallet address for a chain
 - `get-balances` — Query token balances
 - `get-staking-info` — View delegations and rewards
 - `get-portfolio` — Unified portfolio across all chains with USD values
 - `list-validators` — Browse validators with commission and voting power
 - `list-proposals` — View governance proposals
+- `get-proposal` — Get detailed info about a specific proposal with tally results
+- `get-unbonding` — View unbonding delegations with completion times
+- `list-fee-tokens` — List accepted fee tokens for a chain with balances
+- `list-ibc-channels` — List IBC transfer channels for a chain
+
+### Cosmos Transaction
 - `send-tokens` — Send tokens
-- `ibc-transfer` — Cross-chain IBC transfer
+- `ibc-transfer` — Cross-chain IBC transfer (auto-resolves channels via Skip API)
 - `delegate` / `undelegate` / `redelegate` — Manage staking positions
 - `claim-rewards` / `claim-all-rewards` — Claim staking rewards
 - `vote-governance` — Vote on governance proposals
 - `cancel-unbonding` — Cancel unbonding delegation
+
+### Cosmos Signing
+- `cosmos-sign-arbitrary` — Sign arbitrary message using ADR-36 (proves address ownership)
+- `cosmos-verify-signature` — Verify an ADR-36 signature
 
 ### CosmWasm
 - `cosmwasm-query` — Query smart contract state
 - `cosmwasm-execute` — Execute smart contract
 - `cosmwasm-instantiate` — Instantiate a new contract
 - `cosmwasm-contract-info` — Get contract metadata
+- `cosmwasm-list-contracts` — List contracts deployed from a code ID
+
+### Multi-Action
+- `multi-action-create` — Start a multi-action transaction (atomic, saves gas)
+- `multi-action-add` — Add an action (send, delegate, vote, cosmwasm-execute, etc.)
+- `multi-action-remove` — Remove an action by index
+- `multi-action-preview` — Simulate and preview gas/fee estimates
+- `multi-action-execute` — Execute all actions atomically
+- `multi-action-list` — List pending multi-action transactions
+- `multi-action-cancel` — Cancel a multi-action transaction
 
 ### DeFi
 - `osmosis-quote` / `osmosis-swap` — Osmosis DEX token swaps
@@ -165,22 +187,56 @@ Custom chains can be added dynamically via the `add-cosmos-chain` tool.
 - `auth-enable` / `auth-disable` — Enable/disable auth system
 - `auth-provider-disable` — Disable specific auth provider
 
+### Keplr Endpoints
+- `kr_validate_key` — Validate a Keplr Endpoints API key
+- `kr_get_payment_link` — Get a Stripe payment link to add credits
+- `kr_get_usage_summary` — Get usage summary (balance, requests, per-chain breakdown)
+- `kr_get_usage_history` — Get usage history with date/chain/endpoint filters
+- `kr_list_chains` — List all chains available on Keplr Endpoints
+
 ### Utilities
 - `confirm-action` — Execute pending transaction
+- `cancel-pending-action` — Cancel a pending transaction
 - `list-pending-actions` — View pending confirmation tokens
+- `list-transaction-history` — View past transaction history with status
+- `get-transaction-status` — Check on-chain transaction status
+- `search-tools` — Search tools by keyword, category, or ecosystem
+- `describe-tools` — Get full parameter details for specific tools
 - `list-installed-adapters` — List loaded ecosystem adapters
 - `list-installed-protocols` — List loaded DeFi protocol plugins
-- `get-transaction-status` — Check on-chain transaction status
 
 ### Prompts (Slash Commands)
+
+#### Onboarding & Account
 - `/get-started` — Guided onboarding for new users
 - `/create-account` — Create new wallet
+- `/import-account` — Import existing wallet
+- `/delete-account` — Delete a wallet account
+- `/switch-account` — Switch active account
+- `/list-accounts` — List all accounts
+
+#### Query & Operations
 - `/check-balances` — Check token balances
 - `/check-staking` — Check staking positions
+- `/wallet-overview` — Quick overview of wallet status and addresses
+- `/analyze-portfolio` — Analyze cross-chain portfolio with recommendations
+- `/send` — Send tokens (guided)
 - `/stake` — Guided staking flow
+- `/redelegate` — Move stake between validators (guided)
 - `/claim-rewards` — Claim staking rewards
+- `/governance` — Participate in governance voting (guided)
+- `/ibc-transfer` — Transfer tokens between chains (guided)
+- `/bridge` — Bridge tokens between Cosmos chains
+
+#### DeFi & Smart Contracts
+- `/osmosis-swap` — Swap tokens on Osmosis DEX (guided)
+- `/cosmwasm-interact` — Interact with a CosmWasm smart contract (guided)
+
+#### Security & Discovery
 - `/setup-authentication` — Configure authentication for transactions
 - `/setup-totp` — Setup Google Authenticator 2FA
+- `/security-check` — Review wallet security settings
+- `/keplr-guide` — Guide for discovering and using tools via meta-tools
 
 ## Security
 
