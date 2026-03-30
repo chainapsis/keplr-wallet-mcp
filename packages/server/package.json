@@ -6,7 +6,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist", "native/macos/bin", "README.md", "LICENSE"],
   "mcpName": "io.github.chainapsis/keplr-wallet-mcp",
   "publishConfig": {
     "access": "public",
@@ -53,10 +53,6 @@
       "types": "./dist/keys/providers/mnemonic.d.ts",
       "default": "./dist/keys/providers/mnemonic.js"
     },
-    "./keys/providers/passkey": {
-      "types": "./dist/keys/providers/passkey.d.ts",
-      "default": "./dist/keys/providers/passkey.js"
-    },
     "./keys/signers": {
       "types": "./dist/keys/signers/index.d.ts",
       "default": "./dist/keys/signers/index.js"
@@ -92,6 +88,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "postbuild": "node scripts/build-native.js",
+    "prepack": "node scripts/verify-pack-native.js",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
@@ -119,7 +116,6 @@
     "zustand": "^5.0.10"
   },
   "optionalDependencies": {
-    "@keplr-wallet/biometric-darwin": "workspace:*",
     "@keplr-wallet/protocol-osmosis": "workspace:*"
   },
   "devDependencies": {
