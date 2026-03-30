@@ -123,7 +123,7 @@ server.registerTool("my-tool", {
 
 > **Note:** Without an entry, the tool is auto-discovered from `_registeredTools` (category: "uncategorized"). Plugin plug-and-play is guaranteed.
 
-Categories: `account-management`, `authentication`, `transaction-confirm`, `cosmos-query`, `cosmos-transaction`, `cosmwasm`, `cosmos-signing`, `chain-management`, `defi-osmosis`, `keplr-rpc`
+Categories: `account-management`, `authentication`, `transaction-confirm`, `cosmos-query`, `cosmos-transaction`, `cosmwasm`, `cosmos-signing`, `chain-management`, `defi-osmosis`, `keplr-rpc`, `meta`
 
 ### New Adapter
 
@@ -131,6 +131,31 @@ Categories: `account-management`, `authentication`, `transaction-confirm`, `cosm
 2. Implement `EcosystemAdapter`
 3. `export default () => new MyAdapter()`
 4. Add to `optionalDependencies`
+
+### New Protocol Plugin
+
+1. Create `packages/protocol-<name>/`
+2. Implement `ProtocolPlugin` (extends `KeplrPlugin` with `protocolId`, `ecosystem`, `supportedChains`)
+3. `export default () => new MyProtocol()` (factory function required by loader)
+4. Add to `optionalDependencies`
+
+```typescript
+import type { ProtocolPlugin } from "@keplr-wallet/keplr-wallet-mcp/protocol-types";
+
+const myProtocol: ProtocolPlugin = {
+  name: "my-protocol",
+  protocolId: "my-protocol",
+  ecosystem: "cosmos",
+  supportedChains: ["osmosis-1"],
+  register(server, store) {
+    // Register tools, balance enrichers, etc.
+  },
+};
+
+export default () => myProtocol;
+```
+
+Discovery: `@keplr-wallet/protocol-*` prefix auto-detected, or set `KEPLR_PROTOCOLS` env var.
 
 ### New KeyProvider (Registry Pattern)
 
@@ -187,8 +212,16 @@ import { EcosystemAdapter } from "@keplr-wallet/keplr-wallet-mcp/ecosystem";
 
 // Plugins
 import { KeplrPlugin, pluginRegistry, createPluginContext } from "@keplr-wallet/keplr-wallet-mcp/plugin-types";
+import type { ProtocolPlugin } from "@keplr-wallet/keplr-wallet-mcp/protocol-types";
 
-// Balance Enricher
+// SDK & Utilities
 import { balanceEnricherRegistry } from "@keplr-wallet/keplr-wallet-mcp/sdk";
 import type { BalanceEnricher } from "@keplr-wallet/keplr-wallet-mcp/sdk";
+
+// Configuration & Infrastructure
+import { loadConfig } from "@keplr-wallet/keplr-wallet-mcp/config";
+import { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
+import { getRpcResolver, RpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 ```
+
+All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./protocol-types`, `./chain-storage`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`
