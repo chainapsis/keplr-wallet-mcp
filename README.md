@@ -11,6 +11,11 @@ This is a **pnpm monorepo** with a plugin-based architecture for multi-ecosystem
 | `@keplr-wallet/keplr-wallet-mcp` | Core MCP server with Cosmos built-in + account/chain management |
 | `@keplr-wallet/protocol-osmosis` | Osmosis DEX token swaps |
 
+## Prerequisites
+
+- **Node.js** >= 22
+- **pnpm** (npm and yarn are not supported)
+
 ## Quick Start
 
 ```bash
@@ -60,6 +65,10 @@ cp .mcp.json.example .mcp.json
 # Edit .mcp.json with your actual API keys
 ```
 
+### Advanced Configuration
+
+For plugin registration, RPC overrides, or toolset filtering, create a `keplr-mcp.config.ts` in your working directory. See the [SDK docs](docs/pages/sdk/quick-start.mdx) for details.
+
 ## Getting Started
 
 New to the wallet? Use the onboarding tools to get set up:
@@ -92,9 +101,13 @@ Configuration is stored in `~/.keplr-mcp/`.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `KEPLR_MNEMONIC` | No | BIP39 mnemonic (overrides keychain) |
-| `KEPLR_ADAPTERS` | No | Additional adapter packages to load |
-| `KEPLR_PROTOCOLS` | No | Additional protocol plugins to load |
+| `KEPLR_ADAPTERS` | No | Additional adapter packages to load (comma-separated) |
+| `KEPLR_PROTOCOLS` | No | Additional protocol plugins to load (comma-separated) |
 | `KEPLR_RPC_API_KEY` | No | Keplr RPC API key for premium endpoints (falls back to public RPC if unset) |
+| `KEPLR_TX_TTL_MINUTES` | No | Transaction confirmation token TTL in minutes (default: 5) |
+| `COINGECKO_API_KEY` | No | CoinGecko Pro API key for portfolio price data |
+| `SKIP_API_KEY` | No | Skip Routes API key for IBC channel resolution |
+| `SKIP_API_URL` | No | Skip Routes API endpoint override |
 
 ## Supported Chains
 
