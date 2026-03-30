@@ -109,8 +109,8 @@ Configuration is stored in `~/.keplr-mcp/`.
 | `KEPLR_RPC_API_KEY` | No | Keplr RPC API key for premium endpoints (falls back to public RPC if unset) |
 | `KEPLR_TX_TTL_MINUTES` | No | Transaction confirmation token TTL in minutes (default: 5) |
 | `COINGECKO_API_KEY` | No | CoinGecko Pro API key for portfolio price data |
-| `SKIP_API_KEY` | No | Skip Routes API key for IBC channel resolution (also via `skip.apiKey` in config) |
-| `SKIP_API_URL` | No | Skip Routes API endpoint override (also via `skip.apiUrl` in config) |
+| `SKIP_API_KEY` | No | Skip Routes API key for IBC channel resolution |
+| `SKIP_API_URL` | No | Skip Routes API endpoint override |
 
 ## Supported Chains
 
