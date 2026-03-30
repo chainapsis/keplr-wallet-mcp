@@ -1,10 +1,9 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [main]
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       confirm:
@@ -16,9 +15,6 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-biometric:
     name: Build biometric binary
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: macos-14
     steps:
       - name: Checkout repository
@@ -41,10 +37,8 @@ jobs:
 
   release:
     name: Release
-    needs: [build-biometric]
-    if: >-
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish')
+    needs: build-biometric
+    if: github.event_name == 'push' || github.event.inputs.confirm == 'publish'
     runs-on: ubuntu-latest
 
     permissions:
@@ -92,25 +86,23 @@ jobs:
           NPM_CONFIG_PROVENANCE: "true"
           SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
 
-      - name: Install mcp-publisher
-        if: steps.changesets.outputs.published == 'true'
-        run: |
-          VERSION="v1.5.0"
-          EXPECTED_SHA="79bbb73ba048c5906034f73ef6286d7763bd53cf368ea0b358fc593ed360cbd5"
-          curl -fSL -o mcp-publisher.tar.gz \
-            "https://github.com/modelcontextprotocol/registry/releases/download/${VERSION}/mcp-publisher_linux_amd64.tar.gz"
-          echo "${EXPECTED_SHA}  mcp-publisher.tar.gz" | sha256sum -c -
-          tar xzf mcp-publisher.tar.gz mcp-publisher
-          sudo mv mcp-publisher /usr/local/bin/
-
-      - name: Login to MCP Registry
-        if: steps.changesets.outputs.published == 'true'
-        run: mcp-publisher login github-oidc
-
-      - name: Publish to MCP Registry
-        if: steps.changesets.outputs.published == 'true'
-        run: mcp-publisher publish
-
-      - name: Notify on MCP Registry failure
-        if: failure() && steps.changesets.outputs.published == 'true'
-        run: echo "::error::npm publish succeeded but MCP Registry publish failed. Manual intervention required."
+      # TODO: MCP Registry publish — re-enable when ready
+      # - name: Install mcp-publisher
+      #   if: steps.changesets.outputs.published == 'true'
+      #   run: |
+      #     VERSION="v1.5.0"
+      #     EXPECTED_SHA="79bbb73ba048c5906034f73ef6286d7763bd53cf368ea0b358fc593ed360cbd5"
+      #     curl -fSL -o mcp-publisher.tar.gz \
+      #       "https://github.com/modelcontextprotocol/registry/releases/download/${VERSION}/mcp-publisher_linux_amd64.tar.gz"
+      #     echo "${EXPECTED_SHA}  mcp-publisher.tar.gz" | sha256sum -c -
+      #     tar xzf mcp-publisher.tar.gz mcp-publisher
+      #     sudo mv mcp-publisher /usr/local/bin/
+      # - name: Login to MCP Registry
+      #   if: steps.changesets.outputs.published == 'true'
+      #   run: mcp-publisher login github-oidc
+      # - name: Publish to MCP Registry
+      #   if: steps.changesets.outputs.published == 'true'
+      #   run: mcp-publisher publish
+      # - name: Notify on MCP Registry failure
+      #   if: failure() && steps.changesets.outputs.published == 'true'
+      #   run: echo "::error::npm publish succeeded but MCP Registry publish failed. Manual intervention required."

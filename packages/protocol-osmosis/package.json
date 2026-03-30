@@ -1,6 +1,6 @@
 {
   "name": "@keplr-wallet/protocol-osmosis",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "license": "MIT",
   "description": "Osmosis DEX protocol plugin for Keplr MCP Server",
@@ -22,7 +22,7 @@
     "zod": "^3.24.0"
   },
   "peerDependencies": {
-    "@keplr-wallet/keplr-wallet-mcp": "^0.1.0",
+    "@keplr-wallet/keplr-wallet-mcp": "^0.0.1",
     "@modelcontextprotocol/sdk": "^1.12.1"
   },
   "devDependencies": {
