@@ -13,9 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "changeset": "changeset",
-    "version": "changeset version && node scripts/sync-server-json-version.cjs",
-    "release": "pnpm build && changeset publish",
+    "release": "pnpm build",
     "docs": "pnpm --filter keplr-mcp-docs dev",
     "docs:build": "pnpm --filter keplr-mcp-docs build",
     "docs:preview": "pnpm --filter keplr-mcp-docs preview"
@@ -28,8 +26,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
-    "@changesets/changelog-github": "^0.5.2",
-    "@changesets/cli": "^2.29.8",
     "@types/node": "^22.0.0",
     "typescript": "^5.6.0",
     "vitest": "^3.0.0"

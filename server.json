@@ -5,12 +5,12 @@
   "repository": {
     "url": "https://github.com/chainapsis/keplr-wallet-mcp"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@keplr-wallet/keplr-wallet-mcp",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "transport": ["stdio"]
     }
   ]

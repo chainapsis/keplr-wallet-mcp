@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       confirm:
@@ -35,15 +35,13 @@ jobs:
           name: biometric-darwin
           path: packages/server/native/macos/bin/
 
-  release:
-    name: Release
+  publish:
+    name: Publish to npm
     needs: build-biometric
-    if: github.event_name == 'push' || github.event.inputs.confirm == 'publish'
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
 
     steps:
@@ -73,22 +71,27 @@ jobs:
         env:
           npm_config_ignore_scripts: true
 
-      - name: Create Release Pull Request or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: pnpm version
-          publish: pnpm release
-          title: "chore: release packages"
-          commit: "chore: release packages"
+      - name: Build all packages
+        run: pnpm build
+        env:
+          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Publish to npm
+        run: pnpm --filter @keplr-wallet/keplr-wallet-mcp publish --no-git-checks --access public --provenance
+        env:
+          NPM_CONFIG_PROVENANCE: "true"
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: gh release create "${{ github.ref_name }}" --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
 
       # TODO: MCP Registry publish — re-enable when ready
       # - name: Install mcp-publisher
-      #   if: steps.changesets.outputs.published == 'true'
       #   run: |
       #     VERSION="v1.5.0"
       #     EXPECTED_SHA="79bbb73ba048c5906034f73ef6286d7763bd53cf368ea0b358fc593ed360cbd5"
@@ -98,11 +101,6 @@ jobs:
       #     tar xzf mcp-publisher.tar.gz mcp-publisher
       #     sudo mv mcp-publisher /usr/local/bin/
       # - name: Login to MCP Registry
-      #   if: steps.changesets.outputs.published == 'true'
       #   run: mcp-publisher login github-oidc
       # - name: Publish to MCP Registry
-      #   if: steps.changesets.outputs.published == 'true'
       #   run: mcp-publisher publish
-      # - name: Notify on MCP Registry failure
-      #   if: failure() && steps.changesets.outputs.published == 'true'
-      #   run: echo "::error::npm publish succeeded but MCP Registry publish failed. Manual intervention required."
