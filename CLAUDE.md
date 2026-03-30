@@ -221,7 +221,7 @@ import type { BalanceEnricher } from "@keplr-wallet/keplr-wallet-mcp/sdk";
 // Configuration & Infrastructure
 import { loadConfig } from "@keplr-wallet/keplr-wallet-mcp/config";
 import { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
-import { resolveRpcEndpoint } from "@keplr-wallet/keplr-wallet-mcp/rpc";
+import { getRpcResolver, RpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 ```
 
 All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./protocol-types`, `./chain-storage`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`
