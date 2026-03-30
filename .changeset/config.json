@@ -8,9 +8,7 @@
   ],
   "commit": false,
   "fixed": [],
-  "linked": [
-    ["@keplr-wallet/keplr-wallet-mcp", "@keplr-wallet/biometric-darwin"]
-  ],
+  "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
