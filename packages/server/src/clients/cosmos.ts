@@ -53,6 +53,7 @@ import {
   EthermintHdWallet,
   ethermintAccountParser,
   getEthermintPubkeyTypeUrl,
+  isEthermintLike,
   needsEthermintSigning,
 } from "./ethermint/index.js";
 
@@ -268,7 +269,7 @@ export class CosmosClient implements EcosystemClient {
     const coinType = chain.bip44?.coinType ?? 118;
     let wallet: OfflineDirectSigner;
 
-    if (needsEthermintSigning(chain)) {
+    if (isEthermintLike(chain)) {
       wallet = await EthermintHdWallet.fromMnemonic(
         this.mnemonic,
         prefix,
