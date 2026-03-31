@@ -1,18 +1,43 @@
 # Installation
 
-Install and configure Keplr Wallet MCP for your AI assistant.
+Set up Keplr Wallet MCP and connect it to your AI assistant.
 
 ## Prerequisites
 
-- **Node.js 20+**
-- **pnpm** (recommended) or npm
-- **Claude Desktop** or compatible MCP client
+You need **Node.js 22 or later**. [Download here](https://nodejs.org).
 
-## Installation Options
+To check if you already have it, open your terminal and run:
 
-### Option 1: NPX (Recommended)
+```bash
+node -v
+```
 
-No installation required. Configure your MCP client to run directly:
+If you see `v22.x.x` or higher, you're good to go.
+
+## Connect to your AI client
+
+Pick your AI client below and follow the steps.
+
+### Claude Code
+
+Run this in your terminal:
+
+```bash
+claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp
+```
+
+If you're already in a session, type `/mcp` and connect to Keplr — or start a new session.
+
+### Claude Desktop Configuration
+
+**1. Find your config file:**
+
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+
+**2. Add the following to your config file:**
 
 ```json
 {
@@ -25,125 +50,83 @@ No installation required. Configure your MCP client to run directly:
 }
 ```
 
-### Option 2: Global Install
+:::tip
+On Windows, use `"command": "npx.cmd"` instead of `"command": "npx"`.
+:::
+
+**3. Restart Claude Desktop** to apply changes.
+
+### Other MCP clients
+
+First, install the package:
+
+:::code-group
+
+```bash [npm]
+npm install @keplr-wallet/keplr-wallet-mcp
+```
+
+```bash [pnpm]
+pnpm add @keplr-wallet/keplr-wallet-mcp
+```
+
+:::
+
+Then configure your MCP client to run the server. The command depends on your setup:
+
+```json
+{
+  "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+    }
+  }
+}
+```
+
+## Verify installation
+
+After setup, restart your AI client and ask:
+
+> "What Keplr tools are available?"
+
+If everything is working, Claude will respond with a list of wallet tools.
+
+## Next Steps
+
+- [Create your first wallet](/getting-started/create-your-first-wallet)
+- [Learn how to talk to your wallet](/getting-started/talking-to-your-wallet)
+
+
+<details>
+<summary><strong>Advanced: Global install, Plugin config</strong></summary>
+
+### Global Install
 
 ```bash
 pnpm add -g @keplr-wallet/keplr-wallet-mcp
 ```
 
-Then configure:
+Then use `"command": "keplr-wallet-mcp"` in your MCP client config.
 
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "keplr-wallet-mcp"
-    }
-  }
-}
-```
+### Plugin Configuration
 
-### Option 3: Local Project
-
-```bash
-pnpm add @keplr-wallet/keplr-wallet-mcp
-```
-
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "node",
-      "args": ["node_modules/@keplr-wallet/keplr-wallet-mcp/dist/index.js"]
-    }
-  }
-}
-```
-
-## Claude Desktop Configuration
-
-### macOS
-
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "npx",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
-    }
-  }
-}
-```
-
-### Windows
-
-Edit `%APPDATA%\Claude\claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "npx.cmd",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
-    }
-  }
-}
-```
-
-### Linux
-
-Edit `~/.config/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "npx",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
-    }
-  }
-}
-```
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `KEPLR_MNEMONIC` | Pre-configured mnemonic phrase | Optional |
-
-See [Environment Variables](/reference/environment) for the full list.
-
-## Verify Installation
-
-After configuration, restart Claude Desktop and ask:
-
-> "What Keplr tools are available?"
-
-Claude should respond with a list of available wallet tools.
-
-## Optional: DeFi Support
-
-The base server includes Cosmos support. For Osmosis DEX integration, create a `keplr-mcp.config.ts`:
+To customize toolsets or RPC endpoints, create a `keplr-mcp.config.ts` in your project root:
 
 ```typescript
 import { defineConfig } from "@keplr-wallet/keplr-wallet-mcp";
-import osmosisPlugin from "@keplr-wallet/protocol-osmosis";
 
 export default defineConfig({
-  plugins: [osmosisPlugin()],
+  toolsets: {
+    default: ["cosmos-query", "cosmos-transaction"],
+  },
+  rpc: {
+    overrides: {
+      "cosmoshub-4": "https://my-rpc.example.com",
+    },
+  },
 });
 ```
 
-Install the plugin:
-
-```bash
-pnpm add @keplr-wallet/protocol-osmosis
-```
-
-## Next Steps
-
-- [Create your first wallet](/getting-started/first-wallet)
-- [Integrate with AI assistants](/getting-started/ai-integration)
-- [Explore account types](/guides/wallet/account-types)
+</details>

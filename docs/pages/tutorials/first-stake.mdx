@@ -55,15 +55,15 @@ User: Show me the top validators on Cosmos Hub
 {
   "validators": [
     {
-      "name": "Coinbase Custody",
-      "operatorAddress": "cosmosvaloper1...",
+      "name": "Validator A",
+      "operatorAddress": "cosmosvaloper1abc...", // example dummy address
       "commission": "10%",
       "votingPower": "5.2%",
       "uptime": "99.9%"
     },
     {
-      "name": "Kraken",
-      "operatorAddress": "cosmosvaloper2...",
+      "name": "Validator B",
+      "operatorAddress": "cosmosvaloper1def...", // example dummy address
       "commission": "8%",
       "votingPower": "4.1%"
     }
@@ -76,7 +76,7 @@ User: Show me the top validators on Cosmos Hub
 Choose a validator and stake:
 
 ```
-User: Stake 100 ATOM to Coinbase Custody on Cosmos Hub
+User: Stake 100 ATOM to Validator A on Cosmos Hub
 ```
 
 **Preview:**
@@ -85,9 +85,9 @@ User: Stake 100 ATOM to Coinbase Custody on Cosmos Hub
 {
   "status": "pending_confirmation",
   "preview": {
-    "summary": "Stake 100 ATOM to Coinbase Custody",
+    "summary": "Stake 100 ATOM to Validator A",
     "validator": {
-      "name": "Coinbase Custody",
+      "name": "Validator A",
       "commission": "10%",
       "expectedAPY": "~15%"
     },
@@ -114,7 +114,7 @@ User: Yes, confirm the staking
   "txHash": "ABC123...",
   "explorerUrl": "https://mintscan.io/cosmos/txs/ABC123",
   "staked": {
-    "validator": "Coinbase Custody",
+    "validator": "Validator A",
     "amount": "100 ATOM"
   }
 }
@@ -136,7 +136,7 @@ User: Show my staking info on Cosmos Hub
   "totalRewards": "0 ATOM",
   "delegations": [
     {
-      "validator": "Coinbase Custody",
+      "validator": "Validator A",
       "amount": "100 ATOM",
       "rewards": "0 ATOM"
     }
@@ -157,7 +157,7 @@ User: Show my staking rewards
   "totalRewards": "2.5 ATOM",
   "delegations": [
     {
-      "validator": "Coinbase Custody",
+      "validator": "Validator A",
       "rewards": "2.5 ATOM"
     }
   ]
@@ -182,7 +182,7 @@ User: Claim all my staking rewards on Cosmos Hub
 
 - [Add more validators](/guides/cosmos/staking) for diversification
 - [Vote on governance](/guides/cosmos/governance) using your staked tokens
-- [Set up authentication](/guides/security/biometric) for security
+- [Set up security](/getting-started/set-up-security) for wallet protection
 
 ## Tips
 
@@ -199,7 +199,7 @@ User: Stake 50 ATOM to Validator A and 50 ATOM to Validator B
 Re-stake your rewards for compound growth:
 
 ```
-User: Claim my rewards and stake them to Coinbase Custody
+User: Claim my rewards and stake them to Validator A
 ```
 
 ### Monitor Commission Changes

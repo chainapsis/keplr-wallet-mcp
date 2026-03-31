@@ -1,21 +1,32 @@
 # Keplr Wallet MCP
 
-AI-powered wallet interface for Cosmos chains via Model Context Protocol (MCP).
+Your AI-powered wallet. Send, stake, swap - just ask. Currently supporting 50+ Cosmos chains.
+
+<div style={{ background: '#B6EAFE', padding: '16px', borderRadius: '8px' }}>
+
+**Beta Notice:** Keplr Wallet MCP is in beta and may contain bugs or unexpected behavior. By using this software, you acknowledge that you do so at your own risk. The developers are not liable for any loss of funds or damages arising from the use of this software.
+
+</div>
 
 ## What is Keplr Wallet MCP?
 
-Keplr Wallet MCP is a **Model Context Protocol** server that allows AI assistants like Claude to interact with blockchain wallets. It supports:
+Keplr Wallet MCP brings your Cosmos wallet into AI assistants like Claude. Describe what you want in everyday language, and the AI executes it for you.
 
-- **Cosmos Ecosystem**: Cosmos Hub, Osmosis, Celestia, and 50+ chains
-- **DeFi Protocols**: Osmosis DEX
+- **50+ Cosmos chains**: Cosmos Hub, Osmosis, Celestia, and more
+- **Token swaps**: Osmosis DEX
 
 ## Key Features
 
 ### Multi-Chain Support
 
-```
-Cosmos: cosmoshub-4, osmosis-1, celestia, neutron-1, ...
-```
+50+ Cosmos chains supported out of the box.
+
+<details>
+<summary>View all supported chains</summary>
+
+Cosmos Hub, Osmosis, Celestia, Stargaze, Noble, Neutron, Injective, dYdX, Initia, Axelar, Babylon Genesis, Agoric, Akash, Archway, AtomOne, Bostrom, Chihuahua, Crypto.org, Dymension, IRISnet, Jackal, Juno, Kava, KYVE, Lava, Lumera, MANTRA, Nolus, Nym, Passage, Persistence, Pocket Network, Provenance, Quicksilver, Regen, Saga, Secret Network, SEDA, Sentinel, Sommelier, Stride, THORChain, Union, UX Chain, XION, XPLA, XRPL EVM, ZetaChain, ZIGChain, Terra, Terra Classic
+
+</details>
 
 ### Natural Language Wallet Operations
 
@@ -24,13 +35,53 @@ Ask your AI assistant things like:
 - "Stake 100 ATOM to a top validator"
 - "Swap 50 OSMO to ATOM on Osmosis"
 
-### Wallet Type
+### Wallet Security
 
-| Type | Best For | Security |
-|------|----------|----------|
-| **Mnemonic** | Development, testing | Local storage |
+Your wallet is protected by a **24-word recovery phrase** (mnemonic). The recovery phrase is encrypted and stored in your OS credential store (e.g. macOS Keychain).
 
 ## Quick Start
+
+**1. Install Node.js** — [Download here](https://nodejs.org) (v22 or later). If you're not sure whether you have it, open Terminal (Mac) or Command Prompt (Windows) and type `node -v`.
+
+**2. Connect to your AI client** — Pick your client and follow the steps:
+
+<details>
+<summary><strong>Claude Code</strong></summary>
+
+Run this in your terminal:
+
+```bash
+claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp
+```
+
+If you're already in a session, type `/mcp` and connect to Keplr — or start a new session.
+
+</details>
+
+<details>
+<summary><strong>Claude Desktop</strong></summary>
+
+Add this to your config file ([how to find this file](/getting-started/installation#claude-desktop-configuration)):
+
+```json
+{
+  "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+    }
+  }
+}
+```
+
+No separate installation needed — `npx` downloads and runs it automatically.
+
+</details>
+
+<details>
+<summary><strong>Other MCP clients</strong></summary>
+
+First, install the package:
 
 :::code-group
 
@@ -44,39 +95,16 @@ pnpm add @keplr-wallet/keplr-wallet-mcp
 
 :::
 
-Configure Claude Desktop (`claude_desktop_config.json`):
+Then configure your MCP client to run the installed package. See [Installation](/getting-started/installation) for detailed options.
 
-```json
-{
-  "mcpServers": {
-    "keplr": {
-      "command": "npx",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
-    }
-  }
-}
-```
+</details>
 
-Then ask Claude: **"Help me set up a wallet"**
+**3. Start chatting** — Ask Claude: **"Help me set up a wallet"**
 
-## Documentation Structure
+## What's Next?
 
-| Section | Description |
-|---------|-------------|
-| [Getting Started](/getting-started/installation) | Installation and first wallet setup |
-| [Guides](/guides/wallet/account-types) | Step-by-step guides for common tasks |
-| [SDK](/sdk) | Build custom adapters and plugins |
-| [Architecture](/architecture) | Internal design and key management |
-| [Reference](/reference) | Complete tool and prompt reference |
-| [Tutorials](/tutorials/first-stake) | End-to-end tutorials |
+New here? Start with [Installation](/getting-started/installation).
 
-## For AI Assistants
+Already set up? Explore the [Guides](/guides/cosmos/basics).
 
-This documentation is designed for both humans and AI. Each tool reference includes:
-
-- **Input Schema**: JSON Schema for parameters
-- **Output Schema**: Response structure
-- **Examples**: Request/response pairs
-- **Suggested Actions**: Next steps after each operation
-
-A machine-readable index of tools and capabilities will be available at `/llms.txt` when vocs generates it.
+Looking for tool details? See the [Reference](/reference).

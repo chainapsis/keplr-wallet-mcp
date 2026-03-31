@@ -60,7 +60,7 @@ Consider:
 ### 3. Delegate Tokens
 
 ```
-User: Stake 100 ATOM to Coinbase Custody
+User: Stake 100 ATOM to Validator A
 ```
 
 Preview:
@@ -68,9 +68,9 @@ Preview:
 ```json
 {
   "preview": {
-    "summary": "Stake 100 ATOM to Coinbase Custody",
+    "summary": "Stake 100 ATOM to Validator A",
     "validator": {
-      "name": "Coinbase Custody",
+      "name": "Validator A",
       "commission": "10%",
       "estimatedAPY": "~15%"
     },
@@ -108,12 +108,12 @@ Response:
   "totalRewards": "15.5 ATOM",
   "delegations": [
     {
-      "validator": "Coinbase Custody",
+      "validator": "Validator A",
       "amount": "300 ATOM",
       "rewards": "9.3 ATOM"
     },
     {
-      "validator": "Kraken",
+      "validator": "Validator B",
       "amount": "200 ATOM",
       "rewards": "6.2 ATOM"
     }
@@ -124,14 +124,14 @@ Response:
 ### Add More to Existing Validator
 
 ```
-User: Stake 50 more ATOM to Coinbase Custody
+User: Stake 50 more ATOM to Validator A
 ```
 
 ### Claim Rewards
 
 From one validator:
 ```
-User: Claim rewards from Coinbase Custody
+User: Claim rewards from Validator A
 ```
 
 From all validators:
@@ -144,7 +144,7 @@ User: Claim all my staking rewards
 ### Start Unbonding
 
 ```
-User: Unstake 50 ATOM from Coinbase Custody
+User: Unstake 50 ATOM from Validator A
 ```
 
 :::warning Unbonding Period
@@ -163,7 +163,7 @@ User: Show my unbonding delegations
 ### Cancel Unbonding
 
 ```
-User: Cancel my unbonding from Coinbase Custody
+User: Cancel my unbonding from Validator A
 ```
 
 ## Redelegation
@@ -171,7 +171,7 @@ User: Cancel my unbonding from Coinbase Custody
 Move stake between validators without unbonding:
 
 ```
-User: Move 100 ATOM from Coinbase Custody to Kraken
+User: Move 100 ATOM from Validator A to Validator B
 ```
 
 Benefits:
