@@ -18,7 +18,6 @@ const ALWAYS_REGISTER = new Set([
 const PLUGIN_TO_CATEGORY: Record<string, string> = {
   "cosmos-query": "cosmos-query",
   "cosmos-transaction": "cosmos-transaction",
-  "chain-management": "chain-management",
   cosmwasm: "cosmwasm",
   "cosmos-signing": "cosmos-signing",
   "unified-portfolio": "cosmos-query",

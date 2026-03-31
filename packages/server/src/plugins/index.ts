@@ -3,7 +3,6 @@ import { discoverExternalAdapters } from "../adapter-loader.js";
 import { CosmosAdapter } from "../adapters/cosmos.js";
 import { initializeAuthManager } from "../auth/manager.js";
 import { registerAuthProviders } from "../auth/providers/index.js";
-import { initializeCustomChains } from "../chains/cosmos.js";
 import { wrapExternalPlugin } from "../config/plugin-adapter.js";
 import { shouldRegisterPlugin } from "../config/toolset-filter.js";
 import type { KeplrMcpPlugin } from "../config/types.js";
@@ -13,7 +12,6 @@ import type { KeplrStore } from "../store.js";
 import accountsPlugin from "./accounts.js";
 import adapterInfoPlugin from "./adapter-info.js";
 import authPlugin from "./auth.js";
-import chainManagementPlugin from "./chain-management.js";
 import confirmPlugin from "./confirm.js";
 import keplrRpcPlugin from "./keplr-rpc.js";
 import metaToolsPlugin from "./meta/index.js";
@@ -33,9 +31,6 @@ export async function registerAll(
   // Initialize authentication system
   registerAuthProviders();
   await initializeAuthManager();
-
-  // Initialize custom Cosmos chains from storage
-  await initializeCustomChains();
 
   const allAdapters: EcosystemAdapter[] = [...builtinAdapters];
 
@@ -70,7 +65,6 @@ export async function registerAll(
     { name: "accounts", plugin: accountsPlugin },
     { name: "confirm", plugin: confirmPlugin },
     { name: "adapter-info", plugin: adapterInfoPlugin },
-    { name: "chain-management", plugin: chainManagementPlugin },
     { name: "auth", plugin: authPlugin },
     { name: "unified-portfolio", plugin: unifiedPortfolioPlugin },
     { name: "keplr-rpc", plugin: keplrRpcPlugin },

@@ -224,4 +224,4 @@ import { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
 import { getRpcResolver, RpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 ```
 
-All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./protocol-types`, `./chain-storage`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`
+All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./protocol-types`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`

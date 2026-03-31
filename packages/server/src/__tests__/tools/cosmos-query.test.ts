@@ -47,7 +47,6 @@ const mockCosmosChain = {
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 const mockOsmosisChain = {
@@ -76,7 +75,6 @@ const mockOsmosisChain = {
       gasPriceStep: { low: 0.0025, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 // Mock the chains module
@@ -180,7 +178,6 @@ describe("Cosmos Query Tools", () => {
           name: string;
           denom: string;
           bech32Prefix: string;
-          isBuiltin: boolean;
         }>;
         suggestedActions: Array<{
           tool: string;

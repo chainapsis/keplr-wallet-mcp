@@ -41,10 +41,6 @@
       "types": "./dist/plugins/protocol-types.d.ts",
       "default": "./dist/plugins/protocol-types.js"
     },
-    "./chain-storage": {
-      "types": "./dist/chains/storage.d.ts",
-      "default": "./dist/chains/storage.js"
-    },
     "./keys": {
       "types": "./dist/keys/index.d.ts",
       "default": "./dist/keys/index.js"

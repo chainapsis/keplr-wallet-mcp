@@ -49,7 +49,6 @@ export const registerKeplrGuidePrompt = (server: McpServer): void => {
                 "| cosmos-transaction | cosmos | Send, delegate, IBC transfer, vote |",
                 "| cosmwasm | cosmos | Smart contract query and execute |",
                 "| cosmos-signing | cosmos | ADR-36 message signing and verification |",
-                "| chain-management | common | Add/remove custom Cosmos chains |",
                 "| defi-osmosis | cosmos | Osmosis DEX swap quote and execute |",
                 "",
                 "## Quick Examples",
