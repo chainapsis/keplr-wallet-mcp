@@ -36,7 +36,7 @@ claude mcp add keplr -- npx @keplr-wallet/keplr-wallet-mcp
 
 ### Advanced Configuration
 
-For plugin registration, RPC overrides, or toolset filtering, create a `keplr-mcp.config.ts` in your working directory. See the [SDK docs](https://github.com/chainapsis/keplr-wallet-mcp/tree/main/docs/pages/sdk/quick-start.mdx) for details.
+For plugin registration, RPC overrides, or toolset filtering, create a `keplr-mcp.config.ts` in your working directory. See the [SDK docs](https://github.com/chainapsis/keplr-wallet-mcp/tree/develop/docs/pages/sdk/quick-start.mdx) for details.
 
 ## Tool Discovery
 
