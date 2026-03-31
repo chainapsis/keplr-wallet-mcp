@@ -48,7 +48,6 @@ const mockOsmosisChain = {
       gasPriceStep: { low: 0.0025, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 // Mock Cosmos Hub chain (does NOT support CosmWasm)
@@ -78,7 +77,6 @@ const mockCosmosChain = {
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 // Mock the chains module

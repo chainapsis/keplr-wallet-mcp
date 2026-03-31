@@ -101,16 +101,6 @@ vi.mock("../../utils/ibc-resolver.js", () => ({
   resolveIbcDenom: (...args: unknown[]) => mockResolveIbcDenom(...args),
 }));
 
-// Mock custom chain storage (no custom chains by default)
-const mockLoadCustomChains = vi.fn().mockResolvedValue({
-  version: 2,
-  cosmos: {},
-});
-
-vi.mock("../../chains/storage.js", () => ({
-  loadCustomChains: (...args: unknown[]) => mockLoadCustomChains(...args),
-}));
-
 // Mock price service
 const mockGetPrices = vi.fn().mockResolvedValue(
   new Map([

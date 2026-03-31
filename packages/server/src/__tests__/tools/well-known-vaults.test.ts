@@ -46,7 +46,6 @@ const mockNeutronChain = {
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 const mockCosmosChain = {
@@ -75,7 +74,6 @@ const mockCosmosChain = {
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
   ],
-  isBuiltin: true,
 };
 
 vi.mock("../../chains/cosmos.js", () => ({

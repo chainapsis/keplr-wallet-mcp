@@ -92,8 +92,6 @@ Configuration is stored in `~/.keplr-mcp/`.
 
 **Cosmos:** Cosmos Hub, Osmosis, dYdX, Celestia, Stargaze, Juno, Noble, Stride, Akash, Injective, and 40+ more.
 
-Custom chains can be added dynamically via the `add-cosmos-chain` tool.
-
 ## Tool Summary
 
 ### Onboarding
@@ -110,10 +108,8 @@ Custom chains can be added dynamically via the `add-cosmos-chain` tool.
 - `export-mnemonic` — Export recovery phrase for an account (requires confirmation)
 - `check-vault-health` — Check vault integrity and repair if needed
 
-### Chain Management
+### Chain Query
 - `list-cosmos-chains` — List all supported Cosmos chains
-- `add-cosmos-chain` — Add custom Cosmos chain
-- `remove-cosmos-chain` — Remove custom Cosmos chain
 
 ### Cosmos Query
 - `get-cosmos-address` — Get wallet address for a chain

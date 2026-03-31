@@ -436,27 +436,11 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     keywords: ["verify", "signature", "adr36", "cosmos"],
   },
 
-  // ─── Chain Management (common) ───────────────────────────────
-  {
-    name: "add-cosmos-chain",
-    description: "Add a custom Cosmos chain",
-    category: "chain-management",
-    ecosystem: "common",
-    risk: "destructive",
-    keywords: ["add", "cosmos", "chain", "custom", "register"],
-  },
-  {
-    name: "remove-cosmos-chain",
-    description: "Remove a custom Cosmos chain",
-    category: "chain-management",
-    ecosystem: "common",
-    risk: "destructive",
-    keywords: ["remove", "cosmos", "chain", "delete", "unregister"],
-  },
+  // ─── Adapter & Protocol Info (common) ───────────────────────────────
   {
     name: "list-installed-adapters",
     description: "List installed ecosystem adapters",
-    category: "chain-management",
+    category: "meta",
     ecosystem: "common",
     risk: "safe",
     keywords: ["adapters", "installed", "list", "ecosystem", "plugins"],
@@ -464,7 +448,7 @@ export const TOOL_REGISTRY: ToolEntry[] = [
   {
     name: "list-installed-protocols",
     description: "List installed protocol plugins",
-    category: "chain-management",
+    category: "meta",
     ecosystem: "common",
     risk: "safe",
     keywords: ["protocols", "installed", "list", "plugins", "defi"],

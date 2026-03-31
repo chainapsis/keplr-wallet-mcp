@@ -71,7 +71,7 @@ export interface ToolsetConfig {
    *
    * Available categories: "account-management", "authentication",
    * "cosmos-query", "cosmos-transaction", "cosmwasm",
-   * "cosmos-signing", "chain-management"
+   * "cosmos-signing"
    */
   default: string[];
 }
