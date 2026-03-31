@@ -16,7 +16,6 @@ describe("TOOL_REGISTRY", () => {
       "cosmos-transaction",
       "cosmwasm",
       "cosmos-signing",
-      "chain-management",
       "evm-query",
       "evm-transaction",
       "evm-signing",

@@ -1,6 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import type { ChainInfo, FeeCurrency } from "@keplr-wallet/types";
-import { loadCustomChains } from "./storage.js";
 
 /**
  * Built-in chain registry using @keplr-wallet/types ChainInfo format.
@@ -2266,111 +2265,17 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
 };
 
 /**
- * Runtime cache of custom chains (loaded at startup).
- */
-let customChains: Record<string, ChainInfo> = {};
-
-/**
- * Initialize custom chains from storage.
- * Should be called at server startup.
- */
-export async function initializeCustomChains(): Promise<void> {
-  const config = await loadCustomChains();
-
-  // Convert stored configs to ChainInfo format
-  customChains = {};
-  for (const [chainId, stored] of Object.entries(config.cosmos)) {
-    customChains[chainId] = convertStoredToChainInfo(stored);
-  }
-}
-
-/**
- * Convert stored chain config to ChainInfo format.
- * This is also exported as createChainConfig for backwards compatibility.
- */
-export function convertStoredToChainInfo(stored: {
-  chainId: string;
-  chainName: string;
-  rpc: string;
-  rest: string;
-  bech32Prefix: string;
-  denom: string;
-  minimalDenom: string;
-  decimals: number;
-  gasPrice: string;
-  coinGeckoId?: string;
-  features?: string[];
-}): ChainInfo {
-  const currency = {
-    coinDenom: stored.denom,
-    coinMinimalDenom: stored.minimalDenom,
-    coinDecimals: stored.decimals,
-    coinGeckoId: stored.coinGeckoId,
-  };
-
-  // Parse gas price (e.g., "0.025uatom" -> { low: 0.025, minimalDenom: "uatom" })
-  const gasPriceMatch = stored.gasPrice.match(/^([\d.]+)(.+)$/);
-  const gasPrice = gasPriceMatch ? Number.parseFloat(gasPriceMatch[1]) : 0.025;
-
-  return {
-    rpc: stored.rpc,
-    rest: stored.rest,
-    chainId: stored.chainId,
-    chainName: stored.chainName,
-    stakeCurrency: currency,
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config(stored.bech32Prefix),
-    currencies: [currency],
-    feeCurrencies: [
-      {
-        ...currency,
-        gasPriceStep: {
-          low: gasPrice,
-          average: gasPrice * 1.5,
-          high: gasPrice * 2,
-        },
-      },
-    ],
-    features: stored.features ?? ["ibc-transfer"],
-  };
-}
-
-/**
- * Add a custom chain to the runtime cache.
- * Note: This is called after storage is updated.
- */
-export function addCustomChainToCache(chain: ChainInfo): void {
-  customChains[chain.chainId] = chain;
-}
-
-/**
- * Remove a custom chain from the runtime cache.
- * Note: This is called after storage is updated.
- */
-export function removeCustomChainFromCache(chainId: string): void {
-  delete customChains[chainId];
-}
-
-/**
- * Check if a chain is a built-in chain.
- */
-export function isBuiltinChain(chainId: string): boolean {
-  return chainId in BUILTIN_CHAINS;
-}
-
-/**
  * Get a chain config by ID.
- * Custom chains take precedence over built-in chains.
  */
 export function getChainConfig(chainId: string): ChainInfo | undefined {
-  return customChains[chainId] ?? BUILTIN_CHAINS[chainId];
+  return BUILTIN_CHAINS[chainId];
 }
 
 /**
- * Find a chain by bech32 prefix, preferring built-in (mainnet) chains.
+ * Find a chain by bech32 prefix.
  * Used for IBC auto-resolve where the recipient address prefix is the only hint.
  *
- * Throws when multiple built-in chains share the same prefix (e.g. terra)
+ * Throws when multiple chains share the same prefix (e.g. terra)
  * to prevent silently routing to the wrong chain.
  */
 export const findChainByBech32Prefix = (
@@ -2380,9 +2285,9 @@ export const findChainByBech32Prefix = (
   const byPrefix = (c: ChainInfo): boolean =>
     c.bech32Config?.bech32PrefixAccAddr.toLowerCase() === lower;
 
-  const builtinMatches = Object.values(BUILTIN_CHAINS).filter(byPrefix);
-  if (builtinMatches.length > 1) {
-    const names = builtinMatches
+  const matches = Object.values(BUILTIN_CHAINS).filter(byPrefix);
+  if (matches.length > 1) {
+    const names = matches
       .map((c) => `${c.chainName} (${c.chainId})`)
       .join(", ");
     throw new Error(
@@ -2390,26 +2295,14 @@ export const findChainByBech32Prefix = (
     );
   }
 
-  return builtinMatches[0] ?? Object.values(customChains).find(byPrefix);
+  return matches[0];
 };
 
 /**
  * Find a chain by name, ID, or bech32 prefix.
- * Custom chains take precedence over built-in chains.
  */
 export function findChainByName(name: string): ChainInfo | undefined {
   const lower = name.toLowerCase();
-
-  // Search custom chains first
-  const customMatch = Object.values(customChains).find(
-    (c) =>
-      c.chainName.toLowerCase() === lower ||
-      c.chainId.toLowerCase() === lower ||
-      c.bech32Config?.bech32PrefixAccAddr.toLowerCase() === lower,
-  );
-  if (customMatch) return customMatch;
-
-  // Then search built-in chains
   return Object.values(BUILTIN_CHAINS).find(
     (c) =>
       c.chainName.toLowerCase() === lower ||
@@ -2425,51 +2318,14 @@ export const findAllChainsByName = (name: string): ChainInfo[] => {
     c.chainId.toLowerCase() === lower ||
     c.bech32Config?.bech32PrefixAccAddr.toLowerCase() === lower;
 
-  const matches: ChainInfo[] = [];
-  for (const chain of Object.values(customChains)) {
-    if (isMatch(chain)) matches.push(chain);
-  }
-  for (const chain of Object.values(BUILTIN_CHAINS)) {
-    if (isMatch(chain) && !matches.some((m) => m.chainId === chain.chainId))
-      matches.push(chain);
-  }
-  return matches;
+  return Object.values(BUILTIN_CHAINS).filter(isMatch);
 };
 
 /**
- * Extended chain info with isBuiltin flag.
+ * List all supported chains.
  */
-export interface ChainInfoWithMeta extends ChainInfo {
-  isBuiltin: boolean;
-}
-
-/**
- * List all chains (custom + built-in).
- * Returns chains with isBuiltin flag.
- */
-export function listChains(): ChainInfoWithMeta[] {
-  const result: ChainInfoWithMeta[] = [];
-
-  // Add custom chains first
-  for (const chain of Object.values(customChains)) {
-    result.push({ ...chain, isBuiltin: false });
-  }
-
-  // Add built-in chains (skip if overridden by custom)
-  for (const chain of Object.values(BUILTIN_CHAINS)) {
-    if (!customChains[chain.chainId]) {
-      result.push({ ...chain, isBuiltin: true });
-    }
-  }
-
-  return result;
-}
-
-/**
- * List only custom chains.
- */
-export function listCustomChains(): ChainInfo[] {
-  return Object.values(customChains);
+export function listChains(): ChainInfo[] {
+  return Object.values(BUILTIN_CHAINS);
 }
 
 // ============================================

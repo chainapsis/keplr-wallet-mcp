@@ -15,7 +15,6 @@ describe("pickTip", () => {
 
   it("returns a tip from the pool for each known tool", () => {
     const knownTools = [
-      "list-cosmos-chains",
       "get-cosmos-address",
       "get-balances",
       "get-staking-info",

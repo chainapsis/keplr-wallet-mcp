@@ -34,26 +34,11 @@ pnpm add @keplr-wallet/mcp-server
 - `description` — Optional description
 - `setActive` — Whether to set as active account (default: true)
 
-### Chain Management
+### Chain Query
 
 | Tool | Description |
 |------|-------------|
 | `list-cosmos-chains` | List all supported Cosmos chains with chain IDs, names, and native denominations |
-| `add-cosmos-chain` | Add a custom Cosmos chain to the registry |
-| `remove-cosmos-chain` | Remove a custom Cosmos chain (built-in chains cannot be removed) |
-
-**Parameters for `add-cosmos-chain`:**
-- `chainId` (required) — Unique chain identifier (e.g., 'mychain-1')
-- `chainName` (required) — Human-readable chain name
-- `rpc` (required) — RPC endpoint URL
-- `rest` (required) — REST/LCD endpoint URL
-- `bech32Prefix` (required) — Address prefix (e.g., 'cosmos')
-- `denom` (required) — Display denomination (e.g., 'ATOM')
-- `minimalDenom` (required) — Minimal denomination (e.g., 'uatom')
-- `gasPrice` (required) — Gas price with denom (e.g., '0.025uatom')
-- `decimals` — Token decimals (default: 6)
-- `coinGeckoId` — CoinGecko ID for price lookup
-- `testConnection` — Test RPC connection before adding (default: false)
 
 ### Cosmos Query Tools
 
@@ -140,7 +125,6 @@ pnpm add @keplr-wallet/mcp-server
 
 Configuration files are stored in `~/.keplr-mcp/`:
 - `accounts.json` — Account metadata and active account
-- `chains.json` — Custom chain configurations
 - `auth.json` — Authentication configuration
 
 Mnemonics are stored securely in the OS Keychain.
@@ -153,7 +137,6 @@ import { EcosystemAdapter, EcosystemClient } from "@keplr-wallet/mcp-server/ecos
 import { store, KeplrStore } from "@keplr-wallet/mcp-server/store";
 import { KeplrPlugin } from "@keplr-wallet/mcp-server/plugin-types";
 import { ProtocolPlugin } from "@keplr-wallet/mcp-server/protocol-types";
-import { loadCustomChains, addCosmosChain } from "@keplr-wallet/mcp-server/chain-storage";
 ```
 
 ## License

@@ -6,7 +6,6 @@
  */
 
 const tipPool: Readonly<Record<string, string[]>> = {
-  "list-cosmos-chains": ["add-cosmos-chain으로 커스텀 체인을 추가할 수 있어요"],
   "get-cosmos-address": [
     "get-balances로 해당 주소의 잔액을 바로 확인할 수 있어요",
   ],

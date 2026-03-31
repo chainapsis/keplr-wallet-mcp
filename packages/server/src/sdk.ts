@@ -59,19 +59,6 @@ export {
   createFeeCurrencyFromGasPrice,
 } from "./chains/migration.js";
 // ============================================
-// Chain Storage
-// ============================================
-export type {
-  ChainsConfig,
-  StoredChainConfig,
-} from "./chains/storage.js";
-export {
-  addCosmosChain,
-  loadCustomChains,
-  removeCosmosChain,
-  saveCustomChains,
-} from "./chains/storage.js";
-// ============================================
 // Balance Enricher
 // ============================================
 export type { BalanceResult } from "./clients/cosmos.js";

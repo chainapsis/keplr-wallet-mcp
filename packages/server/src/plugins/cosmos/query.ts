@@ -102,7 +102,6 @@ const queryPlugin: KeplrPlugin = {
           name: c.chainName,
           denom: getStakeDenom(c),
           bech32Prefix: getBech32Prefix(c),
-          isBuiltin: c.isBuiltin,
         }));
 
         const suggestedActions: SuggestedAction[] = [
@@ -1333,7 +1332,6 @@ const queryPlugin: KeplrPlugin = {
           chainId: c.chainId,
           name: c.chainName,
           denom: getStakeDenom(c),
-          isBuiltin: c.isBuiltin,
         }));
         return {
           contents: [
