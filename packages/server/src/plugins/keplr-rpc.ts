@@ -241,7 +241,7 @@ const keplrRpcPlugin: KeplrPlugin = {
           const data = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: `/v1/usage/${apiKey}/summary`,
-            query: { clientType: "mcp" },
+            query: { clientType: "keplr-mcp" },
           });
 
           const balance = (data as { balance?: number }).balance ?? 0;
@@ -295,7 +295,7 @@ const keplrRpcPlugin: KeplrPlugin = {
       },
       async ({ apiKey, startDate, endDate, chain, endpointType }) => {
         try {
-          const query: Record<string, string> = { clientType: "mcp" };
+          const query: Record<string, string> = { clientType: "keplr-mcp" };
           if (startDate) query.startDate = startDate;
           if (endDate) query.endDate = endDate;
           if (chain) query.chain = chain;
