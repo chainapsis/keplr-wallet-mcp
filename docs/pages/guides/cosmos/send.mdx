@@ -11,18 +11,6 @@ You: "Send 100 OSMO to osmo1abc... on Osmosis"
 
 The AI will show you a preview (amount, recipient, fee) before executing. Nothing happens until you confirm.
 
-## Memo
-
-```
-You: "Send 10 ATOM to cosmos1abc... with memo 12345"
-```
-
-When sending to an exchange, a memo is usually required — check the exchange's deposit instructions.
-
-:::warning
-Never put your recovery phrase or sensitive information in a memo. Memos are publicly visible on the blockchain.
-:::
-
 ## Cross-Chain Transfer
 
 To send tokens to a different chain, just ask — the AI will automatically use IBC:
@@ -31,12 +19,6 @@ To send tokens to a different chain, just ask — the AI will automatically use 
 You: "Send 50 ATOM from Cosmos Hub to Osmosis"
 You: "Send 50 ATOM from Cosmos Hub to osmo1abc... on Osmosis"
 You: "Send my ATOM from Osmosis back to Cosmos Hub"
-```
-
-Some routes go through intermediate chains. The AI handles this automatically:
-
-```
-You: "Send USDC from Noble to Cosmos Hub"
 ```
 
 - **Transfer taking long** — The AI may take some time to find the right channel. Once the transaction is submitted, it usually completes quickly.

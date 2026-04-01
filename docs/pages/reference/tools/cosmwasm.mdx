@@ -42,8 +42,14 @@ Query contract state (read-only).
 
 ```json
 {
+  "chainId": "juno-1",
+  "contractAddress": "juno1token...",
+  "query": { "balance": { "address": "juno1user..." } },
   "result": { ... },
-  "height": 12345678
+  "suggestedActions": [
+    { "tool": "cosmwasm-contract-info", "reason": "View contract metadata", "params": { "chain": "juno-1", "contractAddress": "juno1token..." }, "priority": 1 },
+    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "juno-1", "contractAddress": "juno1token..." }, "priority": 2 }
+  ]
 }
 ```
 
@@ -57,9 +63,13 @@ Request: {
 }
 
 Response: {
+  "chainId": "juno-1",
+  "contractAddress": "juno1token...",
+  "query": { "balance": { "address": "juno1user..." } },
   "result": {
     "balance": "1000000"
-  }
+  },
+  "suggestedActions": [...]
 }
 ```
 
@@ -73,10 +83,14 @@ Request: {
 }
 
 Response: {
+  "chainId": "stargaze-1",
+  "contractAddress": "stars1nft...",
+  "query": { "owner_of": { "token_id": "123" } },
   "result": {
     "owner": "stars1...",
     "approvals": []
-  }
+  },
+  "suggestedActions": [...]
 }
 ```
 
@@ -96,12 +110,19 @@ Get contract metadata including code ID, admin, and label.
 
 ```json
 {
-  "address": "juno1...",
-  "codeId": 123,
-  "creator": "juno1...",
-  "admin": "juno1...",
-  "label": "My Token Contract",
-  "ibcPortId": null
+  "chainId": "juno-1",
+  "contract": {
+    "address": "juno1...",
+    "codeId": "123",
+    "creator": "juno1...",
+    "admin": "juno1...",
+    "label": "My Token Contract",
+    "ibcPortId": null
+  },
+  "suggestedActions": [
+    { "tool": "cosmwasm-query", "reason": "Query the contract state", "params": { "chain": "juno-1", "contractAddress": "juno1..." }, "priority": 1 },
+    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "juno-1", "contractAddress": "juno1..." }, "priority": 2 }
+  ]
 }
 ```
 
@@ -156,12 +177,20 @@ Execute a contract function (requires confirmation).
   "status": "pending_confirmation",
   "confirmationToken": "...",
   "preview": {
-    "summary": "Execute transfer on juno1token...",
+    "action": "Execute CosmWasm Contract",
+    "chain": "juno-1",
+    "chainName": "Juno",
     "contract": "juno1token...",
-    "action": "transfer",
+    "message": "transfer",
+    "messageDetails": { "transfer": { "recipient": "juno1recipient...", "amount": "1000000" } },
     "funds": [],
-    "estimatedFee": "0.05 JUNO"
-  }
+    "sender": "juno1sender..."
+  },
+  "instructions": "To execute this contract action, call the confirm-action tool with confirmationToken: \"...\"",
+  "warnings": [
+    "Contract executions may transfer tokens or change state",
+    "Verify the contract address and message carefully"
+  ]
 }
 ```
 
@@ -220,12 +249,21 @@ Deploy a new instance of an uploaded contract.
   "status": "pending_confirmation",
   "confirmationToken": "...",
   "preview": {
-    "summary": "Instantiate contract from code #123",
-    "codeId": 123,
+    "action": "Instantiate CosmWasm Contract",
+    "chain": "juno-1",
+    "chainName": "Juno",
+    "codeId": "123",
     "label": "My New Token",
     "admin": "juno1...",
-    "estimatedFee": "0.1 JUNO"
-  }
+    "instantiateMsg": { "name": "My Token", "symbol": "MYT", "decimals": 6 },
+    "funds": [],
+    "sender": "juno1sender..."
+  },
+  "instructions": "To instantiate this contract, call the confirm-action tool with confirmationToken: \"...\"",
+  "warnings": [
+    "Contract instantiation creates a new contract instance",
+    "This contract will have an admin and can be migrated"
+  ]
 }
 ```
 
@@ -233,12 +271,16 @@ Deploy a new instance of an uploaded contract.
 
 ```json
 {
-  "status": "success",
-  "txHash": "ABC123...",
+  "transactionHash": "ABC123...",
+  "code": 0,
+  "gasUsed": "250000",
+  "gasWanted": "400000",
+  "events": [...],
   "contractAddress": "juno1newcontract...",
   "suggestedActions": [
-    { "tool": "cosmwasm-contract-info", "reason": "Verify contract", "priority": 1 },
-    { "tool": "cosmwasm-query", "reason": "Query initial state", "priority": 2 }
+    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "params": { "chain": "juno-1", "txHash": "ABC123..." }, "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated token balances", "params": { "chain": "juno-1" }, "priority": 2 },
+    { "tool": "get-staking-info", "reason": "Check updated staking positions and rewards", "params": { "chain": "juno-1" }, "priority": 3 }
   ]
 }
 ```

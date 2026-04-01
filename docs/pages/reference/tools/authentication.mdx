@@ -41,7 +41,7 @@ None required.
       "authenticatorType": "google",
       "note": "Ready to use"
     }
-  },
+  }
 }
 ```
 
@@ -109,7 +109,9 @@ Biometric setup completes immediately:
   "success": true,
   "setupPending": false,
   "provider": "biometric",
-  "message": "Authentication provider 'biometric' enabled for 'delete_account'"
+  "message": "Authentication provider 'biometric' enabled for: delete_account, export_mnemonic",
+  "setupResult": { ... },
+  "status": { ... }
 }
 ```
 
@@ -134,7 +136,9 @@ The response includes two content blocks:
     "tool": "auth-verify-setup",
     "params": {
       "provider": "totp",
-      "code": "<6-digit code from app>"
+      "code": "<6-digit code from app>",
+      "action": "delete_account",
+      "protectDestructiveActions": true
     }
   }
 }
@@ -149,7 +153,8 @@ When TOTP is already set up and you call `auth-setup` to add it to additional ac
   "success": true,
   "setupPending": false,
   "provider": "totp",
-  "message": "TOTP already configured. Enabled for: delete_account"
+  "message": "TOTP already configured. Enabled for: delete_account, export_mnemonic",
+  "status": { ... }
 }
 ```
 
@@ -173,8 +178,9 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 {
   "success": true,
   "provider": "totp",
-  "message": "TOTP (Google Authenticator) setup complete and enabled for 'delete_account'",
-  "verifiedAt": "2024-01-01T00:00:00.000Z"
+  "message": "TOTP (Google Authenticator) setup complete and enabled for: delete_account, export_mnemonic",
+  "verifiedAt": "2024-01-01T00:00:00.000Z",
+  "status": { ... }
 }
 ```
 
@@ -215,7 +221,7 @@ Check which authentication methods are available and configured for a specific a
       "available": true,
       "configured": true,
       "requiresCode": true,
-      "note": "TOTP code collected via elicitation"
+      "note": "Provide totpCode parameter with 6-digit code"
     },
     {
       "id": "biometric",
@@ -249,7 +255,8 @@ Disable a specific authentication provider.
 {
   "success": true,
   "message": "Authentication provider 'totp' disabled",
-  "hint": "Use auth-setup --provider totp to set up again"
+  "hint": "Use auth-setup --provider totp to set up again",
+  "status": { ... }
 }
 ```
 

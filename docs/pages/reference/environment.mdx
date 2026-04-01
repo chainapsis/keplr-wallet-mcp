@@ -12,7 +12,7 @@ Configuration options for Keplr Wallet MCP.
 | `SKIP_API_URL` | Skip API base URL (default: `https://api.skip.build`) | No |
 | `SKIP_API_KEY` | Skip API key for IBC routing and Osmosis swaps | No |
 
-For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
+Plugin configuration (plugins, toolsets, RPC overrides) is done via the config file, not environment variables.
 
 
 ## Wallet Configuration
@@ -72,7 +72,7 @@ Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then ad
 }
 ```
 
-Per-chain overrides and plugin configuration are done in the [config file](#config-file).
+Per-chain overrides and plugin configuration are done in the config file.
 
 
 ## Skip API
@@ -93,7 +93,7 @@ Default: `https://api.skip.build`
 
 ### `SKIP_API_KEY`
 
-Skip API key for authenticated access. When set, requests include an `authorization` header. Without a key, the free tier is used with automatic rate limiting and retry logic.
+Skip API key for authenticated access. When set, requests include an `authorization` header. Without a key, the public API is used with no authentication.
 
 ```json
 {
@@ -103,11 +103,7 @@ Skip API key for authenticated access. When set, requests include an `authorizat
 }
 ```
 
-| Behavior | Without Key (Free) | With Key |
-|----------|-------------------|----------|
-| Rate limit retries | 3 retries with backoff | 1 retry |
-| Request throttle | 500ms minimum interval | None |
-| Cooldown on rate limit | 60s | 10s |
+The Skip API client is a simple fetch wrapper with a 15-second timeout. There is no built-in retry logic, throttle, or cooldown.
 
 ---
 

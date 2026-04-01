@@ -34,24 +34,32 @@ None required.
 ```json
 {
   "status": "not_started | in_progress | complete",
-  "progress": "2/6 steps completed",
+  "progress": "2/5 steps completed",
   "activeAccount": "main",
   "totalAccounts": 1,
   "welcomeMessage": {
     "title": "Welcome to Keplr MCP Server! 🎉",
-    "description": "...",
-    "tips": ["Security tip 1", "Security tip 2"]
+    "description": "This is your AI-powered wallet interface for Cosmos blockchains. ...",
+    "tips": [
+      "📝 If creating a new wallet, write down your recovery phrase and store it safely",
+      "🚫 Never share your mnemonic phrase with anyone",
+      "🔒 Consider enabling biometric authentication to protect sensitive actions"
+    ]
   },
   "supportedEcosystems": [
-    { "ecosystem": "cosmos", "name": "Cosmos", "features": ["Staking", "IBC"] }
+    { "ecosystem": "cosmos", "name": "Cosmos", "features": ["Staking", "Governance", "IBC Transfers", "CosmWasm"] }
   ],
   "checklist": [
-    { "step": "Create Wallet", "status": "✓ Done", "required": "Required" },
-    { "step": "Set Up Security", "status": "○ Pending", "required": "Optional" }
+    { "step": "Create or Import Wallet", "status": "✓ Done", "required": "Required", "description": "Set up a wallet account to interact with blockchain networks" },
+    { "step": "Set Up Security (Optional)", "status": "○ Pending", "required": "Optional", "description": "Enable biometric authentication for extra security when performing destructive actions" }
   ],
+  "message": "Next step: Create your first wallet to get started",
+  "nextAction": {
+    "tool": "create-account"
+  },
   "setupOptions": [
-    { "tool": "create-account", "description": "Generate new wallet", "security": "Keys in OS Keychain" },
-    { "tool": "import-account", "description": "Import mnemonic", "security": "⚠️ Visible in chat" }
+    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Keys stored in OS Keychain", "ecosystems": ["Cosmos"] },
+    { "tool": "import-account", "description": "Import existing wallet with your mnemonic phrase", "security": "⚠️ Mnemonic visible in chat history - use with caution", "ecosystems": ["Cosmos"] }
   ]
 }
 ```
@@ -68,14 +76,23 @@ None required.
 Request: { }
 Response: {
   "status": "not_started",
+  "progress": "0/5 steps completed",
+  "activeAccount": null,
+  "totalAccounts": 0,
   "welcomeMessage": {
     "title": "Welcome to Keplr MCP Server! 🎉",
+    "description": "This is your AI-powered wallet interface for Cosmos blockchains. ...",
     "tips": [
-      "📝 Write down your recovery phrase"
+      "📝 If creating a new wallet, write down your recovery phrase and store it safely"
     ]
   },
+  "checklist": [
+    { "step": "Create or Import Wallet", "status": "○ Pending", "required": "Required", "description": "..." }
+  ],
+  "message": "Next step: Create your first wallet to get started",
+  "nextAction": { "tool": "create-account" },
   "setupOptions": [
-    { "tool": "create-account", "description": "Generate a new wallet" }
+    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Keys stored in OS Keychain", "ecosystems": ["Cosmos"] }
   ]
 }
 ```
@@ -99,20 +116,30 @@ Generate a new wallet with a BIP39 mnemonic phrase.
 ```json
 {
   "status": "success",
+  "message": "Account \"My Wallet\" created successfully!",
   "account": {
     "name": "My Wallet",
     "type": "mnemonic",
-    "addresses": {
-      "cosmos": "cosmos1..."
-    }
+    "wordCount": 24,
+    "isActive": true
   },
-  "mnemonic": "word1 word2 ... word24",
-  "warning": "Save this mnemonic securely"
+  "addresses": { "Cosmos": "cosmos1..." },
+  "warning": "⚠️ This mnemonic was transmitted through your AI provider's servers. Store it in a secure location immediately and consider deleting this conversation.",
+  "security": {
+    "storage": "OS Keychain (secure)",
+    "backupRecommendation": "Consider backing up your recovery phrase in a secure location."
+  },
+  "nextSteps": [
+    { "step": 1, "action": "Fund your wallet", "description": "Send tokens to the addresses above" },
+    { "step": 2, "action": "Check your balances", "tool": "get-balances", "params": { "chain": "osmosis" } },
+    { "step": 3, "action": "Explore staking", "tool": "get-staking-info", "params": { "chain": "osmosis" } },
+    { "step": 4, "action": "Set up biometric security (RECOMMENDED)", "description": "Protect account deletion with Touch ID", "tool": "auth-setup", "params": { "provider": "biometric" }, "priority": "high" }
+  ]
 }
 ```
 
 :::warning
-The mnemonic is only shown once. Store it securely offline.
+The mnemonic is transmitted through your AI provider's servers. Store it securely offline and consider deleting the conversation.
 :::
 
 ### Example
@@ -121,13 +148,22 @@ The mnemonic is only shown once. Store it securely offline.
 Request: { "name": "Trading Wallet" }
 Response: {
   "status": "success",
+  "message": "Account \"Trading Wallet\" created successfully!",
   "account": {
     "name": "Trading Wallet",
-    "type": "mnemonic"
+    "type": "mnemonic",
+    "wordCount": 24,
+    "isActive": true
   },
-  "mnemonic": "abandon abandon ... about",
-  "suggestedActions": [
-    { "tool": "get-balances", "reason": "Check your balances", "priority": 1 }
+  "addresses": { "Cosmos": "cosmos1..." },
+  "warning": "⚠️ This mnemonic was transmitted through your AI provider's servers. ...",
+  "security": {
+    "storage": "OS Keychain (secure)",
+    "backupRecommendation": "Consider backing up your recovery phrase in a secure location."
+  },
+  "nextSteps": [
+    { "step": 1, "action": "Fund your wallet", "description": "Send tokens to the addresses above" },
+    { "step": 2, "action": "Check your balances", "tool": "get-balances", "params": { "chain": "osmosis" } }
   ]
 }
 ```
@@ -164,8 +200,9 @@ If declined, the response includes alternatives:
 ```json
 {
   "status": "cancelled",
+  "message": "Import cancelled by user.",
   "alternatives": [
-    { "tool": "import-account", "description": "Import existing mnemonic" }
+    { "tool": "create-account", "description": "Create a fresh wallet with a new mnemonic" }
   ]
 }
 ```
@@ -175,22 +212,28 @@ If declined, the response includes alternatives:
 ```json
 {
   "status": "success",
+  "message": "Account \"Imported Wallet\" imported successfully!",
   "account": {
     "name": "Imported Wallet",
     "type": "mnemonic",
-    "wordCount": 24
+    "wordCount": 24,
+    "isActive": true
   },
   "addresses": { "Cosmos": "cosmos1..." },
   "security": {
     "storage": "OS Keychain (secure)",
+    "note": "Your recovery phrase is now stored securely in your system keychain.",
     "warnings": [
-      "🚨 Your mnemonic was visible in this conversation"
+      "🚨 IMPORTANT: Your mnemonic was provided as a tool parameter and is visible in this conversation",
+      "🔒 Consider clearing chat history if this is a high-value wallet",
+      "🚫 Never share your mnemonic phrase with anyone"
     ],
-    "recommendation": "Enable biometric auth with 'auth-setup'"
+    "recommendation": "Enable biometric authentication with 'auth-setup --provider biometric' to protect account deletion."
   },
   "nextSteps": [
-    { "step": 1, "action": "Set up biometric security", "priority": "high" },
-    { "step": 2, "action": "Check your balances" }
+    { "step": 1, "action": "Set up biometric security (RECOMMENDED)", "description": "Protect account deletion with Touch ID", "tool": "auth-setup", "params": { "provider": "biometric" }, "priority": "high" },
+    { "step": 2, "action": "Check your balances", "description": "See what tokens you have across chains", "tool": "get-balances", "params": { "chain": "osmosis" } },
+    { "step": 3, "action": "View staking positions", "tool": "get-staking-info", "params": { "chain": "osmosis" } }
   ]
 }
 ```
@@ -212,6 +255,7 @@ None required.
 
 ```json
 {
+  "activeAccount": "Main Wallet",
   "accounts": [
     {
       "name": "Main Wallet",
@@ -221,9 +265,7 @@ None required.
       "description": "My main wallet"
     }
   ],
-  "suggestedActions": [
-    { "tool": "switch-account", "reason": "Change active account", "priority": 2 }
-  ]
+  "totalAccounts": 1
 }
 ```
 
@@ -324,7 +366,6 @@ and assets derived from it. Unlike passwords, a compromised mnemonic cannot be c
 - This tool requires authentication when auth is enabled
 - The mnemonic is returned in the tool response — avoid storing conversation logs containing it
 - If you suspect the mnemonic has been exposed, transfer all assets to a new wallet immediately
-- Only mnemonic-based accounts support export — passkey accounts will return an error
 
 
 ## `get-account-addresses`
@@ -340,12 +381,9 @@ None required.
 ```json
 {
   "account": "Main Wallet",
+  "type": "mnemonic",
   "addresses": {
-    "cosmos": {
-      "cosmoshub-4": "cosmos1...",
-      "osmosis-1": "osmo1...",
-      "celestia": "celestia1..."
-    }
+    "Cosmos": "cosmos1..."
   }
 }
 ```
@@ -395,7 +433,7 @@ Queries balances, staking info, and current market prices in a single call.
   "cosmos": [
     {
       "chainId": "cosmoshub-4",
-      "chainName": "cosmoshub",
+      "chainName": "Cosmos Hub",
       "address": "cosmos1...",
       "balances": [
         { "denom": "uatom", "amount": "15500000", "displayAmount": "15.5", "displayDenom": "ATOM", "priceUsd": 11.5, "valueUsd": 178.25 }
@@ -411,8 +449,8 @@ Queries balances, staking info, and current market prices in a single call.
   ],
   "priceNote": "Prices from CoinGecko (300s cache). 1 token(s) priced.",
   "suggestedActions": [
-    { "tool": "delegate", "reason": "Stake tokens on cosmoshub to earn rewards", "priority": 1 },
-    { "tool": "claim-all-rewards", "reason": "Claim pending rewards on cosmoshub", "priority": 2 }
+    { "tool": "delegate", "reason": "Stake tokens on Cosmos Hub to earn rewards", "params": { "chain": "cosmoshub-4" }, "priority": 1 },
+    { "tool": "claim-all-rewards", "reason": "Claim pending rewards on Cosmos Hub", "params": { "chain": "cosmoshub-4" }, "priority": 2 }
   ]
 }
 ```
