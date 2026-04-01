@@ -9,7 +9,7 @@ export default defineConfig({
   rootDir: ".",
   basePath: process.env.BASE_PATH || "/",
   topNav: [
-    { text: "Guides", link: "/guides/cosmos/basics" },
+    { text: "Tutorials", link: "/guides/cosmos/balances" },
     { text: "Reference", link: "/reference" },
     {
       text: "GitHub",
@@ -38,19 +38,17 @@ export default defineConfig({
       ],
     },
     {
-      text: "Guides",
+      text: "Tutorials",
       collapsed: false,
       items: [
         {
           text: "Cosmos",
           collapsed: true,
           items: [
-            { text: "Cosmos Overview", link: "/guides/cosmos/basics" },
-            { text: "Check Balances", link: "/guides/cosmos/balances" },
+{ text: "Check Balances", link: "/guides/cosmos/balances" },
             { text: "Send Tokens", link: "/guides/cosmos/send" },
             { text: "Staking", link: "/guides/cosmos/staking" },
             { text: "Governance", link: "/guides/cosmos/governance" },
-            { text: "IBC Transfer", link: "/guides/cosmos/ibc" },
             { text: "CosmWasm", link: "/guides/cosmos/cosmwasm" },
             { text: "Osmosis Swap", link: "/guides/cosmos/osmosis-swap" },
           ],
@@ -99,15 +97,6 @@ export default defineConfig({
         { text: "Supported Chains", link: "/reference/chains" },
         { text: "Environment Variables", link: "/reference/environment" },
         { text: "Glossary", link: "/reference/glossary" },
-      ],
-    },
-    {
-      text: "Tutorials",
-      collapsed: true,
-      items: [
-        { text: "First Staking", link: "/tutorials/first-stake" },
-        { text: "Cross-Chain Transfer", link: "/tutorials/cross-chain" },
-        { text: "DeFi Basics", link: "/tutorials/defi-basics" },
       ],
     },
   ],

@@ -2,124 +2,53 @@
 
 Transfer tokens on Cosmos chains.
 
-## Quick Commands
-
-**Basic send:**
-```
-User: Send 10 ATOM to cosmos1recipient...
-```
-
-**With chain specified:**
-```
-User: Send 100 OSMO to osmo1recipient... on Osmosis
-```
-
-## Step-by-Step Transfer
-
-### 1. Check Your Balance
+## How to Send
 
 ```
-User: Show my ATOM balance on Cosmos Hub
+You: "Send 10 ATOM to cosmos1abc..."
+You: "Send 100 OSMO to osmo1abc... on Osmosis"
 ```
 
-### 2. Initiate Transfer
+The AI will show you a preview (amount, recipient, fee) before executing. Nothing happens until you confirm.
+
+## Memo
 
 ```
-User: Send 10 ATOM to cosmos1abc123...
-```
-
-### 3. Review Preview
-
-```json
-{
-  "status": "pending_confirmation",
-  "preview": {
-    "summary": "Send 10 ATOM",
-    "from": "cosmos1sender...",
-    "to": "cosmos1recipient...",
-    "amount": "10 ATOM",
-    "estimatedFee": "0.005 ATOM"
-  }
-}
-```
-
-### 4. Confirm Transaction
-
-```
-User: Yes, confirm the transaction
-```
-
-### 5. Receive Confirmation
-
-```json
-{
-  "status": "success",
-  "txHash": "ABC123...",
-  "explorerUrl": "https://mintscan.io/cosmos/txs/ABC123"
-}
-```
-
-## Tips
-
-### Memo
-
-```
-User: Send 10 ATOM to cosmos1... with memo "12345"
+You: "Send 10 ATOM to cosmos1abc... with memo 12345"
 ```
 
 When sending to an exchange, a memo is usually required — check the exchange's deposit instructions.
 
 :::warning
-Never put your recovery phrase or any sensitive information in a memo. Memos are publicly visible on the blockchain.
+Never put your recovery phrase or sensitive information in a memo. Memos are publicly visible on the blockchain.
 :::
 
-## Cross-Chain Transfers
+## Cross-Chain Transfer
 
-To send tokens to a different chain (e.g. Cosmos Hub → Osmosis), just ask — the AI will automatically use IBC transfer:
+To send tokens to a different chain, just ask — the AI will automatically use IBC:
 
 ```
-User: Send ATOM from Cosmos Hub to Osmosis
+You: "Send 50 ATOM from Cosmos Hub to Osmosis"
+You: "Send 50 ATOM from Cosmos Hub to osmo1abc... on Osmosis"
+You: "Send my ATOM from Osmosis back to Cosmos Hub"
 ```
 
-See [IBC Transfer](/guides/cosmos/ibc) for details.
+Some routes go through intermediate chains. The AI handles this automatically:
 
-## Fee Estimation
+```
+You: "Send USDC from Noble to Cosmos Hub"
+```
 
-Fees depend on:
-- Chain congestion
-- Transaction complexity
-- Chain parameters
+- **Transfer taking long** — The AI may take some time to find the right channel. Once the transaction is submitted, it usually completes quickly.
+- **Tokens not appearing** — Check the destination chain balance. IBC tokens may show as a different denom — the AI will display the friendly name when possible.
 
 ## Common Issues
 
-### "Insufficient funds"
-
-**Problem:** Balance too low for amount + fee.
-
-**Solution:**
-1. Check actual balance
-2. Reduce amount to leave room for fee
-3. Example: Send 99.99 ATOM instead of 100 ATOM
-
-### "Invalid address"
-
-**Problem:** Recipient address format wrong.
-
-**Solution:**
-1. Verify address prefix matches chain (cosmos1... for Cosmos Hub)
-2. Check address length
-3. No extra spaces or characters
-
-### "Account does not exist"
-
-**Problem:** Your account hasn't been activated yet — it needs to receive tokens at least once before it can send.
-
-**Solution:** Send some tokens to this account first (from an exchange or another wallet), then try again.
-
----
+- **"Insufficient funds"** — Your balance is too low for the amount + fee. Try a smaller amount.
+- **"Invalid address"** — Check that the address prefix matches the chain (e.g. `cosmos1...` for Cosmos Hub, `osmo1...` for Osmosis).
+- **"Account does not exist"** — Your account needs to receive tokens at least once before it can send. Fund it first.
 
 ## Related
 
 - [Check Balances](/guides/cosmos/balances)
-- [IBC Transfer](/guides/cosmos/ibc)
 - [Osmosis Swap](/guides/cosmos/osmosis-swap)

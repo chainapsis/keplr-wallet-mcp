@@ -1,191 +1,29 @@
 # CosmWasm
 
-Interact with CosmWasm smart contracts.
+Interact with smart contracts on Cosmos chains.
 
-## Quick Commands
+## How to Use
 
-**Query contract:**
+**Query a contract:**
 ```
-User: Query the balance of juno1user... on CW20 token at juno1token...
-```
-
-**Execute contract:**
-```
-User: Transfer 100 tokens on CW20 contract juno1token... to juno1recipient...
+You: "What's my balance on CW20 token juno1abc...?"
+You: "Show info about contract juno1abc... on Juno"
 ```
 
-## Understanding CosmWasm
-
-### What is CosmWasm?
-
-- Smart contract framework for Cosmos
-- Written in Rust, compiled to WebAssembly
-- Supports CW20 (tokens), CW721 (NFTs), and more
-
-### Supported Chains
-
-| Chain | Chain ID |
-|-------|----------|
-| Osmosis | `osmosis-1` |
-| Neutron | `neutron-1` |
-| Juno | `juno-1` |
-| Stargaze | `stargaze-1` |
-| Injective | `injective-1` |
-| Archway | `archway-1` |
-| Terra | `phoenix-1` |
-| Sei | `pacific-1` |
-
-## Querying Contracts
-
-### Get Contract Info
-
+**Execute a contract:**
 ```
-User: Show info about contract juno1abc... on Juno
+You: "Transfer 100 tokens on CW20 juno1abc... to juno1def..."
 ```
 
-Response:
-
-```json
-{
-  "address": "juno1abc...",
-  "codeId": 123,
-  "creator": "juno1creator...",
-  "admin": "juno1admin...",
-  "label": "My Token"
-}
+You can also pass raw JSON messages:
 ```
-
-### Query State
-
+You: "Query juno1abc... with {"token_info": {}}"
 ```
-User: Query juno1token... with {"token_info": {}}
-```
-
-Or in natural language:
-
-```
-User: Get the token info from contract juno1token...
-```
-
-## Common Query Patterns
-
-### CW20 Token Balance
-
-```json
-{
-  "query": {
-    "balance": {
-      "address": "juno1user..."
-    }
-  }
-}
-```
-
-```
-User: What's my balance on CW20 token juno1token...?
-```
-
-### CW20 Token Info
-
-```json
-{
-  "query": {
-    "token_info": {}
-  }
-}
-```
-
-### CW721 NFT Owner
-
-```json
-{
-  "query": {
-    "owner_of": {
-      "token_id": "123"
-    }
-  }
-}
-```
-
-## Executing Contracts
-
-### CW20 Transfer
-
-```
-User: Transfer 1000 tokens from CW20 juno1token... to juno1recipient...
-```
-
-Equivalent message:
-
-```json
-{
-  "transfer": {
-    "recipient": "juno1recipient...",
-    "amount": "1000000"
-  }
-}
-```
-
-### CW20 Send (to contract)
-
-```
-User: Send 500 tokens from CW20 juno1token... to contract juno1staking... with message {"stake": {}}
-```
-
-### Execute with Funds
-
-Some contracts require native tokens:
-
-```
-User: Execute swap on osmosis1swap... sending 1 OSMO
-```
-
-## Advanced Usage
-
-### Custom Queries
-
-```
-User: Query juno1contract... with custom message {"get_config": {}}
-```
-
-### Custom Executions
-
-```
-User: Execute on juno1contract... with message {"update_config": {"admin": "juno1new..."}}
-```
-
-## Contract Standards
-
-### CW20 (Fungible Tokens)
-
-| Method | Type | Description |
-|--------|------|-------------|
-| `balance` | Query | Get token balance |
-| `token_info` | Query | Get token metadata |
-| `transfer` | Execute | Transfer tokens |
-| `send` | Execute | Transfer to contract |
 
 ## Troubleshooting
 
-### "Contract not found"
-
-1. Verify contract address
-2. Check you're on correct chain
-3. Contract may have been migrated
-
-### "Query failed"
-
-1. Check query message format
-2. Verify parameter names
-3. Some queries require specific inputs
-
-### "Execution reverted"
-
-1. Check you have required permissions
-2. Verify parameters are correct
-3. May need to approve spending first
-
----
+- **"Contract not found"** — Verify the contract address and chain.
+- **"Execution reverted"** — Check that you have the required permissions and correct parameters.
 
 ## Related
 
