@@ -363,57 +363,14 @@ None required.
 
 ## `check-vault-health`
 
-Check vault integrity and diagnose anomalies. Detects orphaned accounts, missing keys, dangling vault files, and corrupt vaults — then auto-repairs from backup when possible.
+Check vault integrity and automatically repair issues.
 
 ### Parameters
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `repair` | `boolean` | No | Attempt automatic repair (default: false) |
-| `deleteDangling` | `boolean` | No | Delete dangling `.enc` files without matching config (default: false) |
-
-### Response
-
-```json
-{
-  "summary": {
-    "healthy": 2,
-    "repaired": 0,
-    "unrecoverable": 0,
-    "issues": 0
-  },
-  "details": {
-    "healthy": ["main", "trading"],
-    "orphaned": [],
-    "keyMissing": [],
-    "dangling": [],
-    "skipped": ["env"],
-    "corrupt": [],
-    "repaired": [],
-    "unrecoverable": [],
-    "keychainError": []
-  },
-  "suggestedActions": [
-    { "tool": "import-account", "reason": "Account \"lost\" needs mnemonic re-import", "priority": 1 }
-  ]
-}
-```
-
-### Anomaly Types
-
-| Type | Description | Repair Action |
-|------|-------------|---------------|
-| `orphaned` | Config entry without `.enc` vault file | Restore from backup |
-| `keyMissing` | Vault file exists but no keychain key | Marked unrecoverable |
-| `dangling` | `.enc` file without matching config entry | Delete orphan file |
-| `corrupt` | Vault file exists but is unreadable | Restore from backup |
-| `keychainError` | Vault file exists but keychain access failed (e.g. locked) | Retry when keychain is unlocked |
-
-### Features
-
-- **Startup guard**: Runs automatically with `repair: true` on server startup
-- **Diagnosis mode**: Use `repair: false` to audit without making changes
-- **Suggested actions**: Recommends `import-account` for unrecoverable accounts
+| `deleteDangling` | `boolean` | No | Delete orphaned vault files (default: false) |
 
 ---
 

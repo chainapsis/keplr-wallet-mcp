@@ -96,7 +96,6 @@ export default defineConfig({
         },
         { text: "Supported Chains", link: "/reference/chains" },
         { text: "Environment Variables", link: "/reference/environment" },
-        { text: "Glossary", link: "/reference/glossary" },
       ],
     },
   ],

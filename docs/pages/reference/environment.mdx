@@ -8,34 +8,15 @@ Configuration options for Keplr Wallet MCP.
 |----------|-------------|----------|
 | `KEPLR_RPC_API_KEY` | Keplr infrastructure RPC/LCD API key | No |
 | `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
-| `KEPLR_MNEMONIC` | Pre-configured mnemonic (dev only) | No |
 | `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
 | `SKIP_API_URL` | Skip API base URL (default: `https://api.skip.build`) | No |
 | `SKIP_API_KEY` | Skip API key for IBC routing and Osmosis swaps | No |
-| `KEPLR_ADAPTERS` | Comma-separated list of additional adapter packages to load | No |
-| `KEPLR_PROTOCOLS` | Comma-separated list of additional protocol plugin packages to load | No |
 
 For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
 
 ---
 
 ## Wallet Configuration
-
-### `KEPLR_MNEMONIC`
-
-Pre-configure a mnemonic phrase (development only).
-
-```json
-{
-  "env": {
-    "KEPLR_MNEMONIC": "word1 word2 word3 ... word24"
-  }
-}
-```
-
-:::warning
-Never use this in production. The mnemonic is exposed in configuration files.
-:::
 
 ### `KEPLR_TX_TTL_MINUTES`
 
@@ -82,10 +63,7 @@ Get an API key from [CoinGecko API](https://www.coingecko.com/en/api).
 
 ### `KEPLR_RPC_API_KEY`
 
-Keplr infrastructure API key. When set, routes RPC and REST requests through `api.keplr.app` for [supported chains](/reference/chains#keplr-infrastructure) with 2-tier priority:
-
-1. **Keplr infrastructure** — `api.keplr.app/rpc/<chain>` + `X-API-Key` header
-2. **Public fallback** — chain-registry endpoints (used when API key is absent or chain is unsupported)
+Keplr infrastructure API key. When set, uses Keplr's dedicated RPC endpoints for [supported chains](/reference/chains#keplr-infrastructure) instead of public fallbacks.
 
 Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then add it to your config:
 
@@ -137,61 +115,6 @@ Skip API key for authenticated access. When set, requests include an `authorizat
 
 ---
 
-## Plugin Discovery
-
-### `KEPLR_ADAPTERS`
-
-Comma-separated list of additional ecosystem adapter packages to load. Packages matching `@keplr-wallet/adapter-*` are auto-discovered; use this to add non-standard adapter packages.
-
-```json
-{
-  "env": {
-    "KEPLR_ADAPTERS": "custom-adapter-1, custom-adapter-2"
-  }
-}
-```
-
-### `KEPLR_PROTOCOLS`
-
-Comma-separated list of additional protocol plugin packages to load. Packages matching `@keplr-wallet/protocol-*` are auto-discovered; use this to add non-standard protocol packages.
-
-```json
-{
-  "env": {
-    "KEPLR_PROTOCOLS": "my-custom-protocol"
-  }
-}
-```
-
----
-
-## Config File
-
-For plugin registration, toolset filtering, and RPC overrides, use a `keplr-mcp.config.ts` file:
-
-```typescript
-import { defineConfig } from "@keplr-wallet/keplr-wallet-mcp";
-import osmosisPlugin from "@keplr-wallet/protocol-osmosis";
-
-export default defineConfig({
-  plugins: [
-    osmosisPlugin(),
-    // "my-custom-plugin",  // string = auto-import npm package default export
-  ],
-  toolsets: {
-    default: ["cosmos-query", "cosmos-transaction"],
-  },
-  rpc: {
-    apiKey: process.env.KEPLR_RPC_API_KEY,
-    overrides: {
-      "cosmoshub-4": "https://my-own-rpc.example.com",
-    },
-  },
-});
-```
-
-See [Installation](/getting-started/installation) for setup details.
-
 ---
 
 ## Full Configuration Example
@@ -223,8 +146,6 @@ See [Installation](/getting-started/installation) for setup details.
 # Price Data (optional)
 COINGECKO_API_KEY=CG-xxxxxxxxxxxxxxxxxxxx
 
-# Development only
-KEPLR_MNEMONIC=test test test test test test test test test test test junk
 KEPLR_TX_TTL_MINUTES=30
 ```
 
