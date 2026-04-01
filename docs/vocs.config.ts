@@ -80,6 +80,10 @@ export default defineConfig({
               link: "/reference/tools/cosmos-signing",
             },
             { text: "Osmosis", link: "/reference/tools/osmosis" },
+            {
+              text: "Keplr Endpoints API",
+              link: "/reference/tools/keplr-rpc",
+            },
           ],
         },
         { text: "Prompts", link: "/reference/prompts" },
