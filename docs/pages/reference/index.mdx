@@ -8,12 +8,18 @@ Keplr Wallet MCP provides tools across multiple categories:
 
 | Category | Tools | Description |
 |----------|-------|-------------|
-| [Account Management](/reference/tools/accounts) | 17 | Wallet creation, switching, sessions |
-| [Authentication](/reference/tools/authentication) | 8 | Biometric auth, sessions |
-| [Cosmos Query](/reference/tools/cosmos-query) | 14 | Balances, staking, governance |
-| [Cosmos Transaction](/reference/tools/cosmos-tx) | 13 | Send, stake, vote, IBC |
-| [CosmWasm](/reference/tools/cosmwasm) | 4 | Smart contract interaction |
+| [Account Management](/reference/tools/accounts) | 10 | Wallet creation, switching, import, export |
+| [Authentication](/reference/tools/authentication) | 7 | Biometric auth, TOTP, sessions |
+| [Transaction Confirm](/reference/tools/transaction-confirm) | 4 | Pending actions, confirmation, tx history |
+| [Chain Management](/reference/tools/chain-management) | 2 | Installed adapters & protocols |
+| [Cosmos Query](/reference/tools/cosmos-query) | 11 | Balances, staking, governance, IBC channels |
+| [Cosmos Transaction](/reference/tools/cosmos-tx) | 9 | Send, stake, vote, IBC |
+| [Multi-Action](/reference/tools/multi-action) | 7 | Batch transaction creation & execution |
+| [CosmWasm](/reference/tools/cosmwasm) | 5 | Smart contract query, execute, instantiate |
 | [Cosmos Signing](/reference/tools/cosmos-signing) | 2 | Arbitrary signing & verification |
+| [Unified Portfolio](/reference/tools/unified-portfolio) | 1 | Cross-chain portfolio overview |
+| [Keplr RPC](/reference/tools/keplr-rpc) | 5 | Keplr API key management & usage |
+| [Meta](/reference/tools/meta) | 2 | Tool search & discovery |
 | [Osmosis](/reference/tools/osmosis) | 2 | DEX swap |
 
 ## Prompts
@@ -43,6 +49,8 @@ Each tool reference includes:
 
 ### Response
 
+Successful responses return structured JSON via `content[0].text`:
+
 ```json
 {
   "result": "...",
@@ -52,20 +60,18 @@ Each tool reference includes:
 }
 ```
 
+Error responses include classification and recovery hints:
+
+```json
+{
+  "isError": true,
+  "category": "validation",
+  "message": "...",
+  "recoverable": false,
+  "suggestion": "..."
+}
+```
+
 ### Examples
 
 Request and response pairs for common use cases.
-
-## For AI Integration
-
-### llms.txt
-
-A machine-readable index is available at `/llms.txt` containing:
-
-- All tool names and descriptions
-- Input/output schemas
-- Example requests
-
-### JSON Schema
-
-Each tool has a complete JSON Schema definition for input validation.

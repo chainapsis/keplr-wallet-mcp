@@ -22,8 +22,8 @@ CosmWasm is supported on:
 - Stargaze (`stargaze-1`)
 - Injective (`injective-1`)
 - Archway (`archway-1`)
-- Terra 2 (`phoenix-1`)
-- Sei (`pacific-1`)
+- Terra Classic (`columbus-5`)
+- Sei (`sei-pacific-1`)
 
 ---
 
@@ -35,9 +35,9 @@ Query contract state (read-only).
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `contract` | `string` | Yes | Contract address |
-| `query` | `object` | Yes | Query message (JSON) |
+| `chain` | `string` | Yes | Chain ID or name |
+| `contractAddress` | `string` | Yes | Contract address (bech32 format) |
+| `queryMsg` | `string` | Yes | Query message as JSON string |
 
 ### Response
 
@@ -53,12 +53,8 @@ Query contract state (read-only).
 ```json
 Request: {
   "chain": "juno-1",
-  "contract": "juno1token...",
-  "query": {
-    "balance": {
-      "address": "juno1user..."
-    }
-  }
+  "contractAddress": "juno1token...",
+  "queryMsg": "{\"balance\":{\"address\":\"juno1user...\"}}"
 }
 
 Response: {
@@ -73,12 +69,8 @@ Response: {
 ```json
 Request: {
   "chain": "stargaze-1",
-  "contract": "stars1nft...",
-  "query": {
-    "owner_of": {
-      "token_id": "123"
-    }
-  }
+  "contractAddress": "stars1nft...",
+  "queryMsg": "{\"owner_of\":{\"token_id\":\"123\"}}"
 }
 
 Response: {
@@ -99,8 +91,8 @@ Get contract metadata including code ID, admin, and label.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `contract` | `string` | Yes | Contract address |
+| `chain` | `string` | Yes | Chain ID or name |
+| `contractAddress` | `string` | Yes | Contract address (bech32 format) |
 
 ### Response
 
@@ -155,10 +147,11 @@ Execute a contract function (requires confirmation).
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `contract` | `string` | Yes | Contract address |
-| `msg` | `object` | Yes | Execute message (JSON) |
-| `funds` | `object[]` | No | Coins to send with execution |
+| `chain` | `string` | Yes | Chain ID or name |
+| `contractAddress` | `string` | Yes | Contract address (bech32 format) |
+| `executeMsg` | `string` | Yes | Execute message as JSON string |
+| `funds` | `string` | No | Optional funds as JSON array string |
+| `feeDenom` | `string` | No | Fee token denomination (optional) |
 
 ### Response (Preview)
 
@@ -181,13 +174,8 @@ Execute a contract function (requires confirmation).
 ```json
 Request: {
   "chain": "juno-1",
-  "contract": "juno1token...",
-  "msg": {
-    "transfer": {
-      "recipient": "juno1recipient...",
-      "amount": "1000000"
-    }
-  }
+  "contractAddress": "juno1token...",
+  "executeMsg": "{\"transfer\":{\"recipient\":\"juno1recipient...\",\"amount\":\"1000000\"}}"
 }
 ```
 
@@ -196,14 +184,8 @@ Request: {
 ```json
 Request: {
   "chain": "juno-1",
-  "contract": "juno1token...",
-  "msg": {
-    "send": {
-      "contract": "juno1staking...",
-      "amount": "1000000",
-      "msg": "eyJzdGFrZSI6e319"  // base64 encoded
-    }
-  }
+  "contractAddress": "juno1token...",
+  "executeMsg": "{\"send\":{\"contract\":\"juno1staking...\",\"amount\":\"1000000\",\"msg\":\"eyJzdGFrZSI6e319\"}}"
 }
 ```
 
@@ -212,20 +194,9 @@ Request: {
 ```json
 Request: {
   "chain": "osmosis-1",
-  "contract": "osmo1swap...",
-  "msg": {
-    "swap": {
-      "offer_asset": {
-        "native": { "denom": "uosmo" }
-      },
-      "ask_asset": {
-        "native": { "denom": "uatom" }
-      }
-    }
-  },
-  "funds": [
-    { "denom": "uosmo", "amount": "1000000" }
-  ]
+  "contractAddress": "osmo1swap...",
+  "executeMsg": "{\"swap\":{\"offer_asset\":{\"native\":{\"denom\":\"uosmo\"}},\"ask_asset\":{\"native\":{\"denom\":\"uatom\"}}}}",
+  "funds": "[{\"denom\":\"uosmo\",\"amount\":\"1000000\"}]"
 }
 ```
 
@@ -239,12 +210,13 @@ Deploy a new instance of an uploaded contract.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `codeId` | `number` | Yes | Uploaded code ID |
-| `msg` | `object` | Yes | Instantiate message |
-| `label` | `string` | Yes | Contract label |
-| `admin` | `string` | No | Admin address |
-| `funds` | `object[]` | No | Initial funds |
+| `chain` | `string` | Yes | Chain ID or name |
+| `codeId` | `string` | Yes | Code ID to instantiate (e.g., '1', '123') |
+| `instantiateMsg` | `string` | Yes | Instantiate message as JSON string (format depends on the contract) |
+| `label` | `string` | Yes | Human-readable label for the contract |
+| `admin` | `string` | No | Admin address for contract migrations (leave empty for immutable) |
+| `funds` | `string` | No | Optional funds as JSON array string |
+| `feeDenom` | `string` | No | Fee token denomination (optional) |
 
 ### Response (Preview)
 
@@ -281,21 +253,8 @@ Deploy a new instance of an uploaded contract.
 ```json
 Request: {
   "chain": "juno-1",
-  "codeId": 1,
-  "msg": {
-    "name": "My Token",
-    "symbol": "MYT",
-    "decimals": 6,
-    "initial_balances": [
-      {
-        "address": "juno1...",
-        "amount": "1000000000000"
-      }
-    ],
-    "mint": {
-      "minter": "juno1..."
-    }
-  },
+  "codeId": "1",
+  "instantiateMsg": "{\"name\":\"My Token\",\"symbol\":\"MYT\",\"decimals\":6,\"initial_balances\":[{\"address\":\"juno1...\",\"amount\":\"1000000000000\"}],\"mint\":{\"minter\":\"juno1...\"}}",
   "label": "My Token Contract",
   "admin": "juno1..."
 }

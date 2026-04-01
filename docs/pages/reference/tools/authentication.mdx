@@ -100,9 +100,9 @@ Configure an authentication provider. Supports biometric (Touch ID/Face ID) and 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `provider` | `"biometric" \| "totp"` | Yes | Auth provider type |
-| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to require auth for (default: "delete_account") |
 | `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
-| `accountLabel` | `string` | No | For TOTP: Label shown in authenticator app (default: "keplr-wallet") |
+| `accountLabel` | `string` | No | For TOTP: Label shown in authenticator app (default: "Keplr Wallet") |
 
 ### Response (Biometric)
 
@@ -169,7 +169,7 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 |------|------|----------|-------------|
 | `provider` | `"totp"` | Yes | Currently only "totp" is supported |
 | `code` | `string` | Yes | 6-digit verification code from authenticator app |
-| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to require auth for (default: "delete_account") |
 | `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
 
 ### Response (Success)
@@ -206,7 +206,7 @@ Check which authentication methods are available and configured for a specific a
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `action` | `string` | No | Action to check (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to check authentication for (default: "delete_account") |
 
 ### Response
 

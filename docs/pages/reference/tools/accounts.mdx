@@ -39,7 +39,7 @@ None required.
   "activeAccount": "main",
   "totalAccounts": 1,
   "welcomeMessage": {
-    "title": "Welcome to Keplr Wallet MCP!",
+    "title": "Welcome to Keplr MCP Server! 🎉",
     "description": "...",
     "tips": ["Security tip 1", "Security tip 2"]
   },
@@ -70,7 +70,7 @@ Request: { }
 Response: {
   "status": "not_started",
   "welcomeMessage": {
-    "title": "Welcome to Keplr Wallet MCP! 🎉",
+    "title": "Welcome to Keplr MCP Server! 🎉",
     "tips": [
       "📝 Write down your recovery phrase"
     ]
@@ -91,7 +91,10 @@ Generate a new wallet with a BIP39 mnemonic phrase.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `name` | `string` | No | Account name (default: "Account N") |
+| `name` | `string` | Yes | Unique name for the account (e.g., 'trading', 'savings') |
+| `strength` | `"12" \| "24"` | No | Number of mnemonic words: 12 or 24 (default: "24") |
+| `description` | `string` | No | Optional description for the account |
+| `setActive` | `boolean` | No | Whether to set this as the active account (default: true) |
 
 ### Response
 
@@ -142,10 +145,9 @@ Import an existing wallet using a mnemonic phrase. Includes security confirmatio
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `name` | `string` | Yes | Unique account name |
-| `mnemonic` | `string` | Yes | BIP39 mnemonic (12/15/18/21/24 words) |
+| `mnemonic` | `string` | No | BIP39 mnemonic (12/15/18/21/24 words). If omitted and client supports elicitation, mnemonic will be collected securely via a password form. |
 | `description` | `string` | No | Optional description |
 | `setActive` | `boolean` | No | Set as active account (default: true) |
-| `skipSecurityWarning` | `boolean` | No | Skip confirmation (not recommended) |
 
 ### Security Confirmation
 
@@ -218,8 +220,9 @@ None required.
     {
       "name": "Main Wallet",
       "type": "mnemonic",
-      "active": true,
-      "ecosystems": ["cosmos"]
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "description": "My main wallet"
     }
   ],
   "suggestedActions": [
@@ -244,8 +247,10 @@ Change the active account.
 
 ```json
 {
-  "status": "success",
-  "activeAccount": "Keplr Mobile"
+  "message": "Switched to account \"Keplr Mobile\".",
+  "activeAccount": "Keplr Mobile",
+  "type": "mnemonic",
+  "addresses": { "Cosmos": "cosmos1..." }
 }
 ```
 
@@ -364,7 +369,7 @@ Check vault integrity and diagnose anomalies. Detects orphaned accounts, missing
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `repair` | `boolean` | No | Attempt automatic repair (default: true) |
+| `repair` | `boolean` | No | Attempt automatic repair (default: false) |
 | `deleteDangling` | `boolean` | No | Delete dangling `.enc` files without matching config (default: false) |
 
 ### Response

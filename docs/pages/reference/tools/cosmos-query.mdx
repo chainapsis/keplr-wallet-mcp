@@ -81,8 +81,7 @@ Get token balances for a chain.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `address` | `string` | No | Address (default: active wallet) |
+| `chain` | `string` | Yes | Chain ID or name (e.g., 'cosmoshub-4' or 'osmosis') |
 
 ### Response
 
@@ -159,9 +158,9 @@ List validators with commission and voting power.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `status` | `string` | No | Filter: "bonded", "unbonding", "unbonded" |
-| `limit` | `number` | No | Max results (default: 100) |
+| `chain` | `string` | Yes | Chain ID or name |
+| `status` | `string` | No | Filter: "active", "inactive", "jailed", "all" (default: "active") |
+| `limit` | `number` | No | Max results, 1-100 (default: 20) |
 
 ### Response
 
@@ -228,8 +227,9 @@ List governance proposals.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `status` | `string` | No | Filter: "voting", "passed", "rejected", "all" |
+| `chain` | `string` | Yes | Chain ID or name |
+| `status` | `string` | No | Filter: "voting", "deposit", "passed", "rejected", "failed", "all" (default: "voting") |
+| `limit` | `number` | No | Max results, 1-50 (default: 10) |
 
 ### Response
 
@@ -352,8 +352,11 @@ List IBC channels to other chains.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Source chain ID |
-| `destination` | `string` | No | Filter by destination chain |
+| `chain` | `string` | Yes | Source chain ID or name |
+| `counterpartyChain` | `string` | No | Filter by counterparty chain ID (e.g., 'cosmoshub-4') |
+| `state` | `string` | No | Filter by channel state: "OPEN", "CLOSED", "all" (default: "OPEN") |
+| `limit` | `number` | No | Max number of channels to return (default: 50) |
+| `offset` | `number` | No | Number of channels to skip for pagination (default: 0) |
 
 ### Response
 

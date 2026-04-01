@@ -10,6 +10,10 @@ Configuration options for Keplr Wallet MCP.
 | `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
 | `KEPLR_MNEMONIC` | Pre-configured mnemonic (dev only) | No |
 | `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
+| `SKIP_API_URL` | Skip API base URL (default: `https://api.skip.build`) | No |
+| `SKIP_API_KEY` | Skip API key for IBC routing and Osmosis swaps | No |
+| `KEPLR_ADAPTERS` | Comma-separated list of additional adapter packages to load | No |
+| `KEPLR_PROTOCOLS` | Comma-separated list of additional protocol plugin packages to load | No |
 
 For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
 
@@ -80,7 +84,7 @@ Get an API key from [CoinGecko API](https://www.coingecko.com/en/api).
 
 Keplr infrastructure API key. When set, routes RPC and REST requests through `api.keplr.app` for [supported chains](/reference/chains#keplr-infrastructure) with 2-tier priority:
 
-1. **Keplr infrastructure** — `api.keplr.app/rpc/{chain}` + `X-API-Key` header
+1. **Keplr infrastructure** — `api.keplr.app/rpc/<chain>` + `X-API-Key` header
 2. **Public fallback** — chain-registry endpoints (used when API key is absent or chain is unsupported)
 
 Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then add it to your config:
@@ -94,6 +98,70 @@ Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then ad
 ```
 
 Per-chain overrides and plugin configuration are done in the [config file](#config-file).
+
+---
+
+## Skip API
+
+### `SKIP_API_URL`
+
+Base URL for the Skip API, used for IBC routing and Osmosis swap routes.
+
+```json
+{
+  "env": {
+    "SKIP_API_URL": "https://api.skip.build"
+  }
+}
+```
+
+Default: `https://api.skip.build`
+
+### `SKIP_API_KEY`
+
+Skip API key for authenticated access. When set, requests include an `authorization` header. Without a key, the free tier is used with automatic rate limiting and retry logic.
+
+```json
+{
+  "env": {
+    "SKIP_API_KEY": "your-skip-api-key"
+  }
+}
+```
+
+| Behavior | Without Key (Free) | With Key |
+|----------|-------------------|----------|
+| Rate limit retries | 3 retries with backoff | 1 retry |
+| Request throttle | 500ms minimum interval | None |
+| Cooldown on rate limit | 60s | 10s |
+
+---
+
+## Plugin Discovery
+
+### `KEPLR_ADAPTERS`
+
+Comma-separated list of additional ecosystem adapter packages to load. Packages matching `@keplr-wallet/adapter-*` are auto-discovered; use this to add non-standard adapter packages.
+
+```json
+{
+  "env": {
+    "KEPLR_ADAPTERS": "custom-adapter-1, custom-adapter-2"
+  }
+}
+```
+
+### `KEPLR_PROTOCOLS`
+
+Comma-separated list of additional protocol plugin packages to load. Packages matching `@keplr-wallet/protocol-*` are auto-discovered; use this to add non-standard protocol packages.
+
+```json
+{
+  "env": {
+    "KEPLR_PROTOCOLS": "my-custom-protocol"
+  }
+}
+```
 
 ---
 

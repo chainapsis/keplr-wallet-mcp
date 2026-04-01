@@ -57,11 +57,11 @@ Send tokens to another address on the same chain.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `to` | `string` | Yes | Recipient address |
-| `amount` | `string` | Yes | Amount (e.g., "100" or "100.5") |
-| `denom` | `string` | No | Token denom (default: native token) |
-| `memo` | `string` | No | Transaction memo |
+| `chain` | `string` | Yes | Chain ID or name |
+| `recipientAddress` | `string` | Yes | Bech32 recipient address |
+| `amount` | `string` | Yes | Amount (e.g., "1 ATOM", "1.5", or "1000000") |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
@@ -151,9 +151,11 @@ Stake tokens to a validator.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
-| `amount` | `string` | Yes | Amount to stake |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address (e.g., 'cosmosvaloper1...') |
+| `amount` | `string` | Yes | Amount to delegate (e.g., '10 ATOM', '10.5', or '10000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
@@ -185,9 +187,11 @@ Unstake tokens from a validator. Triggers unbonding period.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
-| `amount` | `string` | Yes | Amount to unstake |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address |
+| `amount` | `string` | Yes | Amount to undelegate (e.g., '5 ATOM', '5.5', or '5000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
@@ -216,10 +220,12 @@ Move stake between validators without unbonding.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `fromValidator` | `string` | Yes | Source validator address |
-| `toValidator` | `string` | Yes | Destination validator address |
-| `amount` | `string` | Yes | Amount to redelegate |
+| `chain` | `string` | Yes | Chain ID or name |
+| `srcValidatorAddress` | `string` | Yes | Source validator operator address to redelegate FROM |
+| `dstValidatorAddress` | `string` | Yes | Destination validator operator address to redelegate TO |
+| `amount` | `string` | Yes | Amount to redelegate (e.g., '10 ATOM', '10.5', or '10000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
@@ -247,8 +253,9 @@ Claim staking rewards from a specific validator.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address to claim rewards from |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
@@ -274,7 +281,8 @@ Claim staking rewards from all validators at once.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
+| `chain` | `string` | Yes | Chain ID or name |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
@@ -303,9 +311,10 @@ Vote on a governance proposal.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `proposalId` | `string` | Yes | Proposal ID |
-| `vote` | `string` | Yes | Vote option: "yes", "no", "abstain", "no_with_veto" |
+| `chain` | `string` | Yes | Chain ID or name |
+| `proposalId` | `string` | Yes | Proposal ID to vote on |
+| `option` | `string` | Yes | Vote option: "yes", "no", "abstain", "no_with_veto" |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
@@ -334,10 +343,12 @@ Cancel an unbonding delegation and re-stake tokens.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator address |
-| `amount` | `string` | Yes | Amount to cancel |
-| `creationHeight` | `string` | Yes | Height when unbonding started |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address (e.g., 'cosmosvaloper1...') |
+| `amount` | `string` | Yes | Amount to cancel unbonding (e.g., '10 ATOM', '10.5', or '10000000') |
+| `creationHeight` | `string` | Yes | Creation height of the unbonding entry (from get-unbonding output) |
+| `denom` | `string` | No | Token denomination (optional, defaults to stake denom) |
+| `feeDenom` | `string` | No | Fee token denomination |
 
 ---
 

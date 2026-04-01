@@ -202,47 +202,6 @@ Reference for all error categories and handling.
 
 ---
 
-## INSUFFICIENT_FUNDS Errors
-
-### Not Enough Balance
-
-```json
-{
-  "error": {
-    "category": "INSUFFICIENT_FUNDS",
-    "code": "INSUFFICIENT_BALANCE",
-    "message": "Insufficient balance for this transaction",
-    "details": {
-      "required": {
-        "amount": "100 ATOM",
-        "fee": "0.01 ATOM",
-        "total": "100.01 ATOM"
-      },
-      "available": "50 ATOM"
-    },
-    "suggestion": "Reduce the amount or add more funds"
-  }
-}
-```
-
-### Insufficient Gas
-
-```json
-{
-  "error": {
-    "category": "INSUFFICIENT_FUNDS",
-    "code": "INSUFFICIENT_GAS",
-    "message": "Not enough funds to pay for gas",
-    "details": {
-      "estimatedGas": "0.005 ATOM",
-      "available": "0.001 ATOM"
-    }
-  }
-}
-```
-
----
-
 ## Transaction Warnings
 
 Warnings included in transaction previews. These are non-blocking — transactions can still proceed.
@@ -253,7 +212,8 @@ Warnings included in transaction previews. These are non-blocking — transactio
 | `LARGE_AMOUNT` | warning | Amount > 90% of balance |
 | `LOW_BALANCE_AFTER` | warning | Remaining balance < 10% after transaction |
 | `UNSTAKING_PERIOD` | info | Undelegate operation (21-day unbonding) |
-| `GAS_TOKEN_EXHAUSTION` | warning/critical | Remaining gas token balance < 3× estimated fee after transfer |
+| `GAS_TOKEN_EXHAUSTION` | warning/critical | Remaining gas token balance < 3x estimated fee after transfer |
+| `DENOM_NOT_IN_BALANCES` | warning | Requested denom not found in on-chain balances |
 
 ### GAS_TOKEN_EXHAUSTION
 
@@ -282,59 +242,6 @@ Triggered when a `send-tokens` or `ibc-transfer` would leave insufficient gas to
 **Level escalation:**
 - `warning` — remaining balance is positive but below the reserve threshold
 - `critical` — remaining balance would be zero or negative (subsequent transactions will fail)
-
----
-
-## TRANSACTION Errors
-
-### Transaction Failed
-
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "TX_FAILED",
-    "message": "Transaction failed",
-    "details": {
-      "txHash": "ABC123...",
-      "reason": "out of gas",
-      "gasUsed": "100000",
-      "gasLimit": "80000"
-    },
-    "suggestion": "Increase gas limit and retry"
-  }
-}
-```
-
-### Transaction Rejected
-
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "TX_REJECTED",
-    "message": "Transaction rejected by user",
-    "recoverable": false
-  }
-}
-```
-
-### Confirmation Expired
-
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "CONFIRMATION_EXPIRED",
-    "message": "Confirmation token expired",
-    "details": {
-      "ttl": "5 minutes",
-      "expiredAt": "2024-01-01T00:05:00Z"
-    },
-    "suggestion": "Re-initiate the transaction"
-  }
-}
-```
 
 ---
 
