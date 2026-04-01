@@ -24,113 +24,18 @@ import {
   parseToolResponse,
 } from "../helpers/mocks.js";
 
-// Mock chain configs
-const mockNeutronChain = {
-  chainId: "neutron-1",
-  chainName: "Neutron",
-  rpc: "https://rpc.neutron.org",
-  rest: "https://lcd.neutron.org",
-  stakeCurrency: {
-    coinDenom: "NTRN",
-    coinMinimalDenom: "untrn",
-    coinDecimals: 6,
-  },
-  bech32Config: {
-    bech32PrefixAccAddr: "neutron",
-    bech32PrefixAccPub: "neutronpub",
-    bech32PrefixValAddr: "neutronvaloper",
-    bech32PrefixValPub: "neutronvaloperpub",
-    bech32PrefixConsAddr: "neutronvalcons",
-    bech32PrefixConsPub: "neutronvalconspub",
-  },
-  feeCurrencies: [
-    {
-      coinDenom: "NTRN",
-      coinMinimalDenom: "untrn",
-      coinDecimals: 6,
-      gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
-    },
-  ],
-};
+import {
+  createChainsMock,
+  mockCosmosChain,
+  mockNeutronChain,
+} from "../helpers/chain-mocks.js";
 
-const mockCosmosChain = {
-  chainId: "cosmoshub-4",
-  chainName: "Cosmos Hub",
-  rpc: "https://rpc.cosmos.network",
-  rest: "https://lcd.cosmos.network",
-  stakeCurrency: {
-    coinDenom: "ATOM",
-    coinMinimalDenom: "uatom",
-    coinDecimals: 6,
-  },
-  bech32Config: {
-    bech32PrefixAccAddr: "cosmos",
-    bech32PrefixAccPub: "cosmospub",
-    bech32PrefixValAddr: "cosmosvaloper",
-    bech32PrefixValPub: "cosmosvaloperpub",
-    bech32PrefixConsAddr: "cosmosvalcons",
-    bech32PrefixConsPub: "cosmosvalconspub",
-  },
-  feeCurrencies: [
-    {
-      coinDenom: "ATOM",
-      coinMinimalDenom: "uatom",
-      coinDecimals: 6,
-      gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
-    },
-  ],
-};
-
-vi.mock("../../chains/cosmos.js", () => ({
-  listChains: vi.fn().mockReturnValue([mockNeutronChain, mockCosmosChain]),
-  getChainConfig: vi.fn().mockImplementation((chainId: string) => {
-    if (chainId === "neutron-1") return mockNeutronChain;
-    if (chainId === "cosmoshub-4") return mockCosmosChain;
-    return undefined;
+vi.mock("../../chains/cosmos.js", () =>
+  createChainsMock({
+    "neutron-1": mockNeutronChain,
+    "cosmoshub-4": mockCosmosChain,
   }),
-  findChainByName: vi.fn().mockImplementation((name: string) => {
-    const lower = name.toLowerCase();
-    if (lower === "neutron") return mockNeutronChain;
-    if (lower === "cosmos" || lower === "cosmos hub") return mockCosmosChain;
-    return undefined;
-  }),
-  getStakeDenom: vi.fn().mockImplementation((chain: unknown) => {
-    return (
-      (chain as { stakeCurrency?: { coinDenom?: string } })?.stakeCurrency
-        ?.coinDenom ?? ""
-    );
-  }),
-  getBech32Prefix: vi.fn().mockImplementation((chain: unknown) => {
-    return (
-      (chain as { bech32Config?: { bech32PrefixAccAddr?: string } })
-        ?.bech32Config?.bech32PrefixAccAddr ?? ""
-    );
-  }),
-  getStakeMinimalDenom: vi.fn().mockImplementation((chain: unknown) => {
-    return (
-      (chain as { stakeCurrency?: { coinMinimalDenom?: string } })
-        ?.stakeCurrency?.coinMinimalDenom ?? ""
-    );
-  }),
-  getStakeDecimals: vi.fn().mockImplementation((chain: unknown) => {
-    return (
-      (chain as { stakeCurrency?: { coinDecimals?: number } })?.stakeCurrency
-        ?.coinDecimals ?? 6
-    );
-  }),
-  getGasPrice: vi.fn().mockImplementation((chain: unknown) => {
-    const fee = (
-      chain as {
-        feeCurrencies?: Array<{
-          gasPriceStep?: { average?: number };
-          coinMinimalDenom?: string;
-        }>;
-      }
-    )?.feeCurrencies?.[0];
-    const price = fee?.gasPriceStep?.average ?? 0.025;
-    return `${price}${fee?.coinMinimalDenom ?? "untrn"}`;
-  }),
-}));
+);
 
 vi.mock("../../accounts.js", () => ({
   getActiveMnemonic: vi.fn().mockResolvedValue("test mnemonic"),
