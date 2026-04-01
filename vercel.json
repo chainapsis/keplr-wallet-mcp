@@ -1,5 +1,0 @@
-{
-  "buildCommand": "pnpm --filter keplr-mcp-docs build",
-  "outputDirectory": "docs/dist",
-  "installCommand": "pnpm install"
-}
