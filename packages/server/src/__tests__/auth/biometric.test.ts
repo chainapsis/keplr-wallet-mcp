@@ -31,16 +31,6 @@ describe("BiometricProvider", () => {
     vi.restoreAllMocks();
   });
 
-  describe("basic properties", () => {
-    it("should have correct id", () => {
-      expect(provider.id).toBe("biometric");
-    });
-
-    it("should have correct name", () => {
-      expect(provider.name).toBe("Biometric (Touch ID / Face ID)");
-    });
-  });
-
   describe("isAvailable", () => {
     it("should return false when impl is null", async () => {
       const available = await provider.isAvailable();

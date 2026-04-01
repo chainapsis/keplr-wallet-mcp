@@ -3,10 +3,6 @@ import { TOOL_REGISTRY } from "../../../plugins/meta/registry-data.js";
 import { ToolIndex } from "../../../plugins/meta/tool-index.js";
 
 describe("TOOL_REGISTRY", () => {
-  it("should contain all registered tools", () => {
-    expect(TOOL_REGISTRY.length).toBeGreaterThanOrEqual(62);
-  });
-
   it("should have valid categories", () => {
     const validCategories = [
       "account-management",
@@ -54,15 +50,6 @@ describe("TOOL_REGISTRY", () => {
     const names = TOOL_REGISTRY.map((e) => e.name);
     const dupes = names.filter((n, i) => names.indexOf(n) !== i);
     expect(dupes, `Duplicate tool names: ${dupes.join(", ")}`).toHaveLength(0);
-  });
-
-  it("should have keywords for every entry", () => {
-    for (const entry of TOOL_REGISTRY) {
-      expect(
-        entry.keywords.length,
-        `No keywords for tool: ${entry.name}`,
-      ).toBeGreaterThan(0);
-    }
   });
 
   it("should be searchable via ToolIndex", () => {

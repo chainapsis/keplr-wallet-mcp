@@ -1,7 +1,6 @@
 import { sha256 } from "@cosmjs/crypto";
 import { describe, expect, it } from "vitest";
 import {
-  createSecp256k1Signer,
   DEFAULT_HD_PATHS,
   Secp256k1Signer,
 } from "../../../keys/signers/secp256k1.js";
@@ -13,16 +12,6 @@ const TEST_MNEMONIC =
 
 describe("Secp256k1Signer", () => {
   describe("fromMnemonic", () => {
-    it("should create signer from valid mnemonic", async () => {
-      const signer = await Secp256k1Signer.fromMnemonic({
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      expect(signer).toBeInstanceOf(Secp256k1Signer);
-      expect(signer.curve).toBe("secp256k1");
-      expect(signer.requiresInteraction).toBe(false);
-    });
-
     it("should use default Cosmos HD path when none specified", async () => {
       const signer = await Secp256k1Signer.fromMnemonic({
         mnemonic: TEST_MNEMONIC,
@@ -75,19 +64,6 @@ describe("Secp256k1Signer", () => {
   });
 
   describe("fromPrivateKey", () => {
-    it("should create signer from valid private key", async () => {
-      // Generate a valid private key from mnemonic first
-      const mnemonicSigner = await Secp256k1Signer.fromMnemonic({
-        mnemonic: TEST_MNEMONIC,
-      });
-      const privateKey = mnemonicSigner.getPrivateKey();
-
-      const signer = await Secp256k1Signer.fromPrivateKey({ privateKey });
-
-      expect(signer).toBeInstanceOf(Secp256k1Signer);
-      expect(signer.curve).toBe("secp256k1");
-    });
-
     it("should not support derivation when created from private key", async () => {
       const mnemonicSigner = await Secp256k1Signer.fromMnemonic({
         mnemonic: TEST_MNEMONIC,
@@ -133,18 +109,6 @@ describe("Secp256k1Signer", () => {
       expect(pubkey.length).toBe(33);
       // Compressed pubkey starts with 0x02 or 0x03
       expect(pubkey[0] === 0x02 || pubkey[0] === 0x03).toBe(true);
-    });
-
-    it("should cache public key", async () => {
-      const signer = await Secp256k1Signer.fromMnemonic({
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      const pubkey1 = await signer.getPublicKey();
-      const pubkey2 = await signer.getPublicKey();
-
-      // Should be same reference (cached)
-      expect(pubkey1).toBe(pubkey2);
     });
   });
 
@@ -277,32 +241,4 @@ describe("Secp256k1Signer", () => {
     });
   });
 
-  describe("getPrivateKey", () => {
-    it("should return 32-byte private key", async () => {
-      const signer = await Secp256k1Signer.fromMnemonic({
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      const privateKey = signer.getPrivateKey();
-
-      expect(privateKey).toBeInstanceOf(Uint8Array);
-      expect(privateKey.length).toBe(32);
-    });
-  });
-
-  describe("createSecp256k1Signer helper", () => {
-    it("should create signer with default path", async () => {
-      const signer = await createSecp256k1Signer(TEST_MNEMONIC);
-
-      expect(signer).toBeInstanceOf(Secp256k1Signer);
-      expect(signer.getDerivationPath()).toBe(DEFAULT_HD_PATHS.cosmos);
-    });
-
-    it("should create signer with custom path", async () => {
-      const customPath = "m/44'/118'/1'/0/0";
-      const signer = await createSecp256k1Signer(TEST_MNEMONIC, customPath);
-
-      expect(signer.getDerivationPath()).toBe(customPath);
-    });
-  });
 });

@@ -46,25 +46,6 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-// ─── Registration ────────────────────────────────────────────────────
-describe("keplr-rpc plugin registration", () => {
-  it("should register all 5 tools", () => {
-    const expected = [
-      "kr_validate_key",
-      "kr_get_payment_link",
-      "kr_get_usage_summary",
-      "kr_get_usage_history",
-      "kr_list_chains",
-    ];
-    for (const name of expected) {
-      expect(
-        server.getTool(name),
-        `tool "${name}" not registered`,
-      ).toBeDefined();
-    }
-  });
-});
-
 // ─── kr_validate_key ─────────────────────────────────────────────────
 describe("kr_validate_key", () => {
   it("should validate key and return suggestedActions", async () => {

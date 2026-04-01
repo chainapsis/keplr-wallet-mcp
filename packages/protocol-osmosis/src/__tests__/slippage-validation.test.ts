@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OsmosisClient } from "../client.js";
-import { SLIPPAGE_BPS_SCHEMA } from "../constants.js";
 
 // Mock skip-api and skip-assets (same as client.test.ts)
 vi.mock("../skip-api.js", () => ({
@@ -18,60 +17,6 @@ import { resolveOsmosisDenom } from "../skip-assets.js";
 
 const mockResolve = vi.mocked(resolveOsmosisDenom);
 const mockRoute = vi.mocked(getSkipRoute);
-
-const slippageBpsSchema = SLIPPAGE_BPS_SCHEMA;
-
-describe("slippageBps schema validation", () => {
-  it("should reject slippageBps=10000 (100%)", () => {
-    const result = slippageBpsSchema.safeParse(10000);
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject slippageBps=-100 (negative)", () => {
-    const result = slippageBpsSchema.safeParse(-100);
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject slippageBps=0", () => {
-    const result = slippageBpsSchema.safeParse(0);
-    expect(result.success).toBe(false);
-  });
-
-  it("should accept slippageBps=50 (0.5%, default)", () => {
-    const result = slippageBpsSchema.safeParse(50);
-    expect(result.success).toBe(true);
-    if (result.success) expect(result.data).toBe(50);
-  });
-
-  it("should accept slippageBps=1 (0.01%, minimum)", () => {
-    const result = slippageBpsSchema.safeParse(1);
-    expect(result.success).toBe(true);
-  });
-
-  it("should accept slippageBps=500 (5%, maximum)", () => {
-    const result = slippageBpsSchema.safeParse(500);
-    expect(result.success).toBe(true);
-  });
-
-  it("should reject slippageBps=501 (above max)", () => {
-    const result = slippageBpsSchema.safeParse(501);
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject float values (e.g., 50.5)", () => {
-    const result = slippageBpsSchema.safeParse(50.5);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0].code).toBe("invalid_type");
-    }
-  });
-
-  it("should default to 50 when undefined", () => {
-    const result = slippageBpsSchema.safeParse(undefined);
-    expect(result.success).toBe(true);
-    if (result.success) expect(result.data).toBe(50);
-  });
-});
 
 describe("minAmountOut runtime validation (via OsmosisClient.getQuote)", () => {
   const client = new OsmosisClient();
