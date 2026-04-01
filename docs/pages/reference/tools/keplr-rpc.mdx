@@ -22,7 +22,6 @@ Keplr Endpoints provides dedicated RPC and REST endpoints for Cosmos chains:
 - **31 supported chains**: See [Keplr Infrastructure](/reference/chains#keplr-infrastructure)
 - **Dashboard**: [api.keplr.app](https://api.keplr.app)
 
----
 
 ## `kr_validate_key`
 
@@ -47,7 +46,6 @@ Validate an existing Keplr Endpoints API key.
 }
 ```
 
----
 
 ## `kr_get_payment_link`
 
@@ -70,7 +68,6 @@ Get a Stripe payment link to add credits.
 }
 ```
 
----
 
 ## `kr_get_usage_summary`
 
@@ -102,7 +99,6 @@ Get balance and usage summary including requests, credits, and per-chain breakdo
 
 When balance is low, a `kr_get_payment_link` suggestion is added at priority 1.
 
----
 
 ## `kr_get_usage_history`
 
@@ -132,7 +128,6 @@ Get usage history with optional date, chain, and endpoint type filters.
 }
 ```
 
----
 
 ## `kr_list_chains`
 
@@ -153,7 +148,6 @@ None.
 }
 ```
 
----
 
 ## Error Handling
 
@@ -165,7 +159,6 @@ None.
 | 429 | Rate limit exceeded |
 | 5xx | Server error |
 
----
 
 ## Example Workflows
 
@@ -195,7 +188,6 @@ None.
    → Add credits if balance is low
 ```
 
----
 
 ## Related
 

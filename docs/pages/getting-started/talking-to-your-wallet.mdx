@@ -1,0 +1,140 @@
+# Talking to Your Wallet
+
+You don't need to memorize commands — just describe what you want in plain language.
+
+## Example Conversations
+
+**Check balances:**
+```
+You: "Show my balances on Cosmos Hub"
+AI:  "You have 150.5 ATOM on Cosmos Hub (~$1,505)"
+```
+
+**Send tokens:**
+```
+You: "Send 10 ATOM to cosmos1abc..."
+AI:  "Ready to send 10 ATOM. Fee: ~0.005 ATOM. Should I proceed?"
+You: "Yes"
+AI:  "Done! TX: ABC123..."
+```
+
+**Stake tokens:**
+```
+You: "Stake 100 ATOM to a good validator"
+AI:  "Here are the top validators. I recommend Validator A (10% commission, 99.9% uptime).
+      Shall I stake 100 ATOM? Fee: ~0.02 ATOM"
+You: "Go ahead"
+AI:  "Staked! You'll start earning ~15% APY."
+```
+
+**Swap tokens:**
+```
+You: "Swap 50 OSMO for ATOM"
+AI:  "You'll get ~4.25 ATOM for 50 OSMO. Swap fee: 0.2%. Proceed?"
+You: "Yes"
+AI:  "Swap complete! You received 4.27 ATOM."
+```
+
+**Cross-chain transfer:**
+```
+You: "Send 50 ATOM from Cosmos Hub to Osmosis"
+AI:  "IBC transfer: 50 ATOM to Osmosis. Fee: ~0.01 ATOM. Takes ~30 seconds. Confirm?"
+You: "Confirm"
+AI:  "Transfer sent! Check your Osmosis balance in about 30 seconds."
+```
+
+**Governance:**
+```
+You: "Show active proposals on Cosmos Hub"
+AI:  "There are 3 active proposals: ..."
+You: "Vote yes on proposal 123"
+AI:  "Vote YES on Proposal #123. Fee: ~0.005 ATOM. Confirm?"
+```
+
+## How Transactions Work
+
+Any action that moves your tokens follows a simple pattern:
+
+**1. You ask** — "Send 10 ATOM to cosmos1abc..."
+
+**2. AI shows a preview** — Amount, recipient, fee, and any warnings. Nothing happens yet.
+
+**3. You confirm** — Say "yes" or "confirm" to proceed. Or "no" to cancel.
+
+**4. Done** — The AI executes the transaction and shows you the result with a link to the block explorer.
+
+This applies to all transactions: sending, staking, swapping, voting, and IBC transfers. You always get a chance to review before anything happens.
+
+:::warning
+Some AI clients have features that could bypass confirmation prompts (e.g. Claude Code's "Dangerously skip permissions"). If such features are enabled, the AI could execute transactions without asking for your confirmation.
+:::
+
+## Shortcuts
+
+For step-by-step guided workflows, type a slash command:
+
+| Command | What it does |
+|---------|-------------|
+| `/get-started` | Walk you through the full setup |
+| `/create-account` | Guide you through wallet creation |
+| `/check-balances` | Help you check balances across chains |
+| `/stake` | Walk you through staking |
+| `/claim-rewards` | Help you claim staking rewards |
+| `/governance` | Guide you through voting |
+| `/ibc-transfer` | Walk you through cross-chain transfers |
+| `/osmosis-swap` | Guide you through a swap on Osmosis |
+
+**Example:**
+```
+You: "/stake"
+AI:  "Let me help you stake. First, let me check your balances...
+      You have 500 ATOM available. Here are the top validators..."
+```
+
+## Tips
+
+**Be specific about chains** — Keplr supports 50+ chains, so specify which one:
+```
+"Show my ATOM balance on Cosmos Hub"   ← clear
+"Show my balance"                      ← AI will ask which chain
+```
+
+**Review before confirming** — The AI always shows a preview with the amount, recipient, and fee before executing. Take a moment to check.
+
+**Name your wallets clearly** — Use descriptive names so you can easily switch between them:
+```
+"Create a Keplr wallet called trading"
+"Create a Keplr wallet called savings"
+```
+
+**Check quotes before large swaps** — For big trades, ask for a quote first to see the exchange rate and price impact:
+```
+"How much ATOM would I get for 1000 OSMO?"
+```
+
+## When Something Goes Wrong
+
+**"Insufficient funds"** — You don't have enough tokens for the transaction plus the fee. Check your balance and try a smaller amount.
+
+**"Network error" or "RPC timeout"** — The blockchain network is temporarily unreachable. Wait a moment and try again.
+
+**"Confirmation expired"** — You took too long to confirm. Just ask again and the AI will create a new transaction.
+
+**"Invalid address"** — Double-check the recipient address. Each chain has its own format (e.g. `cosmos1...` for Cosmos Hub, `osmo1...` for Osmosis).
+
+In most cases, the AI will explain what went wrong and suggest what to do next.
+
+## Supported AI Clients
+
+| Client | Status | Notes |
+|--------|--------|-------|
+| **Claude Code** | Full Support | Best compatibility, most tested |
+| Claude Desktop | Full Support | Via local MCP |
+| Other local MCP clients | Full Support | Must run on the same machine |
+
+**Remote MCP is not supported.** Keplr Wallet MCP runs locally on your computer. Cloud-based or remote MCP clients cannot connect to it.
+
+## Next Steps
+
+- [Check your balances](/guides/cosmos/balances)
+- [View all available tools](/reference)

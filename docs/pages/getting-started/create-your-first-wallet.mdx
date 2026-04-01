@@ -1,0 +1,59 @@
+# Create Your First Wallet
+
+Set up your wallet in seconds — just ask your AI assistant.
+
+## Create a new wallet
+
+**1.** Tell Claude:
+
+> "Create a new Keplr wallet called my-wallet"
+
+**2.** Claude will generate a wallet and store it securely in your OS credential store (e.g. macOS Keychain). You'll see your wallet addresses for Cosmos chains.
+
+**3.** Verify it worked:
+
+> "Show my accounts"
+
+Your new wallet should appear as the active account.
+
+**That's it!** Your wallet is ready to use. The recovery phrase is encrypted and stored locally — it is not displayed in the conversation.
+
+## Import an existing wallet
+
+**1.** Tell Claude:
+
+> "Import my wallet called trading with mnemonic: word1 word2 ... word24"
+
+:::warning
+This will leave your mnemonic as plain text in the conversation history. To avoid exposure, use the `KEPLR_MNEMONIC` environment variable instead. See [Environment Variables](/reference/environment#keplr_mnemonic) for details.
+:::
+
+**2.** Claude will import the wallet and store it securely in your OS credential store (e.g. macOS Keychain). You'll see your wallet addresses for Cosmos chains.
+
+**3.** Verify it worked:
+
+> "Show my accounts"
+
+Your imported wallet should appear as the active account.
+
+## What can I do next?
+
+Once your wallet is set up, try asking Claude:
+
+- **"Show my balances on Cosmos Hub"** — Check your token balances
+- **"Stake 100 ATOM to a good validator"** — Start earning rewards
+- **"Swap 50 OSMO for ATOM"** — Trade tokens on Osmosis
+
+## Export your recovery phrase
+
+If you need to back up your recovery phrase:
+
+> "Export my recovery phrase"
+
+**Keep it safe.** The 24-word recovery phrase is the only way to restore your wallet. Write it down and store it offline — never share it with anyone.
+
+## Next Steps
+
+- [Learn how to talk to your wallet](/getting-started/talking-to-your-wallet)
+- [Set up security](/getting-started/set-up-security)
+- [Start staking](/guides/cosmos/staking)

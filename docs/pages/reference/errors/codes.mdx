@@ -6,242 +6,274 @@ Reference for all error categories and handling.
 
 | Category | Pattern | Recoverable | Description |
 |----------|---------|-------------|-------------|
-| `NETWORK` | timeout, econnrefused, fetch failed | Yes | Network/RPC issues |
-| `VALIDATION` | invalid, required, insufficient | No | Input validation |
-| `WALLET` | session expired, user rejected | Yes | Wallet/signing issues |
+| `TIMEOUT` | timeout, timed out, deadline exceeded | Yes | Operation timeout |
+| `NETWORK` | network, econnrefused, fetch failed | Yes | Network/RPC issues |
+| `VALIDATION` | insufficient, invalid address, slippage, contract not found, invalid ABI | Varies | Input validation (slippage errors are recoverable) |
+| `WALLET` | user rejected, cancelled, signing failed | Yes | Wallet/signing issues |
 | `SETUP_REQUIRED` | no mnemonic, no account | Yes | Onboarding needed |
-| `AUTH` | auth failed, biometric | No | Authentication issues |
-| `TIMEOUT` | timeout, deadline exceeded | Yes | Operation timeout |
-| `CHAIN` | gas, revert, nonce, sequence | Varies | Blockchain errors |
+| `AUTH` | *(no matching patterns in classifyError)* | N/A | Authentication issues (category exists but has no patterns in the error classification system) |
+| `CHAIN` | gas, rpc error, sequence mismatch, revert, nonce, LCD parse error | Varies | Blockchain errors |
 | `UNKNOWN` | unrecognized | No | Unexpected errors |
 
----
+> **Note:** The `AUTH` category is defined in `ErrorCategory` enum but has no matching patterns in the `classifyError` function. Auth-related errors will be classified as `UNKNOWN` unless explicitly constructed.
+
+
+## TIMEOUT Errors
+
+### Operation Timeout
+
+```json
+{
+  "category": "timeout",
+  "message": "The operation timed out",
+  "recoverable": true,
+  "suggestion": "The operation timed out. Check your network connection and try again."
+}
+```
+
+**Patterns:** `timeout`, `timed out`, `deadline exceeded`
+
+### Token Expired
+
+```json
+{
+  "category": "timeout",
+  "message": "Confirmation token expired",
+  "recoverable": true,
+  "suggestion": "The confirmation token expired. Please request the transaction again."
+}
+```
+
+**Patterns:** `expired token`, `token expired`, `invalid token`, `confirmation expired`
+
 
 ## NETWORK Errors
 
-### Connection Timeout
+### Connection Failed
 
 ```json
 {
-  "error": {
-    "category": "NETWORK",
-    "code": "TIMEOUT",
-    "message": "RPC request timed out after 30s",
-    "recoverable": true,
-    "suggestion": "The network may be congested. Try again in a moment."
-  }
+  "category": "network",
+  "message": "Could not connect to RPC endpoint",
+  "recoverable": true,
+  "suggestion": "Network error occurred. Check your internet connection and try again."
 }
 ```
 
-**Causes:**
-- Network congestion
-- RPC node overload
-- Internet connectivity
+**Patterns:** `network`, `econnrefused`, `enotfound`, `fetch failed`, `connection refused`, `failed to fetch`
 
-**Solutions:**
-- Wait and retry
-- Use different RPC endpoint
-- Check internet connection
-
-### Connection Refused
+### Rate Limiting
 
 ```json
 {
-  "error": {
-    "category": "NETWORK",
-    "code": "ECONNREFUSED",
-    "message": "Could not connect to RPC endpoint",
-    "recoverable": true,
-    "suggestion": "RPC endpoint may be down. Try again later."
-  }
+  "category": "network",
+  "message": "Rate limit exceeded (429)",
+  "recoverable": true,
+  "suggestion": "Rate limit exceeded. Please wait a moment before trying again."
 }
 ```
 
----
+**Patterns:** `rate limit`, `too many requests`, `429`
+
 
 ## VALIDATION Errors
+
+### Insufficient Balance
+
+```json
+{
+  "category": "validation",
+  "message": "Insufficient balance for this transaction",
+  "recoverable": false,
+  "suggestion": "Insufficient balance. Please add funds to your wallet and try again."
+}
+```
+
+**Patterns:** `insufficient`, `not enough`, `balance low`, `low balance`, `balance is lower`
 
 ### Invalid Address
 
 ```json
 {
-  "error": {
-    "category": "VALIDATION",
-    "code": "INVALID_ADDRESS",
-    "message": "Invalid Cosmos address format",
-    "details": {
-      "provided": "cosmos1invalid",
-      "expected": "Bech32 address starting with 'cosmos1'"
-    },
-    "recoverable": false
-  }
+  "category": "validation",
+  "message": "Invalid Cosmos address format",
+  "recoverable": false,
+  "suggestion": "The address format is invalid. Please check and correct it."
 }
 ```
 
-### Missing Required Parameter
+**Patterns:** `invalid address`, `address invalid`, `bech32`, `checksum`
+
+### Slippage Exceeded
 
 ```json
 {
-  "error": {
-    "category": "VALIDATION",
-    "code": "REQUIRED_PARAM",
-    "message": "Missing required parameter: chain",
-    "recoverable": false
-  }
+  "category": "validation",
+  "message": "Price moved beyond slippage tolerance",
+  "recoverable": true,
+  "suggestion": "The price moved beyond slippage tolerance. Try again with higher slippage or a smaller amount."
 }
 ```
 
-### Invalid Amount
+**Patterns:** `slippage`, `price impact`, `price moved`
+
+### CosmWasm Message Error
 
 ```json
 {
-  "error": {
-    "category": "VALIDATION",
-    "code": "INVALID_AMOUNT",
-    "message": "Amount must be a positive number",
-    "details": {
-      "provided": "-100",
-      "expected": "Positive number (e.g., '100' or '100.5')"
-    }
-  }
+  "category": "validation",
+  "message": "Error parsing into type ExecuteMsg: unknown variant `foo`",
+  "recoverable": false,
+  "suggestion": "The contract message format is incorrect. Check the error for valid message variants and retry with the correct format."
 }
 ```
 
----
+**Patterns:** `unknown variant`, `Error parsing into type`, `missing field`
+
+### Contract Not Found (EVM)
+
+```json
+{
+  "category": "validation",
+  "message": "No contract found at the specified address",
+  "recoverable": false,
+  "suggestion": "No contract found at the specified address. Check the contract address and chain."
+}
+```
+
+### Invalid ABI (EVM)
+
+```json
+{
+  "category": "validation",
+  "message": "Invalid ABI or function name",
+  "recoverable": false,
+  "suggestion": "Invalid ABI or function name. Check the contract ABI and function signature."
+}
+```
+
 
 ## WALLET Errors
 
-### No Wallet Configured
+### User Rejected
 
 ```json
 {
-  "error": {
-    "category": "WALLET",
-    "code": "NOT_CONFIGURED",
-    "message": "No wallet is configured",
-    "recoverable": false,
-    "setupGuide": {
-      "options": [
-        { "tool": "create-account", "description": "Generate new wallet" },
-        { "tool": "import-account", "description": "Import existing" }
-      ],
-      "recommendation": "create-account"
-    }
-  }
+  "category": "wallet",
+  "message": "Transaction rejected by user",
+  "recoverable": true,
+  "suggestion": "The transaction was rejected or cancelled. You can try again if needed."
 }
 ```
 
-### Invalid Mnemonic
+**Patterns:** `user rejected`, `user denied`, `rejected by user`, `cancelled`, `signing failed`
 
-```json
-{
-  "error": {
-    "category": "WALLET",
-    "code": "INVALID_MNEMONIC",
-    "message": "Invalid mnemonic phrase",
-    "details": {
-      "reason": "Checksum validation failed",
-      "wordCount": 23,
-      "expected": "12 or 24 words"
-    }
-  }
-}
-```
-
----
 
 ## SETUP_REQUIRED Errors
 
 ### Onboarding Required
 
-```json
-{
-  "error": {
-    "category": "SETUP_REQUIRED",
-    "code": "ONBOARDING_REQUIRED",
-    "message": "Wallet setup required before this operation",
-    "attemptedAction": "get-balances",
-    "setupGuide": {
-      "prompt": "/get-started",
-      "description": "Complete the onboarding flow"
-    }
-  }
-}
-```
-
----
-
-## AUTH Errors
-
-### Authentication Failed
+The `createSetupRequiredResponse` function returns a non-error guide:
 
 ```json
 {
-  "error": {
-    "category": "AUTH",
-    "code": "AUTH_FAILED",
-    "message": "Biometric authentication failed",
-    "recoverable": false,
-    "suggestion": "Try authenticating again"
-  }
-}
-```
-
-### Authentication Required
-
-```json
-{
-  "error": {
-    "category": "AUTH",
-    "code": "AUTH_REQUIRED",
-    "message": "This operation requires authentication",
-    "suggestion": "Use auth-setup to configure authentication"
-  }
-}
-```
-
----
-
-## INSUFFICIENT_FUNDS Errors
-
-### Not Enough Balance
-
-```json
-{
-  "error": {
-    "category": "INSUFFICIENT_FUNDS",
-    "code": "INSUFFICIENT_BALANCE",
-    "message": "Insufficient balance for this transaction",
-    "details": {
-      "required": {
-        "amount": "100 ATOM",
-        "fee": "0.01 ATOM",
-        "total": "100.01 ATOM"
+  "status": "setup_required",
+  "message": "No wallet is configured yet. Choose one of the options below to get started.",
+  "attemptedAction": "get-balances",
+  "setupGuide": {
+    "options": [
+      {
+        "tool": "create-account",
+        "description": "Generate a new wallet with a fresh mnemonic phrase",
+        "recommendedFor": "New users who don't have an existing wallet"
       },
-      "available": "50 ATOM"
-    },
-    "suggestion": "Reduce the amount or add more funds"
+      {
+        "tool": "import-account",
+        "description": "Import an existing wallet using your mnemonic phrase",
+        "recommendedFor": "Users who already have a wallet they want to use"
+      }
+    ],
+    "recommendation": "create-account",
+    "tip": "For best security, enable biometric authentication with 'auth-setup' after creating your account."
   }
 }
 ```
 
-### Insufficient Gas
+When classified as an error via `classifyError`:
 
 ```json
 {
-  "error": {
-    "category": "INSUFFICIENT_FUNDS",
-    "code": "INSUFFICIENT_GAS",
-    "message": "Not enough funds to pay for gas",
-    "details": {
-      "estimatedGas": "0.005 ATOM",
-      "available": "0.001 ATOM"
-    }
-  }
+  "category": "setup_required",
+  "message": "No mnemonic configured. Use create-account or import-account.",
+  "recoverable": true,
+  "suggestion": "No wallet is configured yet. Create a new account or import an existing wallet to get started."
 }
 ```
 
----
+**Patterns:** `no mnemonic configured`, `no active account`, `account not found`, `mnemonic not stored`, `use create-account`, `use import-account`
+
+
+## CHAIN Errors
+
+### Gas Estimation Failed
+
+```json
+{
+  "category": "chain",
+  "message": "Out of gas in location: ...",
+  "recoverable": true,
+  "suggestion": "Gas estimation failed. The transaction may require more gas. Try again with a higher gas limit."
+}
+```
+
+**Patterns:** `out of gas`, `gas estimation failed`, `gas price too low`, `gas limit exceeded`, `gas wanted exceeded`
+
+### RPC Error
+
+```json
+{
+  "category": "chain",
+  "message": "RPC error: sequence mismatch",
+  "recoverable": true,
+  "suggestion": "Chain RPC error occurred. Wait a moment and try again. If the issue persists, the chain may be congested."
+}
+```
+
+**Patterns:** `rpc error`, `chain error`, `broadcast fail`, `sequence mismatch`, `account sequence`
+
+### EVM Nonce Conflict
+
+```json
+{
+  "category": "chain",
+  "message": "Nonce too low",
+  "recoverable": true,
+  "suggestion": "Transaction nonce conflict. A previous transaction may be pending. Wait a moment and try again."
+}
+```
+
+### EVM Contract Execution Failed
+
+```json
+{
+  "category": "chain",
+  "message": "Execution reverted",
+  "recoverable": false,
+  "suggestion": "Smart contract execution failed. The transaction conditions were not met (e.g., insufficient allowance, invalid parameters)."
+}
+```
+
+### LCD Parse Error
+
+```json
+{
+  "category": "chain",
+  "message": "Non-JSON response from LCD endpoint",
+  "recoverable": true,
+  "suggestion": "The chain endpoint returned an invalid response. Try again or check endpoint health."
+}
+```
+
 
 ## Transaction Warnings
 
@@ -253,7 +285,8 @@ Warnings included in transaction previews. These are non-blocking — transactio
 | `LARGE_AMOUNT` | warning | Amount > 90% of balance |
 | `LOW_BALANCE_AFTER` | warning | Remaining balance < 10% after transaction |
 | `UNSTAKING_PERIOD` | info | Undelegate operation (21-day unbonding) |
-| `GAS_TOKEN_EXHAUSTION` | warning/critical | Remaining gas token balance < 3× estimated fee after transfer |
+| `GAS_TOKEN_EXHAUSTION` | warning/critical | Remaining gas token balance < 3x estimated fee after transfer |
+| `DENOM_NOT_IN_BALANCES` | warning | Requested denom not found in on-chain balances |
 
 ### GAS_TOKEN_EXHAUSTION
 
@@ -283,60 +316,21 @@ Triggered when a `send-tokens` or `ibc-transfer` would leave insufficient gas to
 - `warning` — remaining balance is positive but below the reserve threshold
 - `critical` — remaining balance would be zero or negative (subsequent transactions will fail)
 
----
 
-## TRANSACTION Errors
+## ClassifiedError Interface
 
-### Transaction Failed
+The `classifyError` function returns a `ClassifiedError` object:
 
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "TX_FAILED",
-    "message": "Transaction failed",
-    "details": {
-      "txHash": "ABC123...",
-      "reason": "out of gas",
-      "gasUsed": "100000",
-      "gasLimit": "80000"
-    },
-    "suggestion": "Increase gas limit and retry"
-  }
+```typescript
+interface ClassifiedError {
+  category: ErrorCategory;   // "network" | "validation" | "wallet" | "timeout" | "auth" | "chain" | "setup_required" | "unknown"
+  message: string;           // Original error message
+  recoverable: boolean;      // Whether the operation can be retried
+  suggestion?: string;       // How to resolve the error
+  retryAction?: RetryAction; // Added by enhanceWithRetryAction()
+  setupGuide?: SetupGuide;   // Added for SETUP_REQUIRED errors
 }
 ```
-
-### Transaction Rejected
-
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "TX_REJECTED",
-    "message": "Transaction rejected by user",
-    "recoverable": false
-  }
-}
-```
-
-### Confirmation Expired
-
-```json
-{
-  "error": {
-    "category": "TRANSACTION",
-    "code": "CONFIRMATION_EXPIRED",
-    "message": "Confirmation token expired",
-    "details": {
-      "ttl": "5 minutes",
-      "expiredAt": "2024-01-01T00:05:00Z"
-    },
-    "suggestion": "Re-initiate the transaction"
-  }
-}
-```
-
----
 
 ## Error Handling in Code
 

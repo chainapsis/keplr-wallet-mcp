@@ -70,7 +70,7 @@ cp .mcp.json.example .mcp.json
 
 ### Advanced Configuration
 
-For plugin registration, RPC overrides, or toolset filtering, create a `keplr-mcp.config.ts` in your working directory. See the [SDK docs](docs/pages/sdk/quick-start.mdx) for details.
+For plugin registration, RPC overrides, or toolset filtering, create a `keplr-mcp.config.ts` in your working directory. See the [Environment Variables](docs/pages/reference/environment.mdx) for details.
 
 ## Getting Started
 

@@ -6,20 +6,21 @@ Configuration options for Keplr Wallet MCP.
 
 | Variable | Description | Required |
 |----------|-------------|----------|
+| `KEPLR_MNEMONIC` | Wallet recovery phrase (env-based import) | No |
 | `KEPLR_RPC_API_KEY` | Keplr infrastructure RPC/LCD API key | No |
 | `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
-| `KEPLR_MNEMONIC` | Pre-configured mnemonic (dev only) | No |
 | `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
+| `SKIP_API_URL` | Skip API base URL (default: `https://api.skip.build`) | No |
+| `SKIP_API_KEY` | Skip API key for IBC routing and Osmosis swaps | No |
 
-For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
+Plugin configuration (plugins, toolsets, RPC overrides) is done via the config file, not environment variables.
 
----
 
 ## Wallet Configuration
 
 ### `KEPLR_MNEMONIC`
 
-Pre-configure a mnemonic phrase (development only).
+If you want to avoid exposing your mnemonic in the AI conversation window and chat history, you can set it directly as an environment variable. When set, the server automatically registers it as an `env` account on startup.
 
 ```json
 {
@@ -29,9 +30,10 @@ Pre-configure a mnemonic phrase (development only).
 }
 ```
 
-:::warning
-Never use this in production. The mnemonic is exposed in configuration files.
-:::
+- Supports 12/15/18/21/24 word mnemonics.
+- The mnemonic is never saved to the keychain — it is read from the environment variable each time.
+- No need to use the `import-account` tool in the conversation.
+
 
 ### `KEPLR_TX_TTL_MINUTES`
 
@@ -47,7 +49,6 @@ Transaction confirmation token time-to-live.
 
 Default: `5` minutes
 
----
 
 ## Price Data
 
@@ -72,16 +73,12 @@ Get an API key from [CoinGecko API](https://www.coingecko.com/en/api).
 | Request throttle | 2s between requests | None |
 | Retry on rate limit | 3 retries with exponential backoff | 1 retry |
 
----
 
 ## RPC Configuration
 
 ### `KEPLR_RPC_API_KEY`
 
-Keplr infrastructure API key. When set, routes RPC and REST requests through `api.keplr.app` for [supported chains](/reference/chains#keplr-infrastructure) with 2-tier priority:
-
-1. **Keplr infrastructure** — `api.keplr.app/rpc/{chain}` + `X-API-Key` header
-2. **Public fallback** — chain-registry endpoints (used when API key is absent or chain is unsupported)
+Keplr infrastructure API key. When set, uses Keplr's dedicated RPC endpoints for [supported chains](/reference/chains#keplr-infrastructure) instead of public fallbacks.
 
 Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then add it to your config:
 
@@ -93,38 +90,41 @@ Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then ad
 }
 ```
 
-Per-chain overrides and plugin configuration are done in the [config file](#config-file).
+Per-chain overrides and plugin configuration are done in the config file.
 
----
 
-## Config File
+## Skip API
 
-For plugin registration, toolset filtering, and RPC overrides, use a `keplr-mcp.config.ts` file:
+### `SKIP_API_URL`
 
-```typescript
-import { defineConfig } from "@keplr-wallet/keplr-wallet-mcp";
-import osmosisPlugin from "@keplr-wallet/protocol-osmosis";
+Base URL for the Skip API, used for IBC routing and Osmosis swap routes.
 
-export default defineConfig({
-  plugins: [
-    osmosisPlugin(),
-    // "my-custom-plugin",  // string = auto-import npm package default export
-  ],
-  toolsets: {
-    default: ["cosmos-query", "cosmos-transaction"],
-  },
-  rpc: {
-    apiKey: process.env.KEPLR_RPC_API_KEY,
-    overrides: {
-      "cosmoshub-4": "https://my-own-rpc.example.com",
-    },
-  },
-});
+```json
+{
+  "env": {
+    "SKIP_API_URL": "https://api.skip.build"
+  }
+}
 ```
 
-See [Plugin System](/architecture/plugin-system) for details.
+Default: `https://api.skip.build`
+
+### `SKIP_API_KEY`
+
+Skip API key for authenticated access. When set, requests include an `authorization` header. Without a key, the public API is used with no authentication.
+
+```json
+{
+  "env": {
+    "SKIP_API_KEY": "your-skip-api-key"
+  }
+}
+```
+
+The Skip API client is a simple fetch wrapper with a 15-second timeout. There is no built-in retry logic, throttle, or cooldown.
 
 ---
+
 
 ## Full Configuration Example
 
@@ -155,12 +155,9 @@ See [Plugin System](/architecture/plugin-system) for details.
 # Price Data (optional)
 COINGECKO_API_KEY=CG-xxxxxxxxxxxxxxxxxxxx
 
-# Development only
-KEPLR_MNEMONIC=test test test test test test test test test test test junk
 KEPLR_TX_TTL_MINUTES=30
 ```
 
----
 
 ## Environment Variable Priority
 
@@ -168,7 +165,6 @@ KEPLR_TX_TTL_MINUTES=30
 2. **System environment**: Falls back if not in config
 3. **Defaults**: Used if not set anywhere
 
----
 
 ## Verifying Configuration
 

@@ -14,7 +14,6 @@ Tools for managing authentication including biometric and TOTP (Google Authentic
 | `auth-available-methods` | Check available auth methods for an action | Yes |
 | `auth-provider-disable` | Disable specific auth provider | No |
 
----
 
 ## `auth-status`
 
@@ -42,11 +41,10 @@ None required.
       "authenticatorType": "google",
       "note": "Ready to use"
     }
-  },
+  }
 }
 ```
 
----
 
 ## `auth-enable`
 
@@ -66,7 +64,6 @@ None required.
 }
 ```
 
----
 
 ## `auth-disable`
 
@@ -89,7 +86,6 @@ None required.
 Disabling authentication reduces security. Only recommended for development.
 :::
 
----
 
 ## `auth-setup`
 
@@ -100,9 +96,9 @@ Configure an authentication provider. Supports biometric (Touch ID/Face ID) and 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `provider` | `"biometric" \| "totp"` | Yes | Auth provider type |
-| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to require auth for (default: "delete_account") |
 | `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
-| `accountLabel` | `string` | No | For TOTP: Label shown in authenticator app (default: "keplr-wallet") |
+| `accountLabel` | `string` | No | For TOTP: Label shown in authenticator app (default: "Keplr Wallet") |
 
 ### Response (Biometric)
 
@@ -113,7 +109,9 @@ Biometric setup completes immediately:
   "success": true,
   "setupPending": false,
   "provider": "biometric",
-  "message": "Authentication provider 'biometric' enabled for 'delete_account'"
+  "message": "Authentication provider 'biometric' enabled for: delete_account, export_mnemonic",
+  "setupResult": { ... },
+  "status": { ... }
 }
 ```
 
@@ -138,7 +136,9 @@ The response includes two content blocks:
     "tool": "auth-verify-setup",
     "params": {
       "provider": "totp",
-      "code": "<6-digit code from app>"
+      "code": "<6-digit code from app>",
+      "action": "delete_account",
+      "protectDestructiveActions": true
     }
   }
 }
@@ -153,11 +153,11 @@ When TOTP is already set up and you call `auth-setup` to add it to additional ac
   "success": true,
   "setupPending": false,
   "provider": "totp",
-  "message": "TOTP already configured. Enabled for: delete_account"
+  "message": "TOTP already configured. Enabled for: delete_account, export_mnemonic",
+  "status": { ... }
 }
 ```
 
----
 
 ## `auth-verify-setup`
 
@@ -169,7 +169,7 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 |------|------|----------|-------------|
 | `provider` | `"totp"` | Yes | Currently only "totp" is supported |
 | `code` | `string` | Yes | 6-digit verification code from authenticator app |
-| `action` | `string` | No | Action to require auth for (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to require auth for (default: "delete_account") |
 | `protectDestructiveActions` | `boolean` | No | Also enable auth for destructive actions like delete_account (default: true) |
 
 ### Response (Success)
@@ -178,8 +178,9 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 {
   "success": true,
   "provider": "totp",
-  "message": "TOTP (Google Authenticator) setup complete and enabled for 'delete_account'",
-  "verifiedAt": "2024-01-01T00:00:00.000Z"
+  "message": "TOTP (Google Authenticator) setup complete and enabled for: delete_account, export_mnemonic",
+  "verifiedAt": "2024-01-01T00:00:00.000Z",
+  "status": { ... }
 }
 ```
 
@@ -196,7 +197,6 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 }
 ```
 
----
 
 ## `auth-available-methods`
 
@@ -206,7 +206,7 @@ Check which authentication methods are available and configured for a specific a
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `action` | `string` | No | Action to check (default: "delete_account") |
+| `action` | `"delete_account" \| "export_mnemonic"` | No | Action to check authentication for (default: "delete_account") |
 
 ### Response
 
@@ -221,7 +221,7 @@ Check which authentication methods are available and configured for a specific a
       "available": true,
       "configured": true,
       "requiresCode": true,
-      "note": "TOTP code collected via elicitation"
+      "note": "Provide totpCode parameter with 6-digit code"
     },
     {
       "id": "biometric",
@@ -238,7 +238,6 @@ Check which authentication methods are available and configured for a specific a
 }
 ```
 
----
 
 ## `auth-provider-disable`
 
@@ -256,11 +255,11 @@ Disable a specific authentication provider.
 {
   "success": true,
   "message": "Authentication provider 'totp' disabled",
-  "hint": "Use auth-setup --provider totp to set up again"
+  "hint": "Use auth-setup --provider totp to set up again",
+  "status": { ... }
 }
 ```
 
----
 
 ## Authentication Flow
 
@@ -294,7 +293,6 @@ Regular transactions (send, delegate, swap, etc.) use `confirm-action` without a
 - **Lockout duration**: 5 minutes
 - **Behavior**: During lockout, TOTP fails as a hard error, allowing fallback to other methods (e.g., biometric)
 
----
 
 ## Setting Up TOTP (Google Authenticator)
 
@@ -327,7 +325,6 @@ Request: auth-verify-setup --provider totp --code 123456
 Response: { "success": true, "message": "TOTP setup complete" }
 ```
 
----
 
 ## Recommended Settings
 
@@ -337,7 +334,6 @@ Response: { "success": true, "message": "TOTP setup complete" }
 | Development | Optional | Biometric |
 | High Security | Yes | Both |
 
----
 
 ## Supported Authenticator Apps
 
