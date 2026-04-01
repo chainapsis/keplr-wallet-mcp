@@ -151,13 +151,11 @@ describe("CosmosClient broadcast & fee calculation", () => {
       gasUsed: BigInt(80000),
       gasWanted: BigInt(100000),
     });
-    mockSign = vi
-      .fn()
-      .mockResolvedValue({
-        bodyBytes: new Uint8Array(),
-        authInfoBytes: new Uint8Array(),
-        signatures: [],
-      });
+    mockSign = vi.fn().mockResolvedValue({
+      bodyBytes: new Uint8Array(),
+      authInfoBytes: new Uint8Array(),
+      signatures: [],
+    });
     mockSimulate = vi.fn().mockResolvedValue(100000);
 
     const mockClient = {
