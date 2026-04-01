@@ -65,7 +65,7 @@ const getToolHandler = async (toolName: string) => {
 
 describe("Confirm Tools", () => {
   beforeEach(() => {
-    // Clear pending transactions before each test
+    store.getState().resetClients();
     store.setState({ pending: new Map() });
     vi.clearAllMocks();
   });

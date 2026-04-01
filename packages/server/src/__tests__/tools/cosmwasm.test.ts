@@ -66,7 +66,7 @@ describe("CosmWasm Tools", () => {
   });
 
   afterEach(() => {
-    vi.resetModules();
+    vi.clearAllMocks();
   });
 
   describe("cosmwasm-query", () => {

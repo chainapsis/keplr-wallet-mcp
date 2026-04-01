@@ -309,6 +309,7 @@ describe("TotpProvider", () => {
     const TEST_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
 
     beforeEach(() => {
+      keytarStore.clear();
       // Set secret in keytar store
       keytarStore.set("keplr-mcp-server:totp-secret", TEST_SECRET);
 

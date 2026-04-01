@@ -49,13 +49,12 @@ describe("vault-key", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockExistsSync.mockReturnValue(false); // default: native unavailable
-    Object.defineProperty(process, "platform", { value: originalPlatform });
     // Opt out of Layer 2 env guard: this test file mocks child_process and
     // fs.existsSync directly to exercise the native code path safely.
     delete process.env.__KEPLR_TEST_NO_NATIVE_KEYCHAIN;
   });
 
-  afterAll(() => {
+  afterEach(() => {
     Object.defineProperty(process, "platform", { value: originalPlatform });
   });
 
