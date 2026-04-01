@@ -24,6 +24,10 @@ Your new wallet should appear as the active account.
 
 > "Import my wallet called trading with mnemonic: word1 word2 ... word24"
 
+:::warning
+This will leave your mnemonic as plain text in the conversation history. To avoid exposure, use the `KEPLR_MNEMONIC` environment variable instead. See [Environment Variables](/reference/environment#keplr_mnemonic) for details.
+:::
+
 **2.** Claude will import the wallet and store it securely in your OS credential store (e.g. macOS Keychain). You'll see your wallet addresses for Cosmos chains.
 
 **3.** Verify it worked:

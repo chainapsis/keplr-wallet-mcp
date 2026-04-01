@@ -41,18 +41,12 @@ export default defineConfig({
       text: "Tutorials",
       collapsed: false,
       items: [
-        {
-          text: "Cosmos",
-          collapsed: true,
-          items: [
-            { text: "Check Balances", link: "/guides/cosmos/balances" },
-            { text: "Send Tokens", link: "/guides/cosmos/send" },
-            { text: "Staking", link: "/guides/cosmos/staking" },
-            { text: "Governance", link: "/guides/cosmos/governance" },
-            { text: "CosmWasm", link: "/guides/cosmos/cosmwasm" },
-            { text: "Osmosis Swap", link: "/guides/cosmos/osmosis-swap" },
-          ],
-        },
+        { text: "Check Balances", link: "/guides/cosmos/balances" },
+        { text: "Send Tokens", link: "/guides/cosmos/send" },
+        { text: "Staking", link: "/guides/cosmos/staking" },
+        { text: "Governance", link: "/guides/cosmos/governance" },
+        { text: "CosmWasm", link: "/guides/cosmos/cosmwasm" },
+        { text: "Osmosis Swap", link: "/guides/cosmos/osmosis-swap" },
       ],
     },
     {
@@ -80,6 +74,15 @@ export default defineConfig({
               link: "/reference/tools/cosmos-signing",
             },
             { text: "Osmosis", link: "/reference/tools/osmosis" },
+            {
+              text: "Transaction Confirm",
+              link: "/reference/tools/transaction-confirm",
+            },
+            {
+              text: "Multi-Action",
+              link: "/reference/tools/multi-action",
+            },
+{ text: "Meta", link: "/reference/tools/meta" },
             {
               text: "Keplr Endpoints API",
               link: "/reference/tools/keplr-rpc",

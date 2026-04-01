@@ -1,0 +1,90 @@
+# Meta Tools
+
+Tools for discovering and exploring available Keplr tools.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `search-tools` | Search tools by keyword, category, or ecosystem | Yes |
+| `describe-tools` | Get full details for specific tools by name | Yes |
+
+
+## `search-tools`
+
+Search available Keplr tools by keyword, category, or ecosystem. Use this first to discover which tools can help with your task.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `string` | No | Keyword search (e.g., `send cosmos`, `swap`, `balance`, `stake`) |
+| `category` | `string` | No | Filter by category (use without query to list all tools in category) |
+| `ecosystem` | `string` | No | Filter by blockchain ecosystem (`cosmos` or `all`, default: `all`) |
+
+### Response
+
+```json
+{
+  "results": [
+    {
+      "name": "send-tokens",
+      "description": "Send tokens to another address",
+      "category": "cosmos-transaction",
+      "ecosystem": "cosmos",
+      "risk": "destructive"
+    }
+  ],
+  "total": 1,
+  "categories": [
+    "account-management",
+    "cosmos-query",
+    "cosmos-transaction",
+    "cosmwasm",
+    "defi-osmosis"
+  ],
+  "hint": "Use describe-tools with specific tool names to get full usage details."
+}
+```
+
+
+## `describe-tools`
+
+Get full details (description, parameters, category, risk level) for specific tools by name. Use after `search-tools` to get usage information.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `names` | `string[]` | Yes | Tool names to describe (from `search-tools` results) |
+
+### Response
+
+```json
+{
+  "tools": [
+    {
+      "name": "send-tokens",
+      "description": "Send tokens to another address on a Cosmos chain",
+      "category": "cosmos-transaction",
+      "ecosystem": "cosmos",
+      "risk": "destructive",
+      "keywords": ["send", "transfer", "tokens"],
+      "liveSchema": {
+        "description": "Send tokens to another address",
+        "annotations": { "destructiveHint": true },
+        "parameters": ["chain", "recipientAddress", "amount", "denom"],
+        "enabled": true
+      }
+    }
+  ],
+  "notFound": []
+}
+```
+
+When a tool name is not found, it appears in the `notFound` array with a hint to use `search-tools`.
+
+
+## Related
+
+- [Overview](/reference) - Tool categories and counts

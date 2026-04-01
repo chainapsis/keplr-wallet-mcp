@@ -1,0 +1,132 @@
+# Transaction Confirm Tools
+
+Tools for confirming, listing, and cancelling pending transactions.
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `confirm-action` | Confirm and execute a pending transaction | No |
+| `list-pending-actions` | List all pending transactions awaiting confirmation | Yes |
+| `cancel-pending-action` | Cancel a pending transaction | Yes |
+| `list-transaction-history` | View past transaction history | Yes |
+
+
+## `confirm-action`
+
+Confirm and execute a pending transaction using the confirmation token returned by a transaction tool.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `confirmationToken` | `string` | Yes | The confirmation token returned by a transaction tool |
+| `totpCode` | `string` | No | 6-digit TOTP code from authenticator app. Required only for TOTP-only auth when the client does not support elicitation. |
+
+### Response
+
+```json
+{
+  "txHash": "ABC123...",
+  "suggestedActions": [
+    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated token balances", "priority": 2 },
+    { "tool": "get-staking-info", "reason": "Check updated staking positions and rewards", "priority": 3 }
+  ]
+}
+```
+
+If authentication is not enabled, a `securityWarning` field is included with a suggestion to use `auth-enable`.
+
+
+## `list-pending-actions`
+
+List all pending transactions awaiting confirmation. Shows token (truncated for security), summary, chain, and time remaining.
+
+### Parameters
+
+None.
+
+### Response
+
+```json
+{
+  "message": "2 pending transaction(s)",
+  "count": 2,
+  "pending": [
+    {
+      "tokenPreview": "abc12345...",
+      "summary": "Send 100 ATOM to cosmos1...",
+      "chain": "cosmoshub-4",
+      "expiresIn": "4 minutes",
+      "expiresAt": 1735689600000
+    }
+  ],
+  "tip": "Use cancel-pending-action with the full token to cancel a transaction before it expires."
+}
+```
+
+
+## `cancel-pending-action`
+
+Cancel a pending transaction before it is confirmed. Requires the full confirmation token.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `confirmationToken` | `string` | Yes | The full confirmation token to cancel |
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Transaction cancelled successfully",
+  "cancelledTransaction": {
+    "summary": "Send 100 ATOM to cosmos1...",
+    "chain": "cosmoshub-4"
+  }
+}
+```
+
+
+## `list-transaction-history`
+
+View past transaction history. Shows recent transactions with their status, chain, and results.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | No | Filter by chain ID (e.g., `osmosis-1`, `cosmoshub-4`) |
+| `limit` | `number` | No | Maximum number of transactions to return (default: 20) |
+
+### Response
+
+```json
+{
+  "message": "Found 3 transaction(s)",
+  "count": 3,
+  "transactions": [
+    {
+      "id": "tx-001",
+      "summary": "Send 100 ATOM",
+      "status": "confirmed",
+      "chain": "cosmoshub-4",
+      "txHash": "ABC123...",
+      "timestamp": "2025-01-01T00:00:00.000Z",
+      "timeAgo": "2 hours ago"
+    }
+  ],
+  "suggestedActions": [
+    { "tool": "get-transaction-status", "reason": "Check status of most recent transaction", "priority": 1 }
+  ]
+}
+```
+
+
+## Related
+
+- [Cosmos Transaction](/reference/tools/cosmos-tx) - Transaction tools that produce confirmation tokens
+- [Authentication](/reference/tools/authentication) - Secure transactions with biometric or TOTP auth

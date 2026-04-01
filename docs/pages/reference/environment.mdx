@@ -6,6 +6,7 @@ Configuration options for Keplr Wallet MCP.
 
 | Variable | Description | Required |
 |----------|-------------|----------|
+| `KEPLR_MNEMONIC` | Wallet recovery phrase (env-based import) | No |
 | `KEPLR_RPC_API_KEY` | Keplr infrastructure RPC/LCD API key | No |
 | `COINGECKO_API_KEY` | CoinGecko Pro API key for portfolio prices | No |
 | `KEPLR_TX_TTL_MINUTES` | Transaction confirmation TTL | No |
@@ -16,6 +17,23 @@ Plugin configuration (plugins, toolsets, RPC overrides) is done via the config f
 
 
 ## Wallet Configuration
+
+### `KEPLR_MNEMONIC`
+
+If you want to avoid exposing your mnemonic in the AI conversation window and chat history, you can set it directly as an environment variable. When set, the server automatically registers it as an `env` account on startup.
+
+```json
+{
+  "env": {
+    "KEPLR_MNEMONIC": "word1 word2 word3 ... word24"
+  }
+}
+```
+
+- Supports 12/15/18/21/24 word mnemonics.
+- The mnemonic is never saved to the keychain — it is read from the environment variable each time.
+- No need to use the `import-account` tool in the conversation.
+
 
 ### `KEPLR_TX_TTL_MINUTES`
 
