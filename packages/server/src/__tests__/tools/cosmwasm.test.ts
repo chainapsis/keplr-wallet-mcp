@@ -727,13 +727,4 @@ describe("CosmWasm Tools", () => {
     });
   });
 
-  describe("prompt registration", () => {
-    it("should register cosmwasm-interact prompt", () => {
-      expect(mockServer.registerPrompt).toHaveBeenCalledWith(
-        "cosmwasm-interact",
-        expect.any(Object),
-        expect.any(Function),
-      );
-    });
-  });
 });

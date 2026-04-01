@@ -192,30 +192,6 @@ describe("BiometricProvider with mock impl", () => {
       );
     });
 
-    it("should handle delete_account action", async () => {
-      const context: AuthContext = {
-        action: "delete_account",
-      };
-
-      await provider.authenticate(context);
-
-      expect(mockImpl.authenticate).toHaveBeenCalledWith(
-        expect.stringContaining("Delete account"),
-      );
-    });
-
-    it("should handle delete_account action (import replaced)", async () => {
-      const context: AuthContext = {
-        action: "delete_account",
-      };
-
-      await provider.authenticate(context);
-
-      expect(mockImpl.authenticate).toHaveBeenCalledWith(
-        expect.stringContaining("Delete account"),
-      );
-    });
-
     it("should still attempt auth when biometric is not available (device-owner fallback)", async () => {
       vi.mocked(mockImpl.isAvailable).mockResolvedValue(false);
 

@@ -98,7 +98,7 @@ describe("Confirm Tools", () => {
   });
 
   describe("cancel-pending-action", () => {
-    it("should remove a pending transaction from the store", () => {
+    it("should remove a pending transaction from the store", async () => {
       const { storePending } = store.getState();
 
       // Store a pending transaction
@@ -109,27 +109,20 @@ describe("Confirm Tools", () => {
       // Verify it exists
       expect(store.getState().pending.has(token)).toBe(true);
 
-      // Cancel it by removing from the map (simulating the tool)
-      const { pending } = store.getState();
-      const next = new Map(pending);
-      next.delete(token);
-      store.setState({ pending: next });
+      // Cancel via actual tool handler
+      const cancelHandler = await getToolHandler("cancel-pending-action");
+      await cancelHandler({ confirmationToken: token });
 
       // Verify it's gone
       expect(store.getState().pending.has(token)).toBe(false);
     });
 
-    it("should not throw when cancelling non-existent transaction", () => {
-      const { pending } = store.getState();
-      const fakeToken = "fake-token-12345";
-
-      // Verify it doesn't exist
-      expect(pending.has(fakeToken)).toBe(false);
-
-      // Attempting to delete should not throw
-      const next = new Map(pending);
-      next.delete(fakeToken);
-      store.setState({ pending: next });
+    it("should not throw when cancelling non-existent transaction", async () => {
+      const cancelHandler = await getToolHandler("cancel-pending-action");
+      // Should not throw for non-existent token
+      await expect(
+        cancelHandler({ confirmationToken: "fake-token-12345" }),
+      ).resolves.not.toThrow();
     });
   });
 
