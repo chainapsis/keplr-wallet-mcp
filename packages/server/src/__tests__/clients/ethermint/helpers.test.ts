@@ -116,4 +116,16 @@ describe("getEthermintPubkeyTypeUrl", () => {
       "/ethermint.crypto.v1.ethsecp256k1.PubKey",
     );
   });
+
+  it("returns Initia-specific pubkey typeUrl for interwoven chain", () => {
+    expect(getEthermintPubkeyTypeUrl(makeChain("interwoven-1"))).toBe(
+      "/initia.crypto.v1beta1.ethsecp256k1.PubKey",
+    );
+  });
+
+  it("returns Initia-specific pubkey typeUrl for interwoven testnet", () => {
+    expect(getEthermintPubkeyTypeUrl(makeChain("interwoven-2"))).toBe(
+      "/initia.crypto.v1beta1.ethsecp256k1.PubKey",
+    );
+  });
 });
