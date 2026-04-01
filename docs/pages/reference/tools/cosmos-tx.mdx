@@ -16,7 +16,6 @@ Tools for executing transactions on Cosmos chains. All transactions require conf
 | `vote-governance` | Vote on governance proposal |
 | `cancel-unbonding` | Cancel unbonding delegation |
 
----
 
 ## Confirmation Flow
 
@@ -47,7 +46,6 @@ All transaction tools use a two-step confirmation flow:
 }
 ```
 
----
 
 ## `send-tokens`
 
@@ -101,7 +99,6 @@ Send tokens to another address on the same chain.
 }
 ```
 
----
 
 ## `ibc-transfer`
 
@@ -141,7 +138,6 @@ Transfer tokens across chains via IBC. Source channel is automatically resolved 
 }
 ```
 
----
 
 ## `delegate`
 
@@ -177,7 +173,6 @@ Stake tokens to a validator.
 }
 ```
 
----
 
 ## `undelegate`
 
@@ -210,7 +205,6 @@ Unstake tokens from a validator. Triggers unbonding period.
 }
 ```
 
----
 
 ## `redelegate`
 
@@ -243,7 +237,6 @@ Move stake between validators without unbonding.
 }
 ```
 
----
 
 ## `claim-rewards`
 
@@ -271,7 +264,6 @@ Claim staking rewards from a specific validator.
 }
 ```
 
----
 
 ## `claim-all-rewards`
 
@@ -301,7 +293,6 @@ Claim staking rewards from all validators at once.
 }
 ```
 
----
 
 ## `vote-governance`
 
@@ -333,7 +324,6 @@ Vote on a governance proposal.
 }
 ```
 
----
 
 ## `cancel-unbonding`
 
@@ -350,7 +340,6 @@ Cancel an unbonding delegation and re-stake tokens.
 | `denom` | `string` | No | Token denomination (optional, defaults to stake denom) |
 | `feeDenom` | `string` | No | Fee token denomination |
 
----
 
 ## Error Handling
 

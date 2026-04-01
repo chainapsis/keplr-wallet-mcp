@@ -14,7 +14,6 @@ Configuration options for Keplr Wallet MCP.
 
 For plugin configuration (plugins, toolsets, RPC overrides), use the [config file](#config-file) instead of environment variables.
 
----
 
 ## Wallet Configuration
 
@@ -32,7 +31,6 @@ Transaction confirmation token time-to-live.
 
 Default: `5` minutes
 
----
 
 ## Price Data
 
@@ -57,7 +55,6 @@ Get an API key from [CoinGecko API](https://www.coingecko.com/en/api).
 | Request throttle | 2s between requests | None |
 | Retry on rate limit | 3 retries with exponential backoff | 1 retry |
 
----
 
 ## RPC Configuration
 
@@ -77,7 +74,6 @@ Create an API key from the [Keplr API Dashboard](https://api.keplr.app), then ad
 
 Per-chain overrides and plugin configuration are done in the [config file](#config-file).
 
----
 
 ## Skip API
 
@@ -115,7 +111,6 @@ Skip API key for authenticated access. When set, requests include an `authorizat
 
 ---
 
----
 
 ## Full Configuration Example
 
@@ -149,7 +144,6 @@ COINGECKO_API_KEY=CG-xxxxxxxxxxxxxxxxxxxx
 KEPLR_TX_TTL_MINUTES=30
 ```
 
----
 
 ## Environment Variable Priority
 
@@ -157,7 +151,6 @@ KEPLR_TX_TTL_MINUTES=30
 2. **System environment**: Falls back if not in config
 3. **Defaults**: Used if not set anywhere
 
----
 
 ## Verifying Configuration
 

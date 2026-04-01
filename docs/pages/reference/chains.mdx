@@ -60,20 +60,6 @@ Complete list of supported blockchains.
 | Archway | `archway-1` | ARCH | archway | CosmWasm, Rewards |
 | Nym | `nyx` | NYM | n | Mixnet Privacy |
 
-### Chain Features Matrix
-
-| Chain | Staking | IBC | CosmWasm | NFT (CW721) |
-|-------|---------|-----|----------|-------------|
-| Cosmos Hub | Yes | Yes | No | No |
-| Osmosis | Yes | Yes | Yes | Yes |
-| Celestia | Yes | Yes | No | No |
-| Stargaze | Yes | Yes | Yes | Yes |
-| Neutron | No* | Yes | Yes | Yes |
-| Juno | Yes | Yes | Yes | Yes |
-| Injective | Yes | Yes | Yes | Yes |
-
-*Neutron uses interchain security, no native staking.
-
 ### Keplr Infrastructure
 
 When `KEPLR_RPC_API_KEY` is configured, the following chains use Keplr's dedicated RPC/REST endpoints (`api.keplr.app`) instead of public fallbacks. Unsupported chains automatically fall back to public chain-registry endpoints. See [Environment Variables](/reference/environment#keplr_rpc_api_key) for setup.
@@ -112,24 +98,4 @@ When `KEPLR_RPC_API_KEY` is configured, the following chains use Keplr's dedicat
 | ZetaChain | `zetachain_7000-1` | zetachain |
 | ZigChain | `zigchain-1` | zigchain |
 
----
-
-## DeFi Protocol Support
-
-### Osmosis DEX
-
-- **Chain:** Osmosis (`osmosis-1`)
-- **Type:** AMM DEX
-- **Tokens:** All IBC tokens
-- **Features:** Swap, LP (coming soon)
-
----
-
-## Chain Resources
-
-### Cosmos
-
-- [Cosmos Directory](https://cosmos.directory) - Chain registry
-- [Map of Zones](https://mapofzones.com) - IBC visualization
-- [Mintscan](https://mintscan.io) - Block explorer
 

@@ -14,7 +14,6 @@ Tools for managing authentication including biometric and TOTP (Google Authentic
 | `auth-available-methods` | Check available auth methods for an action | Yes |
 | `auth-provider-disable` | Disable specific auth provider | No |
 
----
 
 ## `auth-status`
 
@@ -46,7 +45,6 @@ None required.
 }
 ```
 
----
 
 ## `auth-enable`
 
@@ -66,7 +64,6 @@ None required.
 }
 ```
 
----
 
 ## `auth-disable`
 
@@ -89,7 +86,6 @@ None required.
 Disabling authentication reduces security. Only recommended for development.
 :::
 
----
 
 ## `auth-setup`
 
@@ -157,7 +153,6 @@ When TOTP is already set up and you call `auth-setup` to add it to additional ac
 }
 ```
 
----
 
 ## `auth-verify-setup`
 
@@ -196,7 +191,6 @@ Complete the two-step TOTP setup by verifying a code from the authenticator app.
 }
 ```
 
----
 
 ## `auth-available-methods`
 
@@ -238,7 +232,6 @@ Check which authentication methods are available and configured for a specific a
 }
 ```
 
----
 
 ## `auth-provider-disable`
 
@@ -260,7 +253,6 @@ Disable a specific authentication provider.
 }
 ```
 
----
 
 ## Authentication Flow
 
@@ -294,7 +286,6 @@ Regular transactions (send, delegate, swap, etc.) use `confirm-action` without a
 - **Lockout duration**: 5 minutes
 - **Behavior**: During lockout, TOTP fails as a hard error, allowing fallback to other methods (e.g., biometric)
 
----
 
 ## Setting Up TOTP (Google Authenticator)
 
@@ -327,7 +318,6 @@ Request: auth-verify-setup --provider totp --code 123456
 Response: { "success": true, "message": "TOTP setup complete" }
 ```
 
----
 
 ## Recommended Settings
 
@@ -337,7 +327,6 @@ Response: { "success": true, "message": "TOTP setup complete" }
 | Development | Optional | Biometric |
 | High Security | Yes | Both |
 
----
 
 ## Supported Authenticator Apps
 
