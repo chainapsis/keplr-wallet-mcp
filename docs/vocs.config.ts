@@ -45,7 +45,7 @@ export default defineConfig({
           text: "Cosmos",
           collapsed: true,
           items: [
-{ text: "Check Balances", link: "/guides/cosmos/balances" },
+            { text: "Check Balances", link: "/guides/cosmos/balances" },
             { text: "Send Tokens", link: "/guides/cosmos/send" },
             { text: "Staking", link: "/guides/cosmos/staking" },
             { text: "Governance", link: "/guides/cosmos/governance" },
