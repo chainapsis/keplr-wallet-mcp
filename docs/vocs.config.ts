@@ -82,7 +82,7 @@ export default defineConfig({
               text: "Multi-Action",
               link: "/reference/tools/multi-action",
             },
-{ text: "Meta", link: "/reference/tools/meta" },
+            { text: "Meta", link: "/reference/tools/meta" },
             {
               text: "Keplr Endpoints API",
               link: "/reference/tools/keplr-rpc",
