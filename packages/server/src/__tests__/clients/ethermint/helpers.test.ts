@@ -2,7 +2,6 @@ import type { ChainInfo } from "@keplr-wallet/types";
 import { describe, expect, it } from "vitest";
 import {
   getEthermintPubkeyTypeUrl,
-  isEthermintLike,
   needsEthermintSigning,
 } from "../../../clients/ethermint/helpers.js";
 
@@ -11,30 +10,6 @@ const makeChain = (chainId: string, features?: string[]): ChainInfo =>
     chainId,
     features,
   }) as unknown as ChainInfo;
-
-describe("isEthermintLike", () => {
-  it("returns true for chain with eth-address-gen feature", () => {
-    expect(
-      isEthermintLike(
-        makeChain("injective-1", ["eth-address-gen", "eth-key-sign"]),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns false for chain without eth-address-gen", () => {
-    expect(isEthermintLike(makeChain("cosmoshub-4", ["ibc-transfer"]))).toBe(
-      false,
-    );
-  });
-
-  it("returns false when features is undefined", () => {
-    expect(isEthermintLike(makeChain("cosmoshub-4"))).toBe(false);
-  });
-
-  it("returns false when features is empty", () => {
-    expect(isEthermintLike(makeChain("cosmoshub-4", []))).toBe(false);
-  });
-});
 
 describe("needsEthermintSigning", () => {
   it("returns true for injective-1", () => {

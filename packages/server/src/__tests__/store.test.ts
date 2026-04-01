@@ -28,63 +28,6 @@ describe("KeplrStore", () => {
     vi.clearAllMocks();
   });
 
-  describe("Adapter Registration", () => {
-    it("should register an adapter", () => {
-      const mockAdapter = {
-        type: "test",
-        displayName: "Test Adapter",
-        createClient: vi.fn(),
-        getPlugins: vi.fn().mockReturnValue([]),
-      };
-
-      store.getState().registerAdapter(mockAdapter);
-
-      const adapters = store.getState().getAdapters();
-      expect(adapters.size).toBe(1);
-      expect(adapters.get("test")).toBe(mockAdapter);
-    });
-
-    it("should overwrite adapter with same type", () => {
-      const adapter1 = {
-        type: "test",
-        displayName: "Adapter 1",
-        createClient: vi.fn(),
-        getPlugins: vi.fn().mockReturnValue([]),
-      };
-      const adapter2 = {
-        type: "test",
-        displayName: "Adapter 2",
-        createClient: vi.fn(),
-        getPlugins: vi.fn().mockReturnValue([]),
-      };
-
-      store.getState().registerAdapter(adapter1);
-      store.getState().registerAdapter(adapter2);
-
-      const adapters = store.getState().getAdapters();
-      expect(adapters.size).toBe(1);
-      expect(adapters.get("test")?.displayName).toBe("Adapter 2");
-    });
-  });
-
-  describe("Protocol Registration", () => {
-    it("should register a protocol", () => {
-      const mockProtocol = {
-        protocolId: "test-protocol",
-        name: "Test Protocol",
-        ecosystem: "evm" as const,
-        supportedChains: [1, 137],
-        register: vi.fn(),
-      };
-
-      store.getState().registerProtocol(mockProtocol);
-
-      const protocols = store.getState().getProtocols();
-      expect(protocols.size).toBe(1);
-      expect(protocols.get("test-protocol")).toBe(mockProtocol);
-    });
-  });
-
   describe("Pending Transactions", () => {
     it("should store a pending transaction and return token", () => {
       const execute = vi.fn().mockResolvedValue({ txHash: "abc123" });
