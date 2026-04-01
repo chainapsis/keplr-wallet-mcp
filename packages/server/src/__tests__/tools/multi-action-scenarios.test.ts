@@ -219,5 +219,4 @@ describe("Multi-action User Scenarios", () => {
       expect(store.getState().getMultiAction(actionId)).toBeUndefined();
     });
   });
-
 });

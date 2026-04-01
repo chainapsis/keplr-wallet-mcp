@@ -240,5 +240,4 @@ describe("Secp256k1Signer", () => {
       expect(pkSigner.canDerive()).toBe(false);
     });
   });
-
 });

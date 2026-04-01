@@ -10,6 +10,11 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  createChainsMock,
+  mockCosmosChain,
+  mockNeutronChain,
+} from "../helpers/chain-mocks.js";
+import {
   createMockCosmosClient,
   createMockMcpServer,
   createMockStore,
@@ -18,12 +23,6 @@ import {
   type MockStore,
   parseToolResponse,
 } from "../helpers/mocks.js";
-
-import {
-  createChainsMock,
-  mockCosmosChain,
-  mockNeutronChain,
-} from "../helpers/chain-mocks.js";
 
 vi.mock("../../chains/cosmos.js", () =>
   createChainsMock({

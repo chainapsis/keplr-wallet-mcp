@@ -15,6 +15,11 @@ import {
   matchLstBalances,
 } from "../../plugins/cosmos/well-known-lst.js";
 import {
+  createChainsMock,
+  mockCosmosChain,
+  mockNeutronChain,
+} from "../helpers/chain-mocks.js";
+import {
   createMockCosmosClient,
   createMockMcpServer,
   createMockStore,
@@ -23,12 +28,6 @@ import {
   type MockStore,
   parseToolResponse,
 } from "../helpers/mocks.js";
-
-import {
-  createChainsMock,
-  mockCosmosChain,
-  mockNeutronChain,
-} from "../helpers/chain-mocks.js";
 
 vi.mock("../../chains/cosmos.js", () =>
   createChainsMock({

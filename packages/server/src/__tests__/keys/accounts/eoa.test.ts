@@ -133,6 +133,5 @@ describe("EOAAccountImpl", () => {
       // Verify by running: cosmjs or similar tool
       expect(address).toMatch(/^cosmos1/);
     });
-
   });
 });

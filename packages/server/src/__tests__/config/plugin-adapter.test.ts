@@ -34,7 +34,6 @@ describe("resolveExternalPlugin", () => {
     const result = resolveExternalPlugin(plugin);
     expect(result).toBe(plugin);
   });
-
 });
 
 describe("createExternalPluginContext", () => {
@@ -46,5 +45,4 @@ describe("createExternalPluginContext", () => {
     const result = ctx.get<{ value: number }>("my-plugin.data");
     expect(result?.value).toBe(42);
   });
-
 });

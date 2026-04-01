@@ -96,9 +96,7 @@ type ChainConfig = typeof mockCosmosChain;
  * Create a chains/cosmos.js mock from a map of chainId → config.
  * Pass the result to vi.mock("../../chains/cosmos.js", () => createChainsMock(...)).
  */
-export const createChainsMock = (
-  chains: Record<string, ChainConfig>,
-) => {
+export const createChainsMock = (chains: Record<string, ChainConfig>) => {
   const chainList = Object.values(chains);
   const byId = (chainId: string) => chains[chainId] ?? undefined;
   const byName = (name: string) => {
@@ -114,12 +112,10 @@ export const createChainsMock = (
     listChains: vi.fn().mockReturnValue(chainList),
     getChainConfig: vi.fn().mockImplementation(byId),
     findChainByName: vi.fn().mockImplementation(byName),
-    findAllChainsByName: vi
-      .fn()
-      .mockImplementation((name: string) => {
-        const found = byName(name);
-        return found ? [found] : [];
-      }),
+    findAllChainsByName: vi.fn().mockImplementation((name: string) => {
+      const found = byName(name);
+      return found ? [found] : [];
+    }),
     getStakeDenom: vi
       .fn()
       .mockImplementation(
