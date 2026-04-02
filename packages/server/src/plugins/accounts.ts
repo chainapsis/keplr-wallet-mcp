@@ -75,7 +75,7 @@ async function getOnboardingStatus(
     try {
       // Just check if adapters are registered - don't actually create client
       // to avoid errors in onboarding status
-      canAccessWallet = store.adapters.size > 0;
+      canAccessWallet = store.getAdapters().size > 0;
     } catch {
       canAccessWallet = false;
     }
@@ -88,7 +88,7 @@ async function getOnboardingStatus(
   const hasAuthConfigured = await authManager.isAuthRequired("delete_account");
 
   // Get available ecosystems from adapters
-  const availableEcosystems = Array.from(store.adapters.keys());
+  const availableEcosystems = Array.from(store.getAdapters().keys());
 
   // Define onboarding steps
   const steps: OnboardingStep[] = [
@@ -250,7 +250,7 @@ const accountsPlugin: KeplrPlugin = {
         if (onboarding.availableEcosystems.length > 0) {
           response.supportedEcosystems = onboarding.availableEcosystems.map(
             (eco) => {
-              const adapter = store.adapters.get(eco);
+              const adapter = store.getAdapters().get(eco);
               return {
                 ecosystem: eco,
                 name: adapter?.displayName || eco,
@@ -556,7 +556,7 @@ const accountsPlugin: KeplrPlugin = {
         // Collect display addresses from all adapters
         const addresses: Record<string, string> = {};
         const addressErrors: Record<string, string> = {};
-        for (const [type, adapter] of store.adapters) {
+        for (const [type, adapter] of store.getAdapters()) {
           if (adapter.getDisplayAddress) {
             try {
               const client = await store.getClientFor(type);
@@ -851,7 +851,7 @@ const accountsPlugin: KeplrPlugin = {
         // Collect display addresses from all adapters
         const addresses: Record<string, string> = {};
         const addressErrors: Record<string, string> = {};
-        for (const [type, adapter] of store.adapters) {
+        for (const [type, adapter] of store.getAdapters()) {
           if (adapter.getDisplayAddress) {
             try {
               const client = await store.getClientFor(type);
@@ -972,7 +972,7 @@ const accountsPlugin: KeplrPlugin = {
         // Collect display addresses from all adapters
         const addresses: Record<string, string> = {};
         const addressErrors: Record<string, string> = {};
-        for (const [type, adapter] of store.adapters) {
+        for (const [type, adapter] of store.getAdapters()) {
           if (adapter.getDisplayAddress) {
             try {
               const client = await store.getClientFor(type);
@@ -1820,20 +1820,24 @@ const accountsPlugin: KeplrPlugin = {
           };
         }
 
-        // Collect display addresses from all adapters
-        const addresses: Record<string, string> = {};
+        // Collect addresses from all adapters (all chains)
+        const addresses: Record<string, Record<string, string>> = {};
         const errors: Record<string, string> = {};
 
-        for (const [type, adapter] of store.adapters) {
-          if (adapter.getDisplayAddress) {
-            try {
-              const client = await store.getClientFor(type);
+        for (const [type, adapter] of store.getAdapters()) {
+          try {
+            const client = await store.getClientFor(type);
+            if (adapter.getAllAddresses) {
               addresses[adapter.displayName] =
-                await adapter.getDisplayAddress(client);
-            } catch (error) {
-              errors[adapter.displayName] =
-                error instanceof Error ? error.message : String(error);
+                await adapter.getAllAddresses(client);
+            } else if (adapter.getDisplayAddress) {
+              addresses[adapter.displayName] = {
+                default: await adapter.getDisplayAddress(client),
+              };
             }
+          } catch (error) {
+            errors[adapter.displayName] =
+              error instanceof Error ? error.message : String(error);
           }
         }
 
