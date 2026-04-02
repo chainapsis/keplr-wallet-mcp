@@ -902,27 +902,21 @@ const queryPlugin: KeplrPlugin = {
           const suggestedActions: SuggestedAction[] = [];
 
           if (unbonding.length > 0) {
-            // Get the first unbonding entry for cancel suggestion
-            const firstEntry = unbonding[0]?.entries[0];
-            if (firstEntry) {
-              suggestedActions.push({
-                tool: "cancel-unbonding",
-                reason:
-                  "Cancel unbonding to return tokens to staked state (no waiting period)",
-                params: {
-                  chain: chain.chainId,
-                  validatorAddress: unbonding[0].validatorAddress,
-                  creationHeight: firstEntry.creationHeight,
-                },
-                priority: 1,
-              });
-            }
-
             suggestedActions.push({
               tool: "get-staking-info",
-              reason: "Check your active delegations and pending rewards",
+              reason: "Check active delegations and pending rewards",
               params: { chain: chain.chainId },
-              priority: 2,
+              priority: 1,
+            });
+
+            suggestedActions.push({
+              tool: "cancel-unbonding",
+              reason:
+                "Cancel a specific unbonding entry (only if explicitly requested)",
+              params: {
+                chain: chain.chainId,
+              },
+              priority: 3,
             });
           } else {
             suggestedActions.push({
