@@ -208,10 +208,8 @@ describe("keplr_api_get_usage_history", () => {
     const tool = server.getTool("keplr_api_get_usage_history")!;
     const result = await tool.handler({ apiKey: "keplr_abc123" });
     const parsed = parseToolResponse(result);
-    const history = (
-      parsed as { history: { apiKeyId: number; data: unknown[] } }
-    ).history;
-    expect(history).toHaveProperty("apiKeyId");
+    const history = (parsed as { history: { data: unknown[] } }).history;
+    expect(history).not.toHaveProperty("apiKeyId");
     expect(history).toHaveProperty("data");
     expect(Array.isArray(history.data)).toBe(true);
     expect(

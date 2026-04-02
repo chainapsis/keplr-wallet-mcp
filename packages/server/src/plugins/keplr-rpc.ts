@@ -66,6 +66,19 @@ const keplrApiFetch = async <T>(options: {
   return (await res.json()) as T;
 };
 
+// ─── Response sanitization ──────────────────────────────────────────
+/** Remove internal identifiers (e.g. apiKeyId) from API responses before returning to the agent. */
+const stripInternalIds = <T extends Record<string, unknown>>(data: T): T => {
+  const cleaned = { ...data };
+  delete (cleaned as Record<string, unknown>).apiKeyId;
+  if (cleaned.history && typeof cleaned.history === "object") {
+    const history = { ...(cleaned.history as Record<string, unknown>) };
+    delete history.apiKeyId;
+    (cleaned as Record<string, unknown>).history = history;
+  }
+  return cleaned;
+};
+
 // ─── Error response helpers ─────────────────────────────────────────
 const createKeplrSetupResponse = (toolName?: string) => ({
   content: [
@@ -238,11 +251,12 @@ const keplrRpcPlugin: KeplrPlugin = {
       },
       async ({ apiKey }) => {
         try {
-          const data = await keplrApiFetch<Record<string, unknown>>({
+          const raw = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: `/v1/usage/${apiKey}/summary`,
             query: { clientType: "keplr-mcp" },
           });
+          const data = stripInternalIds(raw);
 
           const balance = (data as { balance?: number }).balance ?? 0;
           const lowBalance = balance > 0 && balance < 100_000;
@@ -301,11 +315,12 @@ const keplrRpcPlugin: KeplrPlugin = {
           if (chain) query.chain = chain;
           if (endpointType) query.endpointType = endpointType;
 
-          const data = await keplrApiFetch<Record<string, unknown>>({
+          const raw = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: `/v1/usage/${apiKey}/history`,
             query: Object.keys(query).length > 0 ? query : undefined,
           });
+          const data = stripInternalIds(raw);
 
           const suggestedActions: SuggestedAction[] = [
             {
