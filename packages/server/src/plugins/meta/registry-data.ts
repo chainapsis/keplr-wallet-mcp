@@ -547,7 +547,7 @@ export const TOOL_REGISTRY: ToolEntry[] = [
       "Configure a Keplr Infra API key in MCP config (user or project scope)",
     category: "keplr-rpc",
     ecosystem: "common",
-    risk: "safe",
+    risk: "destructive",
     keywords: ["keplr", "infra", "api", "key", "configure", "setup", "config"],
   },
   {

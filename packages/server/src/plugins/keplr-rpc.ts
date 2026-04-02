@@ -81,9 +81,9 @@ const sanitizeResponse = <T extends Record<string, unknown>>(data: T): T => {
 
     // Strip metadata from credit history entries (contains Stripe PII)
     if (Array.isArray(history.entries)) {
-      history.entries = (
-        history.entries as Record<string, unknown>[]
-      ).map(({ metadata: _, ...entry }) => entry);
+      history.entries = (history.entries as Record<string, unknown>[]).map(
+        ({ metadata: _, ...entry }) => entry,
+      );
     }
 
     (cleaned as Record<string, unknown>).history = history;
