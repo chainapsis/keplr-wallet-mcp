@@ -35,6 +35,9 @@ export interface EcosystemAdapter {
   /** Display address for generate-mnemonic output (optional) */
   getDisplayAddress?(client: EcosystemClient): string | Promise<string>;
 
+  /** Get all addresses across supported chains (optional) */
+  getAllAddresses?(client: EcosystemClient): Promise<Record<string, string>>;
+
   /** Plugins provided by this ecosystem */
   getPlugins(): KeplrPlugin[];
 

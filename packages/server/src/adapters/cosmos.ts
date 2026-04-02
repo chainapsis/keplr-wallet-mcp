@@ -1,3 +1,4 @@
+import { listChains } from "../chains/cosmos.js";
 import { CosmosClient } from "../clients/cosmos.js";
 import type { EcosystemAdapter, EcosystemClient } from "../ecosystem.js";
 import { adapterBridgeRegistry } from "../keys/adapter-bridge.js";
@@ -69,6 +70,28 @@ export class CosmosAdapter implements EcosystemAdapter {
       return client.getAddress(chain);
     }
     throw new Error("Unknown client type");
+  }
+
+  async getAllAddresses(
+    client: EcosystemClient,
+  ): Promise<Record<string, string>> {
+    if (!(client instanceof CosmosClient)) {
+      throw new Error("Unknown client type");
+    }
+    const chains = listChains();
+    const results = await Promise.allSettled(
+      chains.map(async (chain) => ({
+        chainId: chain.chainId,
+        address: await client.getAddress(chain),
+      })),
+    );
+    const addresses: Record<string, string> = {};
+    for (const result of results) {
+      if (result.status === "fulfilled") {
+        addresses[result.value.chainId] = result.value.address;
+      }
+    }
+    return addresses;
   }
 
   getPlugins() {
