@@ -1,20 +1,22 @@
-# Keplr Endpoints API Tools
+# Keplr Infra API Tools
 
-Tools for managing Keplr Endpoints API keys, credits, and usage analytics via `api.keplr.app`.
+Tools for managing Keplr Infra API keys, credits, and usage analytics via `api.keplr.app`.
 
 ## Overview
 
 | Tool | Description | Read-Only |
 |------|-------------|-----------|
-| `kr_validate_key` | Validate an API key | Yes |
-| `kr_get_payment_link` | Get Stripe payment link to add credits | Yes |
-| `kr_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
-| `kr_get_usage_history` | Get usage history with filters | Yes |
-| `kr_list_chains` | List available chains (no auth) | Yes |
+| `keplr_api_configure_key` | Configure API key in MCP config (user/project scope) | No |
+| `keplr_api_validate_key` | Validate an API key | Yes |
+| `keplr_api_get_payment_link` | Get Stripe payment link to add credits | Yes |
+| `keplr_api_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
+| `keplr_api_get_usage_history` | Get usage history with filters | Yes |
+| `keplr_api_get_credit_history` | Get credit transaction history (top-ups, adjustments) | Yes |
+| `keplr_api_list_chains` | List available chains (no auth) | Yes |
 
-## About Keplr Endpoints API
+## About Keplr Infra API
 
-Keplr Endpoints provides dedicated RPC and REST endpoints for Cosmos chains:
+Keplr Infra provides dedicated RPC and REST endpoints for Cosmos chains:
 
 - **Reliable infrastructure**: Dedicated endpoints instead of public fallbacks
 - **API key auth**: All requests authenticated via `X-API-Key` header
@@ -23,9 +25,38 @@ Keplr Endpoints provides dedicated RPC and REST endpoints for Cosmos chains:
 - **Dashboard**: [api.keplr.app](https://api.keplr.app)
 
 
-## `kr_validate_key`
+## `keplr_api_configure_key`
 
-Validate an existing Keplr Endpoints API key.
+Configure a Keplr Infra API key by writing it to the MCP configuration file. Validates the key first, then saves it to the selected scope. Requires a server restart after configuration.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | Keplr Infra API key (starts with `keplr_`) |
+| `scope` | `"user" \| "project"` | Yes | `user` for `~/.claude.json` (all projects), `project` for `.mcp.json` (this project only) |
+
+### Response
+
+```json
+{
+  "status": "configured",
+  "message": "API key saved to ~/.claude.json (user scope). Restart the MCP server for the key to take effect.",
+  "configPath": "/Users/you/.claude.json",
+  "scope": "user",
+  "restartRequired": true,
+  "suggestedActions": [
+    { "tool": "keplr_api_get_usage_summary", "reason": "Check your credit balance and usage", "priority": 1 },
+    { "tool": "keplr_api_list_chains", "reason": "See which chains are available", "priority": 2 }
+  ]
+}
+```
+
+---
+
+## `keplr_api_validate_key`
+
+Validate an existing Keplr Infra API key.
 
 ### Parameters
 
@@ -40,14 +71,14 @@ Validate an existing Keplr Endpoints API key.
   "valid": true,
   "userId": "user-1",
   "suggestedActions": [
-    { "tool": "kr_get_usage_summary", "reason": "Check credits and usage", "priority": 1 },
-    { "tool": "kr_list_chains", "reason": "See available chains", "priority": 2 }
+    { "tool": "keplr_api_get_usage_summary", "reason": "Check credits and usage", "priority": 1 },
+    { "tool": "keplr_api_list_chains", "reason": "See available chains", "priority": 2 }
   ]
 }
 ```
 
 
-## `kr_get_payment_link`
+## `keplr_api_get_payment_link`
 
 Get a Stripe payment link to add credits.
 
@@ -63,13 +94,14 @@ Get a Stripe payment link to add credits.
 {
   "paymentUrl": "https://checkout.stripe.com/...",
   "suggestedActions": [
-    { "tool": "kr_get_usage_summary", "reason": "Check updated balance after payment", "priority": 1 }
+    { "tool": "keplr_api_get_credit_history", "reason": "Verify exact credit top-up amount after payment", "priority": 1 },
+    { "tool": "keplr_api_get_usage_summary", "reason": "Check current balance and usage overview", "priority": 2 }
   ]
 }
 ```
 
 
-## `kr_get_usage_summary`
+## `keplr_api_get_usage_summary`
 
 Get balance and usage summary including requests, credits, and per-chain breakdown.
 
@@ -92,15 +124,15 @@ Get balance and usage summary including requests, credits, and per-chain breakdo
     ]
   },
   "suggestedActions": [
-    { "tool": "kr_get_usage_history", "reason": "View detailed usage over time", "priority": 2 }
+    { "tool": "keplr_api_get_usage_history", "reason": "View detailed usage over time", "priority": 2 }
   ]
 }
 ```
 
-When balance is low, a `kr_get_payment_link` suggestion is added at priority 1.
+When balance is low, a `keplr_api_get_payment_link` suggestion is added at priority 1.
 
 
-## `kr_get_usage_history`
+## `keplr_api_get_usage_history`
 
 Get usage history with optional date, chain, and endpoint type filters.
 
@@ -123,15 +155,49 @@ Get usage history with optional date, chain, and endpoint type filters.
     { "date": "2025-01-02", "requests": 200, "credits": 20 }
   ],
   "suggestedActions": [
-    { "tool": "kr_get_usage_summary", "reason": "View aggregated usage summary", "priority": 1 }
+    { "tool": "keplr_api_get_usage_summary", "reason": "View aggregated usage summary", "priority": 1 }
   ]
 }
 ```
 
 
-## `kr_list_chains`
+## `keplr_api_get_credit_history`
 
-List all chains available on Keplr Endpoints. No authentication required.
+Get credit transaction history including top-ups and adjustments. Use after payment to verify the exact recharge amount.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key |
+
+### Response
+
+```json
+{
+  "history": {
+    "entries": [
+      {
+        "id": "2",
+        "type": "topup",
+        "amount": 10000000,
+        "balanceAfter": 10999500,
+        "description": "Stripe payment: 10.00 USD",
+        "createdAt": "2025-03-05T14:30:00.000Z"
+      }
+    ]
+  },
+  "suggestedActions": [
+    { "tool": "keplr_api_get_usage_summary", "reason": "View current balance and usage overview", "priority": 1 }
+  ]
+}
+```
+
+---
+
+## `keplr_api_list_chains`
+
+List all chains available on Keplr Infra. No authentication required.
 
 ### Parameters
 
@@ -153,7 +219,7 @@ None.
 
 | HTTP Status | Behavior |
 |-------------|----------|
-| 402 | Credit error with `kr_get_payment_link` suggestion |
+| 402 | Credit error with `keplr_api_get_payment_link` suggestion |
 | 403 | Setup guide with dashboard link (not treated as error) |
 | 404 | Resource not found |
 | 429 | Rate limit exceeded |
@@ -165,27 +231,30 @@ None.
 ### First-Time Setup
 
 ```
-1. kr_list_chains
+1. keplr_api_list_chains
    → Browse available chains (no auth needed)
 
-2. kr_validate_key
+2. keplr_api_validate_key
    → Validate your API key
 
-3. kr_get_usage_summary
+3. keplr_api_get_usage_summary
    → Check credit balance and usage
 ```
 
 ### Monitor Usage
 
 ```
-1. kr_get_usage_summary
+1. keplr_api_get_usage_summary
    → Overview of requests and credits per chain
 
-2. kr_get_usage_history
+2. keplr_api_get_usage_history
    → Drill into specific date ranges or chains
 
-3. kr_get_payment_link
+3. keplr_api_get_payment_link
    → Add credits if balance is low
+
+4. keplr_api_get_credit_history
+   → Verify exact top-up amount after payment
 ```
 
 
