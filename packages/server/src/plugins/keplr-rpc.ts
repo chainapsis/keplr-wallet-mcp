@@ -106,7 +106,7 @@ const createKeplrSetupResponse = (toolName?: string) => ({
             steps: [
               "Visit the Keplr API dashboard at https://api.keplr.app",
               "Create an API key",
-              "Set it as KEPLR_RPC_API_KEY environment variable",
+              "Set it as KEPLR_RPC_API_KEY environment variable, or run `keplr_api_configure_key`",
             ],
           },
           attemptedAction: toolName,
