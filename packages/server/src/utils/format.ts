@@ -202,26 +202,13 @@ export function parseGasPrice(gasPriceStr: string): ParsedGasPrice {
 }
 
 /**
- * Calculate fee amount from gas estimate and gas price.
- *
- * @param gasEstimate - Estimated gas units
- * @param gasPriceStr - Gas price string (e.g., "0.025uatom")
- * @param multiplier - Safety multiplier for gas estimate (default: 1.3)
- * @returns Fee amount in minimal denomination
+ * Gas adjustment multiplier matching Keplr Extension's tx-executor behavior.
+ * - feemarket chains: 1.6 (higher volatility in base fee)
+ * - standard chains: 1.4
  */
-export function calculateFee(
-  gasEstimate: number | string,
-  gasPriceStr: string,
-  multiplier: number = 1.3,
-): string {
-  const { amount: gasPriceAmount } = parseGasPrice(gasPriceStr);
-  const gas =
-    typeof gasEstimate === "string" ? parseInt(gasEstimate, 10) : gasEstimate;
-  const gasWithBuffer = Math.ceil(gas * multiplier);
-  const feeAmount = Math.ceil(gasWithBuffer * gasPriceAmount);
-
-  return feeAmount.toString();
-}
+export const getGasAdjustment = (chain: {
+  features?: readonly string[];
+}): number => (chain.features?.includes("feemarket") ? 1.6 : 1.4);
 
 /**
  * Format a value with appropriate decimal places for display.

@@ -176,13 +176,13 @@ describe("CosmosClient broadcast & fee calculation", () => {
   });
 
   describe("simulateFee", () => {
-    it("should apply 1.3x gas buffer", async () => {
+    it("should apply 1.4x gas buffer", async () => {
       const result = await client.simulateFee(standardChain, [makeMsgSend()]);
 
       expect(mockSimulate).toHaveBeenCalled();
-      // gasEstimate = 100000, with 1.3x buffer = 130000
+      // gasEstimate = 100000, with 1.4x buffer = 140000
       expect(result.gasEstimate).toBe("100000");
-      const gasWithBuffer = Math.ceil(100000 * 1.3);
+      const gasWithBuffer = Math.ceil(100000 * 1.4);
       expect(Number.parseInt(result.feeAmount)).toBe(
         Math.ceil(gasWithBuffer * 0.025),
       );
@@ -426,8 +426,8 @@ describe("CosmosClient broadcast & fee calculation", () => {
         amount: { denom: string; amount: string }[];
       };
       expect(fee.amount[0].denom).toBe("uatom");
-      // 100000 * 1.3 = 130000
-      expect(fee.gas).toBe("130000");
+      // 100000 * 1.4 = 140000
+      expect(fee.gas).toBe("140000");
     });
   });
 });

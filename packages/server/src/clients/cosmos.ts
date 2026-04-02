@@ -45,7 +45,7 @@ import { getRpcResolver } from "../rpc/resolver.js";
 import { wrapForBabylon } from "../utils/babylon.js";
 import { balanceEnricherRegistry } from "../utils/balance-enricher.js";
 import { formatBalances } from "../utils/balance-formatter.js";
-import { parseGasPrice } from "../utils/format.js";
+import { getGasAdjustment, parseGasPrice } from "../utils/format.js";
 import { enrichIbcDenoms } from "../utils/ibc-resolver.js";
 import { lcdFetch, safeParseJson } from "../utils/lcd-fetch.js";
 import { flagHomoglyphs, sanitizeString } from "../utils/sanitize.js";
@@ -478,8 +478,8 @@ export class CosmosClient implements EcosystemClient {
     // Parse gas price using the unified utility
     const parsedGasPrice = parseGasPrice(getGasPrice(chain));
 
-    // Calculate fee with 30% buffer for safety
-    const gasWithBuffer = Math.ceil(gasEstimate * 1.3);
+    // Apply gas adjustment matching Keplr Extension (1.4 standard, 1.6 feemarket)
+    const gasWithBuffer = Math.ceil(gasEstimate * getGasAdjustment(chain));
     const feeAmount = Math.ceil(gasWithBuffer * parsedGasPrice.amount);
 
     return {
@@ -675,7 +675,7 @@ export class CosmosClient implements EcosystemClient {
 
     // Calculate fee with the specified denom
     const parsedGasPrice = parseGasPrice(gasPrice);
-    const gasWithBuffer = Math.ceil(gasEstimate * 1.3);
+    const gasWithBuffer = Math.ceil(gasEstimate * getGasAdjustment(chain));
     const feeAmount = Math.ceil(gasWithBuffer * parsedGasPrice.amount);
 
     return {
@@ -962,7 +962,7 @@ export class CosmosClient implements EcosystemClient {
     );
 
     return {
-      gasEstimate: Math.ceil(gasEstimate * 1.3).toString(), // Add 30% buffer
+      gasEstimate: Math.ceil(gasEstimate * getGasAdjustment(chain)).toString(),
     };
   }
 
@@ -991,7 +991,8 @@ export class CosmosClient implements EcosystemClient {
 
     // 1. Simulate all messages together (batched)
     const batchedGas = await client.simulate(address, messages, undefined);
-    const batchedGasWithBuffer = Math.ceil(batchedGas * 1.3);
+    const gasAdj = getGasAdjustment(chain);
+    const batchedGasWithBuffer = Math.ceil(batchedGas * gasAdj);
 
     // 2. If only one message, no savings calculation needed
     if (messages.length === 1) {
@@ -1007,7 +1008,7 @@ export class CosmosClient implements EcosystemClient {
     for (const msg of messages) {
       try {
         const singleGas = await client.simulate(address, [msg], undefined);
-        individualGasTotal += Math.ceil(singleGas * 1.3);
+        individualGasTotal += Math.ceil(singleGas * gasAdj);
       } catch {
         // If individual simulation fails (e.g., depends on previous action),
         // skip savings calculation but continue with batched estimate

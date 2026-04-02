@@ -20,6 +20,7 @@ import {
 } from "../../errors.js";
 import { chainCompletionProvider } from "../../mcp-features/completions.js";
 import { pickTip } from "../../tips.js";
+import { getGasAdjustment } from "../../utils/format.js";
 import { sanitizeString } from "../../utils/sanitize.js";
 import { CHAIN_PARAM_DESC, resolveChain } from "../shared.js";
 import type { KeplrPlugin } from "../types.js";
@@ -180,7 +181,11 @@ const queryPlugin: KeplrPlugin = {
             const balanceAmount = balance ? BigInt(balance.amount) : BigInt(0);
             // Estimate if balance is sufficient for a typical transaction fee
             const estimatedFee = BigInt(
-              Math.ceil(200000 * (fc.gasPriceStep?.average ?? 0.1) * 1.3),
+              Math.ceil(
+                200000 *
+                  (fc.gasPriceStep?.average ?? 0.1) *
+                  getGasAdjustment(chain),
+              ),
             );
             const sufficient = balanceAmount >= estimatedFee;
 

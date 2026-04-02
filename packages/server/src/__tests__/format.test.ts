@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   addAmounts,
-  calculateFee,
   compareAmounts,
   formatCurrencyAmount,
   formatDisplayValue,
@@ -195,25 +194,6 @@ describe("parseGasPrice", () => {
 
   it("should throw on invalid format", () => {
     expect(() => parseGasPrice("invalid")).toThrow("Invalid gas price format");
-  });
-});
-
-describe("calculateFee", () => {
-  it("should calculate fee from gas estimate", () => {
-    // 100000 gas * 0.025 * 1.3 = 3250
-    const fee = calculateFee(100000, "0.025uatom");
-    expect(fee).toBe("3250");
-  });
-
-  it("should accept string gas estimate", () => {
-    const fee = calculateFee("100000", "0.025uatom");
-    expect(fee).toBe("3250");
-  });
-
-  it("should use custom multiplier", () => {
-    // 100000 gas * 0.025 * 1.5 = 3750
-    const fee = calculateFee(100000, "0.025uatom", 1.5);
-    expect(fee).toBe("3750");
   });
 });
 

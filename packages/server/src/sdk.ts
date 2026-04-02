@@ -180,7 +180,6 @@ export { balanceEnricherRegistry } from "./utils/balance-enricher.js";
 export type { FormatCurrencyInfo, ParsedGasPrice } from "./utils/format.js";
 export {
   addAmounts,
-  calculateFee,
   compareAmounts,
   formatCurrencyAmount,
   formatDisplayValue,
