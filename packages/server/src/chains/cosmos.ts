@@ -1642,27 +1642,28 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     chainId: "mantra-1",
     chainName: "MANTRA",
     stakeCurrency: {
-      coinDenom: "OM",
+      coinDenom: "MANTRA",
       coinMinimalDenom: "amantra",
       coinDecimals: 18,
-      coinGeckoId: "mantra-dao",
+      coinGeckoId: "mantra",
     },
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config("mantra"),
     currencies: [
       {
-        coinDenom: "OM",
+        coinDenom: "MANTRA",
         coinMinimalDenom: "amantra",
         coinDecimals: 18,
-        coinGeckoId: "mantra-dao",
+        coinGeckoId: "mantra",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "OM",
+        coinDenom: "MANTRA",
         coinMinimalDenom: "amantra",
         coinDecimals: 18,
-        coinGeckoId: "mantra-dao",
+        coinGeckoId: "mantra",
+>>>>>>> e3b700d (fix(chain): update MANTRA denom from uom to amantra)
         gasPriceStep: {
           low: 0.01,
           average: 0.025,
