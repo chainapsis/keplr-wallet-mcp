@@ -1634,6 +1634,8 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: [],
   },
+  // TODO: chain config(currency, fee denom 등)를 외부 registry에서 동적으로 동기화하는 메커니즘 필요.
+  // 현재는 하드코딩이라 체인 denom migration(예: uom → amantra) 시 수동 업데이트 필수.
   "mantra-1": {
     rpc: "https://mantra-rpc.polkachu.com",
     rest: "https://mantra-api.polkachu.com",
@@ -1641,8 +1643,8 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     chainName: "MANTRA",
     stakeCurrency: {
       coinDenom: "OM",
-      coinMinimalDenom: "uom",
-      coinDecimals: 6,
+      coinMinimalDenom: "amantra",
+      coinDecimals: 18,
       coinGeckoId: "mantra-dao",
     },
     bip44: { coinType: 118 },
@@ -1650,16 +1652,16 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     currencies: [
       {
         coinDenom: "OM",
-        coinMinimalDenom: "uom",
-        coinDecimals: 6,
+        coinMinimalDenom: "amantra",
+        coinDecimals: 18,
         coinGeckoId: "mantra-dao",
       },
     ],
     feeCurrencies: [
       {
         coinDenom: "OM",
-        coinMinimalDenom: "uom",
-        coinDecimals: 6,
+        coinMinimalDenom: "amantra",
+        coinDecimals: 18,
         coinGeckoId: "mantra-dao",
         gasPriceStep: {
           low: 0.01,
