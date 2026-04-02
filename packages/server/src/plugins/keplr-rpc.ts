@@ -223,10 +223,20 @@ const keplrRpcPlugin: KeplrPlugin = {
 
           // Step 3: Read existing config (or start fresh)
           let config: Record<string, unknown> = {};
+          let raw: string | undefined;
           try {
-            config = JSON.parse(readFileSync(configPath, "utf-8"));
+            raw = readFileSync(configPath, "utf-8");
           } catch {
-            // File doesn't exist or is invalid — start fresh
+            // File doesn't exist — start fresh
+          }
+          if (raw !== undefined) {
+            try {
+              config = JSON.parse(raw);
+            } catch {
+              throw new Error(
+                `Cannot parse ${configPath} — please fix the JSON syntax before configuring the API key.`,
+              );
+            }
           }
 
           // Step 4: Deep merge the env var
