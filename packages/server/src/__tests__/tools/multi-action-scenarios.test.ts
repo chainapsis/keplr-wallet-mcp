@@ -21,7 +21,7 @@ describe("Multi-action User Scenarios", () => {
   beforeEach(() => {
     store.setState({
       adapters: new Map(),
-      protocols: new Map(),
+
       clients: new Map(),
       mnemonicSource: null,
       pending: new Map(),
