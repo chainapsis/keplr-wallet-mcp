@@ -67,13 +67,25 @@ const keplrApiFetch = async <T>(options: {
 };
 
 // ─── Response sanitization ──────────────────────────────────────────
-/** Remove internal identifiers (e.g. apiKeyId) from API responses before returning to the agent. */
-const stripInternalIds = <T extends Record<string, unknown>>(data: T): T => {
+/**
+ * Remove internal/sensitive fields from API responses before returning to the agent.
+ * - apiKeyId: internal DB identifier
+ * - metadata on credit history entries: contains stripeSessionId, stripeCustomerEmail, etc.
+ */
+const sanitizeResponse = <T extends Record<string, unknown>>(data: T): T => {
   const cleaned = { ...data };
   delete (cleaned as Record<string, unknown>).apiKeyId;
   if (cleaned.history && typeof cleaned.history === "object") {
     const history = { ...(cleaned.history as Record<string, unknown>) };
     delete history.apiKeyId;
+
+    // Strip metadata from credit history entries (contains Stripe PII)
+    if (Array.isArray(history.entries)) {
+      history.entries = (
+        history.entries as Record<string, unknown>[]
+      ).map(({ metadata: _, ...entry }) => entry);
+    }
+
     (cleaned as Record<string, unknown>).history = history;
   }
   return cleaned;
@@ -143,7 +155,151 @@ const makeErrorResponse = (error: unknown, toolName?: string) => {
 const keplrRpcPlugin: KeplrPlugin = {
   name: "keplr-rpc",
 
-  register(server, store) {
+  register(server, _store) {
+    // ── keplr_api_configure_key ────────────────────────────────────────
+    server.registerTool(
+      "keplr_api_configure_key",
+      {
+        description:
+          "Configure a Keplr Infra API key by writing it to the MCP configuration file. " +
+          "Validates the key first, then saves it to either user scope (~/.claude.json, all projects) " +
+          "or project scope (.mcp.json, shared via version control). Restart the MCP server after configuration.",
+        inputSchema: {
+          apiKey: z
+            .string()
+            .describe("Keplr Infra API key (starts with 'keplr_')"),
+          scope: z
+            .enum(["user", "project"])
+            .describe(
+              "Where to store the key: 'user' for ~/.claude.json (all projects), " +
+                "'project' for .mcp.json (this project only)",
+            ),
+        },
+      },
+      async ({ apiKey, scope }) => {
+        try {
+          // Step 1: Validate the API key
+          const validation = await keplrApiFetch<{ valid?: boolean }>({
+            method: "POST",
+            path: "/v1/keys/validate",
+            body: { apiKey },
+          });
+
+          if (!validation.valid) {
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: JSON.stringify(
+                    {
+                      status: "invalid_key",
+                      message:
+                        "The provided API key is not valid. Get a key from https://api.keplr.app",
+                      suggestedActions: [
+                        {
+                          tool: "keplr_api_list_chains",
+                          reason: "Browse available chains (no key required)",
+                          priority: 1,
+                        },
+                      ],
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
+            };
+          }
+
+          // Step 2: Determine config file path
+          const { homedir } = await import("node:os");
+          const { readFileSync, writeFileSync } = await import("node:fs");
+          const { join } = await import("node:path");
+
+          const configPath =
+            scope === "user"
+              ? join(homedir(), ".claude.json")
+              : join(process.cwd(), ".mcp.json");
+
+          // Step 3: Read existing config (or start fresh)
+          let config: Record<string, unknown> = {};
+          try {
+            config = JSON.parse(readFileSync(configPath, "utf-8"));
+          } catch {
+            // File doesn't exist or is invalid — start fresh
+          }
+
+          // Step 4: Deep merge the env var
+          if (!config.mcpServers || typeof config.mcpServers !== "object") {
+            config.mcpServers = {};
+          }
+          const servers = config.mcpServers as Record<
+            string,
+            Record<string, unknown>
+          >;
+
+          if (!servers.keplr || typeof servers.keplr !== "object") {
+            servers.keplr = {
+              command: "npx",
+              args: ["@keplr-wallet/keplr-wallet-mcp"],
+            };
+          }
+
+          if (!servers.keplr.env || typeof servers.keplr.env !== "object") {
+            servers.keplr.env = {};
+          }
+          (servers.keplr.env as Record<string, string>).KEPLR_RPC_API_KEY =
+            apiKey;
+
+          // Step 5: Write back
+          writeFileSync(
+            configPath,
+            `${JSON.stringify(config, null, 2)}\n`,
+            "utf-8",
+          );
+
+          const suggestedActions: SuggestedAction[] = [
+            {
+              tool: "keplr_api_get_usage_summary",
+              reason: "Check your credit balance and usage",
+              priority: 1,
+            },
+            {
+              tool: "keplr_api_list_chains",
+              reason: "See which chains are available",
+              priority: 2,
+            },
+          ];
+
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    status: "configured",
+                    message: `API key saved to ${scope === "user" ? "~/.claude.json (user scope)" : ".mcp.json (project scope)"}.`,
+                    configPath,
+                    scope,
+                    restartRequired: true,
+                    restartGuide:
+                      "The API key will take effect after restarting the MCP server. " +
+                      "Please exit Claude Code (/exit) and start a new session. " +
+                      "Note: /mcp reconnect reuses the existing process and will NOT pick up the new environment variable.",
+                    suggestedActions,
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        } catch (error) {
+          return makeErrorResponse(error, "keplr_api_configure_key");
+        }
+      },
+    );
+
     // ── keplr_api_validate_key ──────────────────────────────────────────
     server.registerTool(
       "keplr_api_validate_key",
@@ -261,7 +417,7 @@ const keplrRpcPlugin: KeplrPlugin = {
             path: `/v1/usage/${apiKey}/summary`,
             query: { clientType: "keplr-mcp" },
           });
-          const data = stripInternalIds(raw);
+          const data = sanitizeResponse(raw);
 
           const balance = (data as { balance?: number }).balance ?? 0;
           const lowBalance = balance > 0 && balance < 100_000;
@@ -325,7 +481,7 @@ const keplrRpcPlugin: KeplrPlugin = {
             path: `/v1/usage/${apiKey}/history`,
             query: Object.keys(query).length > 0 ? query : undefined,
           });
-          const data = stripInternalIds(raw);
+          const data = sanitizeResponse(raw);
 
           const suggestedActions: SuggestedAction[] = [
             {
@@ -367,7 +523,7 @@ const keplrRpcPlugin: KeplrPlugin = {
             method: "GET",
             path: `/v1/credits/${apiKey}/history`,
           });
-          const data = stripInternalIds(raw);
+          const data = sanitizeResponse(raw);
 
           const suggestedActions: SuggestedAction[] = [
             {

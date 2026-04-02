@@ -48,8 +48,9 @@ afterEach(() => {
 
 // ─── Registration ────────────────────────────────────────────────────
 describe("keplr-rpc plugin registration", () => {
-  it("should register all 6 tools", () => {
+  it("should register all 7 tools", () => {
     const expected = [
+      "keplr_api_configure_key",
       "keplr_api_validate_key",
       "keplr_api_get_payment_link",
       "keplr_api_get_usage_summary",
@@ -62,6 +63,63 @@ describe("keplr-rpc plugin registration", () => {
         server.getTool(name),
         `tool "${name}" not registered`,
       ).toBeDefined();
+    }
+  });
+});
+
+// ─── keplr_api_configure_key ────────────────────────────────────────────────
+describe("keplr_api_configure_key", () => {
+  it("should reject invalid API key without writing config", async () => {
+    mockFetch.mockResolvedValueOnce(okJson({ valid: false }));
+    const tool = server.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({
+      apiKey: "keplr_invalid",
+      scope: "user",
+    });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "invalid_key");
+  });
+
+  it("should configure valid key for project scope and write .mcp.json", async () => {
+    const { join } = await import("node:path");
+    const { unlinkSync } = await import("node:fs");
+    const configPath = join(process.cwd(), ".mcp.json");
+
+    // Mock validation success
+    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
+
+    const tool = server.getTool("keplr_api_configure_key")!;
+    try {
+      const result = await tool.handler({
+        apiKey: "keplr_valid123",
+        scope: "project",
+      });
+      const parsed = parseToolResponse(result);
+      expect(parsed).toHaveProperty("status", "configured");
+      expect(parsed).toHaveProperty("scope", "project");
+      expect(parsed).toHaveProperty("restartRequired", true);
+      expect((parsed as { configPath: string }).configPath).toBe(configPath);
+      expect(
+        (parsed as { suggestedActions: unknown[] }).suggestedActions,
+      ).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            tool: "keplr_api_get_usage_summary",
+            priority: 1,
+          }),
+        ]),
+      );
+
+      // Verify the file was actually written with correct content
+      const { readFileSync } = await import("node:fs");
+      const written = JSON.parse(readFileSync(configPath, "utf-8"));
+      expect(written.mcpServers.keplr.env.KEPLR_RPC_API_KEY).toBe(
+        "keplr_valid123",
+      );
+    } finally {
+      try {
+        unlinkSync(configPath);
+      } catch {}
     }
   });
 });
@@ -232,7 +290,7 @@ describe("keplr_api_get_usage_history", () => {
 
 // ─── keplr_api_get_credit_history ───────────────────────────────────────────
 describe("keplr_api_get_credit_history", () => {
-  it("should return credit history with apiKeyId stripped", async () => {
+  it("should return credit history with sensitive fields stripped", async () => {
     mockFetch.mockResolvedValueOnce(
       okJson({
         history: {
@@ -244,6 +302,14 @@ describe("keplr_api_get_credit_history", () => {
               amount: 10000000,
               balanceAfter: 10999500,
               description: "Stripe payment: 10.00 USD",
+              metadata: {
+                source: "stripe",
+                stripeSessionId: "cs_live_xxx",
+                stripeCustomerEmail: "user@example.com",
+                stripePaymentIntent: "pi_xxx",
+                amountCents: 1000,
+                currency: "usd",
+              },
               createdAt: "2025-03-05T14:30:00.000Z",
             },
           ],
@@ -254,10 +320,14 @@ describe("keplr_api_get_credit_history", () => {
     const result = await tool.handler({ apiKey: "keplr_abc123" });
     const parsed = parseToolResponse(result);
     const history = (
-      parsed as { history: { entries: unknown[] } }
+      parsed as { history: { entries: Record<string, unknown>[] } }
     ).history;
     expect(history).not.toHaveProperty("apiKeyId");
     expect(history.entries).toHaveLength(1);
+    // Verify metadata is stripped from entries
+    expect(history.entries[0]).not.toHaveProperty("metadata");
+    expect(history.entries[0]).toHaveProperty("amount", 10000000);
+    expect(history.entries[0]).toHaveProperty("description");
     expect(
       (parsed as { suggestedActions: unknown[] }).suggestedActions,
     ).toEqual(

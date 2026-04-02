@@ -6,6 +6,7 @@ Tools for managing Keplr Infra API keys, credits, and usage analytics via `api.k
 
 | Tool | Description | Read-Only |
 |------|-------------|-----------|
+| `keplr_api_configure_key` | Configure API key in MCP config (user/project scope) | No |
 | `keplr_api_validate_key` | Validate an API key | Yes |
 | `keplr_api_get_payment_link` | Get Stripe payment link to add credits | Yes |
 | `keplr_api_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
@@ -22,6 +23,35 @@ Keplr Infra provides dedicated RPC and REST endpoints for Cosmos chains:
 - **Credit-based billing**: Pay-as-you-go with credit balance tracking
 - **31 supported chains**: See [Keplr Infrastructure](/reference/chains#keplr-infrastructure)
 - **Dashboard**: [api.keplr.app](https://api.keplr.app)
+
+---
+
+## `keplr_api_configure_key`
+
+Configure a Keplr Infra API key by writing it to the MCP configuration file. Validates the key first, then saves it to the selected scope. Requires a server restart after configuration.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | Keplr Infra API key (starts with `keplr_`) |
+| `scope` | `"user" \| "project"` | Yes | `user` for `~/.claude.json` (all projects), `project` for `.mcp.json` (this project only) |
+
+### Response
+
+```json
+{
+  "status": "configured",
+  "message": "API key saved to ~/.claude.json (user scope). Restart the MCP server for the key to take effect.",
+  "configPath": "/Users/you/.claude.json",
+  "scope": "user",
+  "restartRequired": true,
+  "suggestedActions": [
+    { "tool": "keplr_api_get_usage_summary", "reason": "Check your credit balance and usage", "priority": 1 },
+    { "tool": "keplr_api_list_chains", "reason": "See which chains are available", "priority": 2 }
+  ]
+}
+```
 
 ---
 

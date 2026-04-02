@@ -542,6 +542,15 @@ export const TOOL_REGISTRY: ToolEntry[] = [
 
   // ─── Keplr Infra (common) ────────────────────────────────────
   {
+    name: "keplr_api_configure_key",
+    description:
+      "Configure a Keplr Infra API key in MCP config (user or project scope)",
+    category: "keplr-rpc",
+    ecosystem: "common",
+    risk: "safe",
+    keywords: ["keplr", "infra", "api", "key", "configure", "setup", "config"],
+  },
+  {
     name: "keplr_api_validate_key",
     description:
       "Validate a Keplr Infra API key used for dedicated RPC/REST endpoints",

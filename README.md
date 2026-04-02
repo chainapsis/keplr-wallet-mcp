@@ -187,6 +187,7 @@ Configuration is stored in `~/.keplr-mcp/`.
 - `auth-provider-disable` — Disable specific auth provider
 
 ### Keplr Infra
+- `keplr_api_configure_key` — Configure a Keplr Infra API key in MCP config (user or project scope)
 - `keplr_api_validate_key` — Validate a Keplr Infra API key
 - `keplr_api_get_payment_link` — Get a Stripe payment link to add Keplr Infra credits
 - `keplr_api_get_usage_summary` — Get Keplr Infra usage summary (balance, requests, per-chain breakdown)

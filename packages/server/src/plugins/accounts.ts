@@ -135,6 +135,20 @@ async function getOnboardingStatus(
       required: false,
       tool: hasAuthConfigured ? undefined : "auth-setup",
     },
+    {
+      id: "setup_api_key",
+      name: "Set Up Keplr Infra API Key (Optional)",
+      description:
+        "Connect a Keplr Infra API key for dedicated RPC/REST endpoints. " +
+        "Routes requests through api.keplr.app for 31 supported chains with reliable infrastructure. " +
+        "Without a key, public endpoints are used automatically. " +
+        "Get a key from https://api.keplr.app ($1 USD = 200,000 credits).",
+      completed: !!process.env.KEPLR_RPC_API_KEY,
+      required: false,
+      tool: process.env.KEPLR_RPC_API_KEY
+        ? undefined
+        : "keplr_api_configure_key",
+    },
   ];
 
   // Mark check_address and check_balance as "completed" if user has active account
