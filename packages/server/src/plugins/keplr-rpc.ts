@@ -218,9 +218,14 @@ const keplrRpcPlugin: KeplrPlugin = {
 
           const suggestedActions: SuggestedAction[] = [
             {
-              tool: "keplr_api_get_usage_summary",
-              reason: "Check updated balance after payment",
+              tool: "keplr_api_get_credit_history",
+              reason: "Verify exact credit top-up amount after payment",
               priority: 1,
+            },
+            {
+              tool: "keplr_api_get_usage_summary",
+              reason: "Check current balance and usage overview",
+              priority: 2,
             },
           ];
 
@@ -340,6 +345,48 @@ const keplrRpcPlugin: KeplrPlugin = {
           };
         } catch (error) {
           return makeErrorResponse(error, "keplr_api_get_usage_history");
+        }
+      },
+    );
+
+    // ── keplr_api_get_credit_history ───────────────────────────────────
+    server.registerTool(
+      "keplr_api_get_credit_history",
+      {
+        description:
+          "Get Keplr Infra credit transaction history (top-ups, adjustments). " +
+          "Use this after payment to verify the exact credit amount added instead of comparing usage summaries.",
+        inputSchema: {
+          apiKey: z.string().describe("API key"),
+        },
+        annotations: { readOnlyHint: true },
+      },
+      async ({ apiKey }) => {
+        try {
+          const raw = await keplrApiFetch<Record<string, unknown>>({
+            method: "GET",
+            path: `/v1/credits/${apiKey}/history`,
+          });
+          const data = stripInternalIds(raw);
+
+          const suggestedActions: SuggestedAction[] = [
+            {
+              tool: "keplr_api_get_usage_summary",
+              reason: "View current balance and usage overview",
+              priority: 1,
+            },
+          ];
+
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({ ...data, suggestedActions }, null, 2),
+              },
+            ],
+          };
+        } catch (error) {
+          return makeErrorResponse(error, "keplr_api_get_credit_history");
         }
       },
     );

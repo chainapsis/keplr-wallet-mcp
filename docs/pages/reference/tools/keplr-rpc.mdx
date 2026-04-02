@@ -10,6 +10,7 @@ Tools for managing Keplr Infra API keys, credits, and usage analytics via `api.k
 | `keplr_api_get_payment_link` | Get Stripe payment link to add credits | Yes |
 | `keplr_api_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
 | `keplr_api_get_usage_history` | Get usage history with filters | Yes |
+| `keplr_api_get_credit_history` | Get credit transaction history (top-ups, adjustments) | Yes |
 | `keplr_api_list_chains` | List available chains (no auth) | Yes |
 
 ## About Keplr Infra API
@@ -65,7 +66,8 @@ Get a Stripe payment link to add credits.
 {
   "paymentUrl": "https://checkout.stripe.com/...",
   "suggestedActions": [
-    { "tool": "keplr_api_get_usage_summary", "reason": "Check updated balance after payment", "priority": 1 }
+    { "tool": "keplr_api_get_credit_history", "reason": "Verify exact credit top-up amount after payment", "priority": 1 },
+    { "tool": "keplr_api_get_usage_summary", "reason": "Check current balance and usage overview", "priority": 2 }
   ]
 }
 ```
@@ -134,6 +136,40 @@ Get usage history with optional date, chain, and endpoint type filters.
 
 ---
 
+## `keplr_api_get_credit_history`
+
+Get credit transaction history including top-ups and adjustments. Use after payment to verify the exact recharge amount.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiKey` | `string` | Yes | API key |
+
+### Response
+
+```json
+{
+  "history": {
+    "entries": [
+      {
+        "id": "2",
+        "type": "topup",
+        "amount": 10000000,
+        "balanceAfter": 10999500,
+        "description": "Stripe payment: 10.00 USD",
+        "createdAt": "2025-03-05T14:30:00.000Z"
+      }
+    ]
+  },
+  "suggestedActions": [
+    { "tool": "keplr_api_get_usage_summary", "reason": "View current balance and usage overview", "priority": 1 }
+  ]
+}
+```
+
+---
+
 ## `keplr_api_list_chains`
 
 List all chains available on Keplr Infra. No authentication required.
@@ -193,6 +229,9 @@ None.
 
 3. keplr_api_get_payment_link
    → Add credits if balance is low
+
+4. keplr_api_get_credit_history
+   → Verify exact top-up amount after payment
 ```
 
 ---

@@ -191,6 +191,7 @@ Configuration is stored in `~/.keplr-mcp/`.
 - `keplr_api_get_payment_link` — Get a Stripe payment link to add Keplr Infra credits
 - `keplr_api_get_usage_summary` — Get Keplr Infra usage summary (balance, requests, per-chain breakdown)
 - `keplr_api_get_usage_history` — Get Keplr Infra usage history with date/chain/endpoint filters
+- `keplr_api_get_credit_history` — Get Keplr Infra credit transaction history (top-ups, adjustments)
 - `keplr_api_list_chains` — List all chains available on Keplr Infra
 
 ### Utilities

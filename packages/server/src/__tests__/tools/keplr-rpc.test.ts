@@ -48,12 +48,13 @@ afterEach(() => {
 
 // ─── Registration ────────────────────────────────────────────────────
 describe("keplr-rpc plugin registration", () => {
-  it("should register all 5 tools", () => {
+  it("should register all 6 tools", () => {
     const expected = [
       "keplr_api_validate_key",
       "keplr_api_get_payment_link",
       "keplr_api_get_usage_summary",
       "keplr_api_get_usage_history",
+      "keplr_api_get_credit_history",
       "keplr_api_list_chains",
     ];
     for (const name of expected) {
@@ -124,8 +125,12 @@ describe("keplr_api_get_payment_link", () => {
     ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          tool: "keplr_api_get_usage_summary",
+          tool: "keplr_api_get_credit_history",
           priority: 1,
+        }),
+        expect.objectContaining({
+          tool: "keplr_api_get_usage_summary",
+          priority: 2,
         }),
       ]),
     );
@@ -212,6 +217,47 @@ describe("keplr_api_get_usage_history", () => {
     expect(history).not.toHaveProperty("apiKeyId");
     expect(history).toHaveProperty("data");
     expect(Array.isArray(history.data)).toBe(true);
+    expect(
+      (parsed as { suggestedActions: unknown[] }).suggestedActions,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tool: "keplr_api_get_usage_summary",
+          priority: 1,
+        }),
+      ]),
+    );
+  });
+});
+
+// ─── keplr_api_get_credit_history ───────────────────────────────────────────
+describe("keplr_api_get_credit_history", () => {
+  it("should return credit history with apiKeyId stripped", async () => {
+    mockFetch.mockResolvedValueOnce(
+      okJson({
+        history: {
+          apiKeyId: 1,
+          entries: [
+            {
+              id: "2",
+              type: "topup",
+              amount: 10000000,
+              balanceAfter: 10999500,
+              description: "Stripe payment: 10.00 USD",
+              createdAt: "2025-03-05T14:30:00.000Z",
+            },
+          ],
+        },
+      }),
+    );
+    const tool = server.getTool("keplr_api_get_credit_history")!;
+    const result = await tool.handler({ apiKey: "keplr_abc123" });
+    const parsed = parseToolResponse(result);
+    const history = (
+      parsed as { history: { entries: unknown[] } }
+    ).history;
+    expect(history).not.toHaveProperty("apiKeyId");
+    expect(history.entries).toHaveLength(1);
     expect(
       (parsed as { suggestedActions: unknown[] }).suggestedActions,
     ).toEqual(

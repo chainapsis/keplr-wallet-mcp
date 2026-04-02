@@ -586,6 +586,23 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     keywords: ["keplr", "infra", "usage", "history", "timeline", "filter"],
   },
   {
+    name: "keplr_api_get_credit_history",
+    description:
+      "Get Keplr Infra credit transaction history (top-ups, adjustments)",
+    category: "keplr-rpc",
+    ecosystem: "common",
+    risk: "safe",
+    keywords: [
+      "keplr",
+      "infra",
+      "credits",
+      "history",
+      "topup",
+      "payment",
+      "stripe",
+    ],
+  },
+  {
     name: "keplr_api_list_chains",
     description: "List all chains available on Keplr Infra",
     category: "keplr-rpc",
