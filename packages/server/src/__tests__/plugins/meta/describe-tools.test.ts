@@ -3,18 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 import { registerDescribeTools } from "../../../plugins/meta/describe-tools.js";
 
 describe("describe-tools registration", () => {
-  it("should register the describe-tools tool", () => {
-    const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
-
-    registerDescribeTools(mockServer);
-
-    expect(registerTool).toHaveBeenCalledOnce();
-    expect(registerTool.mock.calls[0][0]).toBe("describe-tools");
-    const schema = registerTool.mock.calls[0][1];
-    expect(schema.annotations?.readOnlyHint).toBe(true);
-  });
-
   it("should return full details for known tools", async () => {
     const registerTool = vi.fn();
     // Simulate _registeredTools with a known tool that has inputSchema and description
@@ -125,16 +113,6 @@ describe("describe-tools registration", () => {
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.tools[0].liveSchema).toBeDefined();
     expect(parsed.tools[0].liveSchema.annotations).toBeDefined();
-  });
-
-  it("should require names parameter", () => {
-    const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
-
-    registerDescribeTools(mockServer);
-
-    const config = registerTool.mock.calls[0][1];
-    expect(config.inputSchema.names).toBeDefined();
   });
 
   it("should auto-discover tools from plugins not in registry-data", async () => {

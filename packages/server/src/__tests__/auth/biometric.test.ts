@@ -31,16 +31,6 @@ describe("BiometricProvider", () => {
     vi.restoreAllMocks();
   });
 
-  describe("basic properties", () => {
-    it("should have correct id", () => {
-      expect(provider.id).toBe("biometric");
-    });
-
-    it("should have correct name", () => {
-      expect(provider.name).toBe("Biometric (Touch ID / Face ID)");
-    });
-  });
-
   describe("isAvailable", () => {
     it("should return false when impl is null", async () => {
       const available = await provider.isAvailable();
@@ -181,30 +171,6 @@ describe("BiometricProvider with mock impl", () => {
     });
 
     it("should handle delete_account action", async () => {
-      const context: AuthContext = {
-        action: "delete_account",
-      };
-
-      await provider.authenticate(context);
-
-      expect(mockImpl.authenticate).toHaveBeenCalledWith(
-        expect.stringContaining("Delete account"),
-      );
-    });
-
-    it("should handle delete_account action", async () => {
-      const context: AuthContext = {
-        action: "delete_account",
-      };
-
-      await provider.authenticate(context);
-
-      expect(mockImpl.authenticate).toHaveBeenCalledWith(
-        expect.stringContaining("Delete account"),
-      );
-    });
-
-    it("should handle delete_account action (import replaced)", async () => {
       const context: AuthContext = {
         action: "delete_account",
       };

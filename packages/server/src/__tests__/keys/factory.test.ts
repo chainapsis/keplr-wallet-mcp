@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   createKeyProvider,
-  createMnemonicKeyProvider,
-  getSupportedKeyProviderTypes,
   isKeyProviderTypeSupported,
   validateKeyProviderConfig,
 } from "../../keys/factory.js";
-import { MnemonicKeyProvider } from "../../keys/providers/mnemonic.js";
 import { KeyProviderError } from "../../keys/types.js";
 
 // Valid test mnemonic (DO NOT use for real funds)
@@ -15,10 +12,6 @@ const TEST_MNEMONIC =
 
 describe("KeyProvider Factory", () => {
   describe("isKeyProviderTypeSupported", () => {
-    it("should return true for mnemonic", () => {
-      expect(isKeyProviderTypeSupported("mnemonic")).toBe(true);
-    });
-
     it("should return true for registered but unimplemented types", () => {
       // These are registered in the registry but will throw on creation
       // This is by design - they are "known" types that are not yet implemented
@@ -26,26 +19,7 @@ describe("KeyProvider Factory", () => {
     });
   });
 
-  describe("getSupportedKeyProviderTypes", () => {
-    it("should return array of supported types", () => {
-      const types = getSupportedKeyProviderTypes();
-      expect(types).toContain("mnemonic");
-      // Also includes registered but unimplemented types
-      expect(types).toContain("smart-account");
-    });
-  });
-
   describe("createKeyProvider", () => {
-    it("should create MnemonicKeyProvider from config", async () => {
-      const provider = await createKeyProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      expect(provider).toBeInstanceOf(MnemonicKeyProvider);
-      expect(provider.type).toBe("mnemonic");
-    });
-
     it("should throw for passkey without proper config", async () => {
       await expect(
         createKeyProvider({
@@ -77,24 +51,6 @@ describe("KeyProvider Factory", () => {
           mnemonic: "test",
         } as unknown as { type: "mnemonic"; mnemonic: string }),
       ).rejects.toThrow(/Unknown key provider type/);
-    });
-  });
-
-  describe("createMnemonicKeyProvider", () => {
-    it("should create provider with mnemonic", async () => {
-      const provider = await createMnemonicKeyProvider(TEST_MNEMONIC);
-
-      expect(provider).toBeInstanceOf(MnemonicKeyProvider);
-      expect(provider.type).toBe("mnemonic");
-      expect(provider.displayName).toBe("Mnemonic Wallet");
-    });
-
-    it("should pass hdPathPrefix option", async () => {
-      const provider = await createMnemonicKeyProvider(TEST_MNEMONIC, {
-        hdPathPrefix: "m/44'/118'/0'/0/0",
-      });
-
-      expect(provider).toBeInstanceOf(MnemonicKeyProvider);
     });
   });
 

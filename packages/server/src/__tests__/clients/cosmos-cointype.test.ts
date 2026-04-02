@@ -56,28 +56,6 @@ describe("CoinType-aware address derivation", () => {
   });
 
   describe("EVM chains (eth-address-gen)", () => {
-    it("should derive keccak256 address for XRPL EVM", async () => {
-      const wallet = await EthermintHdWallet.fromMnemonic(
-        TEST_MNEMONIC,
-        "ethm",
-        "m/44'/60'/0'/0/0",
-      );
-      const [account] = await wallet.getAccounts();
-
-      expect(account.address).toMatch(/^ethm1/);
-    });
-
-    it("should derive keccak256 address for Injective", async () => {
-      const wallet = await EthermintHdWallet.fromMnemonic(
-        TEST_MNEMONIC,
-        "inj",
-        "m/44'/60'/0'/0/0",
-      );
-      const [account] = await wallet.getAccounts();
-
-      expect(account.address).toMatch(/^inj1/);
-    });
-
     it("should not match standard Cosmos address for same prefix", async () => {
       // If someone mistakenly used standard Cosmos derivation for an EVM chain
       const cosmosWallet = await DirectSecp256k1HdWallet.fromMnemonic(

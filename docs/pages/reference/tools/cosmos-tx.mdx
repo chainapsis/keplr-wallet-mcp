@@ -16,7 +16,6 @@ Tools for executing transactions on Cosmos chains. All transactions require conf
 | `vote-governance` | Vote on governance proposal |
 | `cancel-unbonding` | Cancel unbonding delegation |
 
----
 
 ## Confirmation Flow
 
@@ -26,14 +25,23 @@ All transaction tools use a two-step confirmation flow:
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "abc123...",
+  "summary": "Send 100 ATOM to cosmos1... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Send 100 ATOM to cosmos1...",
     "from": "cosmos1sender...",
     "to": "cosmos1recipient...",
-    "amount": "100 ATOM",
-    "estimatedFee": "0.01 ATOM"
-  }
+    "amount": { "value": "100000000", "denom": "uatom", "formatted": "100 ATOM" },
+    "estimatedFee": { "value": "5000", "denom": "uatom", "formatted": "0.005 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "399995000", "denom": "uatom", "formatted": "399.995 ATOM" },
+    "summary": "Send 100 ATOM to cosmos1... on cosmoshub-4"
+  },
+  "confirmationToken": "abc123...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
@@ -47,7 +55,6 @@ All transaction tools use a two-step confirmation flow:
 }
 ```
 
----
 
 ## `send-tokens`
 
@@ -57,33 +64,34 @@ Send tokens to another address on the same chain.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `to` | `string` | Yes | Recipient address |
-| `amount` | `string` | Yes | Amount (e.g., "100" or "100.5") |
-| `denom` | `string` | No | Token denom (default: native token) |
-| `memo` | `string` | No | Transaction memo |
+| `chain` | `string` | Yes | Chain ID or name |
+| `recipientAddress` | `string` | Yes | Bech32 recipient address |
+| `amount` | `string` | Yes | Amount (e.g., "1 ATOM", "1.5", or "1000000") |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Send 100 ATOM to cosmos1recipient... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Send 100 ATOM",
-    "from": "cosmos1...",
-    "to": "cosmos1...",
-    "amount": {
-      "value": "100000000",
-      "denom": "uatom",
-      "formatted": "100 ATOM"
-    },
-    "estimatedFee": {
-      "value": "5000",
-      "denom": "uatom",
-      "formatted": "0.005 ATOM"
-    }
-  }
+    "from": "cosmos1sender...",
+    "to": "cosmos1recipient...",
+    "amount": { "value": "100000000", "denom": "uatom", "formatted": "100 ATOM" },
+    "estimatedFee": { "value": "5000", "denom": "uatom", "formatted": "0.005 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "399995000", "denom": "uatom", "formatted": "399.995 ATOM" },
+    "summary": "Send 100 ATOM to cosmos1recipient... on cosmoshub-4"
+  },
+  "confirmationToken": "abc123...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
@@ -91,17 +99,18 @@ Send tokens to another address on the same chain.
 
 ```json
 {
-  "status": "success",
-  "txHash": "ABC123...",
-  "explorerUrl": "https://mintscan.io/cosmos/txs/ABC123",
+  "transactionHash": "ABC123...",
+  "code": 0,
+  "gasUsed": "85000",
+  "gasWanted": "200000",
   "suggestedActions": [
-    { "tool": "get-transaction-status", "reason": "Check status", "priority": 1 },
-    { "tool": "get-balances", "reason": "Check updated balance", "priority": 2 }
+    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "params": { "chain": "cosmoshub-4", "txHash": "ABC123..." }, "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated token balances", "params": { "chain": "cosmoshub-4" }, "priority": 2 },
+    { "tool": "get-staking-info", "reason": "Check updated staking positions and rewards", "params": { "chain": "cosmoshub-4" }, "priority": 3 }
   ]
 }
 ```
 
----
 
 ## `ibc-transfer`
 
@@ -117,7 +126,7 @@ Transfer tokens across chains via IBC. Source channel is automatically resolved 
 | `denom` | `string` | Yes | Token denomination to transfer |
 | `destChain` | `string` | No | Destination chain ID or name. Required when the recipient address prefix is ambiguous (e.g., 'terra' matches both Terra and Terra Classic). |
 | `sourceChannel` | `string` | No | IBC source channel (e.g., 'channel-0'). Auto-resolved via Skip API if omitted. |
-| `sourcePort` | `string` | No | IBC source port (default: 'transfer') |
+| `sourcePort` | `enum: "transfer"` | No | IBC source port (must be 'transfer') |
 | `timeoutMinutes` | `number` | No | Timeout in minutes (default: 10) |
 | `feeDenom` | `string` | No | Fee token denomination |
 
@@ -126,22 +135,26 @@ Transfer tokens across chains via IBC. Source channel is automatically resolved 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "IBC transfer 100 ATOM to osmo1recipient... via transfer/channel-0 on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "IBC transfer 100 ATOM from Cosmos Hub to Osmosis",
-    "route": {
-      "source": "cosmoshub-4",
-      "destination": "osmosis-1",
-      "channel": "channel-0"
-    },
-    "amount": "100 ATOM",
-    "estimatedFee": "0.01 ATOM",
-    "estimatedTime": "~30 seconds"
-  }
+    "from": "cosmos1sender...",
+    "to": "osmo1recipient...",
+    "amount": { "value": "100000000", "denom": "uatom", "formatted": "100 ATOM" },
+    "estimatedFee": { "value": "5000", "denom": "uatom", "formatted": "0.005 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "399995000", "denom": "uatom", "formatted": "399.995 ATOM" },
+    "summary": "IBC transfer 100 ATOM to osmo1recipient... via transfer/channel-0 on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `delegate`
 
@@ -151,31 +164,37 @@ Stake tokens to a validator.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
-| `amount` | `string` | Yes | Amount to stake |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address (e.g., 'cosmosvaloper1...') |
+| `amount` | `string` | Yes | Amount to delegate (e.g., '10 ATOM', '10.5', or '10000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Delegate 100 ATOM to cosmosvaloper1... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Stake 100 ATOM to Coinbase Custody",
-    "validator": {
-      "address": "cosmosvaloper1...",
-      "name": "Coinbase Custody",
-      "commission": "10%",
-      "apr": "~15%"
-    },
-    "amount": "100 ATOM",
-    "estimatedFee": "0.02 ATOM"
-  }
+    "from": "cosmos1sender...",
+    "to": "cosmosvaloper1...",
+    "amount": { "value": "100000000", "denom": "uatom", "formatted": "100 ATOM" },
+    "estimatedFee": { "value": "10000", "denom": "uatom", "formatted": "0.01 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "399990000", "denom": "uatom", "formatted": "399.99 ATOM" },
+    "summary": "Delegate 100 ATOM to cosmosvaloper1... on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `undelegate`
 
@@ -185,28 +204,40 @@ Unstake tokens from a validator. Triggers unbonding period.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
-| `amount` | `string` | Yes | Amount to unstake |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address |
+| `amount` | `string` | Yes | Amount to undelegate (e.g., '5 ATOM', '5.5', or '5000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Undelegate 50 ATOM from cosmosvaloper1... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Unstake 50 ATOM from Coinbase Custody",
-    "validator": "Coinbase Custody",
-    "amount": "50 ATOM",
-    "unbondingPeriod": "21 days",
-    "availableDate": "2024-01-22T00:00:00Z",
-    "warning": "Tokens will be locked for 21 days"
-  }
+    "from": "cosmos1sender...",
+    "to": "cosmosvaloper1...",
+    "amount": { "value": "50000000", "denom": "uatom", "formatted": "50 ATOM" },
+    "estimatedFee": { "value": "10000", "denom": "uatom", "formatted": "0.01 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "449990000", "denom": "uatom", "formatted": "449.99 ATOM" },
+    "warnings": [
+      { "level": "warning", "code": "UNSTAKING_PERIOD", "message": "Unstaking has a chain-specific unbonding period..." }
+    ],
+    "summary": "Undelegate 50 ATOM from cosmosvaloper1... on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `redelegate`
 
@@ -216,28 +247,38 @@ Move stake between validators without unbonding.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `fromValidator` | `string` | Yes | Source validator address |
-| `toValidator` | `string` | Yes | Destination validator address |
-| `amount` | `string` | Yes | Amount to redelegate |
+| `chain` | `string` | Yes | Chain ID or name |
+| `srcValidatorAddress` | `string` | Yes | Source validator operator address to redelegate FROM |
+| `dstValidatorAddress` | `string` | Yes | Destination validator operator address to redelegate TO |
+| `amount` | `string` | Yes | Amount to redelegate (e.g., '10 ATOM', '10.5', or '10000000') |
+| `denom` | `string` | No | Token denomination (optional, auto-detected from amount) |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response (Preview)
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Redelegate 100 ATOM from cosmosvaloper1src... to cosmosvaloper1dst... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Move 100 ATOM from Validator A to Validator B",
-    "from": "Validator A",
-    "to": "Validator B",
-    "amount": "100 ATOM",
-    "note": "No unbonding period, but cannot redelegate again for 21 days"
-  }
+    "from": "cosmos1sender...",
+    "to": "cosmosvaloper1dst...",
+    "amount": { "value": "100000000", "denom": "uatom", "formatted": "100 ATOM" },
+    "estimatedFee": { "value": "15000", "denom": "uatom", "formatted": "0.015 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "balanceBefore": { "value": "500000000", "denom": "uatom", "formatted": "500 ATOM" },
+    "balanceAfter": { "value": "399985000", "denom": "uatom", "formatted": "399.985 ATOM" },
+    "summary": "Redelegate 100 ATOM from cosmosvaloper1src... to cosmosvaloper1dst... on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `claim-rewards`
 
@@ -247,24 +288,32 @@ Claim staking rewards from a specific validator.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator operator address |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address to claim rewards from |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Claim staking rewards from cosmosvaloper1... on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Claim 5.2 ATOM rewards",
-    "validator": "Coinbase Custody",
-    "rewards": "5.2 ATOM"
-  }
+    "from": "cosmos1sender...",
+    "to": "cosmosvaloper1...",
+    "estimatedFee": { "value": "5000", "denom": "uatom", "formatted": "0.005 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "summary": "Claim staking rewards from cosmosvaloper1... on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `claim-all-rewards`
 
@@ -274,26 +323,30 @@ Claim staking rewards from all validators at once.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
+| `chain` | `string` | Yes | Chain ID or name |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Claim rewards from 3 validator(s) on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Claim 15.5 ATOM from 3 validators",
-    "validators": [
-      { "name": "Validator A", "rewards": "5.2 ATOM" },
-      { "name": "Validator B", "rewards": "10.3 ATOM" }
-    ],
-    "totalRewards": "15.5 ATOM"
-  }
+    "from": "cosmos1sender...",
+    "estimatedFee": { "value": "8000", "denom": "uatom", "formatted": "0.008 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "summary": "Claim rewards from 3 validator(s) on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `vote-governance`
 
@@ -303,28 +356,32 @@ Vote on a governance proposal.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `proposalId` | `string` | Yes | Proposal ID |
-| `vote` | `string` | Yes | Vote option: "yes", "no", "abstain", "no_with_veto" |
+| `chain` | `string` | Yes | Chain ID or name |
+| `proposalId` | `string` | Yes | Proposal ID to vote on |
+| `option` | `enum: "yes" \| "no" \| "abstain" \| "no_with_veto"` | Yes | Vote option |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
 
 ### Response
 
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
+  "summary": "Vote \"yes\" on proposal #123 on cosmoshub-4",
+  "chain": "cosmoshub-4",
   "preview": {
-    "summary": "Vote YES on Proposal #123",
-    "proposal": {
-      "id": "123",
-      "title": "Parameter Change Proposal"
-    },
-    "vote": "yes"
-  }
+    "from": "cosmos1sender...",
+    "estimatedFee": { "value": "5000", "denom": "uatom", "formatted": "0.005 ATOM" },
+    "feeEstimationMethod": "simulated",
+    "summary": "Vote \"yes\" on proposal #123 on cosmoshub-4"
+  },
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "ttlWarning": "This confirmation token will expire in 5 minutes.",
+  "instruction": "Call confirm-action with this token to execute."
 }
 ```
 
----
 
 ## `cancel-unbonding`
 
@@ -334,12 +391,13 @@ Cancel an unbonding delegation and re-stake tokens.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID |
-| `validator` | `string` | Yes | Validator address |
-| `amount` | `string` | Yes | Amount to cancel |
-| `creationHeight` | `string` | Yes | Height when unbonding started |
+| `chain` | `string` | Yes | Chain ID or name |
+| `validatorAddress` | `string` | Yes | Validator operator address (e.g., 'cosmosvaloper1...') |
+| `amount` | `string` | Yes | Amount to cancel unbonding (e.g., '10 ATOM', '10.5', or '10000000') |
+| `creationHeight` | `string` | Yes | Creation height of the unbonding entry (from get-unbonding output) |
+| `denom` | `string` | No | Token denomination (optional, defaults to stake denom) |
+| `feeDenom` | `string` | No | Fee token denomination |
 
----
 
 ## Error Handling
 
@@ -368,7 +426,7 @@ For recoverable errors (network, timeout, chain), the response includes a `retry
     "tool": "send-tokens",
     "params": {
       "chain": "cosmoshub-4",
-      "to": "cosmos1...",
+      "recipientAddress": "cosmos1...",
       "amount": "100",
       "denom": "uatom"
     },

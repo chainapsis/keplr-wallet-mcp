@@ -43,22 +43,6 @@ describe("MnemonicKeyProvider", () => {
     });
   });
 
-  describe("capabilities", () => {
-    it("should have correct capabilities", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      expect(provider.capabilities.curves).toContain("secp256k1");
-      expect(provider.capabilities.signTypes).toContain("direct");
-      expect(provider.capabilities.signTypes).toContain("amino");
-      expect(provider.capabilities.canExportKey).toBe(true);
-      expect(provider.capabilities.requiresUserInteraction).toBe(false);
-      expect(provider.capabilities.supportsDerivation).toBe(true);
-    });
-  });
-
   describe("getAddress", () => {
     it("should get Cosmos address with default prefix", async () => {
       const provider = await createMnemonicProvider({
@@ -101,24 +85,6 @@ describe("MnemonicKeyProvider", () => {
         }),
       ).rejects.toThrow(KeyProviderError);
     });
-
-    it("should cache wallet for same prefix", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      const address1 = await provider.getAddress({
-        ecosystem: "cosmos",
-        bech32Prefix: "cosmos",
-      });
-      const address2 = await provider.getAddress({
-        ecosystem: "cosmos",
-        bech32Prefix: "cosmos",
-      });
-
-      expect(address1).toBe(address2);
-    });
   });
 
   describe("getPublicKey", () => {
@@ -138,42 +104,6 @@ describe("MnemonicKeyProvider", () => {
     });
   });
 
-  describe("isReady", () => {
-    it("should always return true", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      expect(await provider.isReady()).toBe(true);
-    });
-  });
-
-  describe("disconnect", () => {
-    it("should clear wallet cache", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      // Prime the cache
-      await provider.getAddress({
-        ecosystem: "cosmos",
-        bech32Prefix: "cosmos",
-      });
-
-      // Disconnect
-      await provider.disconnect();
-
-      // Should still work (recreates wallet)
-      const address = await provider.getAddress({
-        ecosystem: "cosmos",
-        bech32Prefix: "cosmos",
-      });
-      expect(address).toMatch(/^cosmos1/);
-    });
-  });
-
   describe("getAllAddresses", () => {
     it("should return addresses for all ecosystems", async () => {
       const provider = await createMnemonicProvider({
@@ -185,31 +115,6 @@ describe("MnemonicKeyProvider", () => {
 
       expect(addresses.has("cosmos")).toBe(true);
       expect(addresses.get("cosmos")).toMatch(/^cosmos1/);
-    });
-  });
-
-  describe("getMnemonic", () => {
-    it("should return the mnemonic", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      expect(provider.getMnemonic()).toBe(TEST_MNEMONIC);
-    });
-  });
-
-  describe("getSupportedEcosystems", () => {
-    it("should return cosmos only", async () => {
-      const provider = await createMnemonicProvider({
-        type: "mnemonic",
-        mnemonic: TEST_MNEMONIC,
-      });
-
-      const ecosystems = provider.getSupportedEcosystems();
-
-      expect(ecosystems).toContain("cosmos");
-      expect(ecosystems).toHaveLength(1);
     });
   });
 

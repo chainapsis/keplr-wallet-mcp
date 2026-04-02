@@ -19,7 +19,6 @@ Osmosis is the leading decentralized exchange (DEX) in the Cosmos ecosystem:
 - **Concentrated liquidity**: Supercharged pools
 - **Skip Routes**: Automatic multi-hop routing across 485+ tokens
 
----
 
 ## `osmosis-quote`
 
@@ -49,8 +48,17 @@ Get a quote for a token swap.
   },
   "route": ["OSMO", "osmosis-poolmanager", "ATOM"],
   "chain": "osmosis-1",
+  "tokens": {
+    "tokenIn": { "symbol": "OSMO", "denom": "uosmo", "decimals": 6 },
+    "tokenOut": { "symbol": "ATOM", "denom": "ibc/27394F...", "decimals": 6 }
+  },
+  "rawAmounts": {
+    "amountIn": "10000000",
+    "amountOut": "900000",
+    "amountOutMin": "895500"
+  },
   "suggestedActions": [
-    { "tool": "osmosis-swap", "reason": "Execute this swap", "priority": 1 }
+    { "tool": "osmosis-swap", "reason": "Execute this swap: 10 OSMO → 0.9 ATOM", "priority": 1 }
   ]
 }
 ```
@@ -73,7 +81,6 @@ Any Osmosis-listed token can be used by symbol or denom:
 Token resolution uses Skip's asset registry (485+ tokens). You don't need to know the full IBC denom — just use the symbol.
 :::
 
----
 
 ## `osmosis-swap`
 
@@ -93,15 +100,20 @@ Execute a token swap on Osmosis.
 ```json
 {
   "status": "pending_confirmation",
-  "confirmationToken": "...",
   "summary": "Swap 10 OSMO → ~0.9 ATOM on Osmosis",
+  "from": "osmo1...",
   "swap": {
-    "tokenIn": { "symbol": "OSMO", "amount": "10" },
-    "tokenOut": { "symbol": "ATOM", "expectedAmount": "0.9", "minimumAmount": "0.8955" },
+    "tokenIn": { "symbol": "OSMO", "denom": "uosmo", "amount": "10" },
+    "tokenOut": { "symbol": "ATOM", "denom": "ibc/27394F...", "expectedAmount": "0.9", "minimumAmount": "0.8955" },
     "priceImpact": "0.12%",
     "slippage": "0.5%",
     "route": ["OSMO", "osmosis-poolmanager", "ATOM"]
-  }
+  },
+  "chain": "osmosis-1",
+  "confirmationToken": "...",
+  "expiresIn": "5 minutes",
+  "expiresAt": "2026-03-31T12:05:00.000Z",
+  "instruction": "Call confirm-action with this token to execute the swap."
 }
 ```
 
@@ -111,6 +123,9 @@ Execute a token swap on Osmosis.
 {
   "status": "success",
   "transactionHash": "ABC123...",
+  "code": 0,
+  "gasUsed": "250000",
+  "gasWanted": "300000",
   "swap": {
     "tokenIn": "OSMO",
     "tokenOut": "ATOM",
@@ -119,13 +134,12 @@ Execute a token swap on Osmosis.
     "minimumOutput": "0.8955"
   },
   "suggestedActions": [
-    { "tool": "get-transaction-status", "reason": "Check confirmation status", "priority": 1 },
-    { "tool": "get-balances", "reason": "Check updated balances", "priority": 2 }
+    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated token balances", "priority": 2 }
   ]
 }
 ```
 
----
 
 ## Slippage Protection
 
@@ -140,7 +154,6 @@ Slippage is the difference between expected and actual price:
 
 If the price moves beyond your slippage tolerance, the transaction will fail to protect you.
 
----
 
 ## Example Workflows
 
@@ -175,9 +188,8 @@ stATOM → NTRN (multi-hop)
 └─ OSMO → NTRN
 ```
 
----
 
 ## Related
 
-- [Osmosis Guide](/guides/defi/osmosis) - Complete usage guide
+- [Osmosis Guide](/guides/cosmos/osmosis-swap) - Complete usage guide
 - [IBC Transfer](/reference/tools/cosmos-tx#ibc-transfer) - Cross-chain transfers

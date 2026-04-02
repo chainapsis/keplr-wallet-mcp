@@ -90,6 +90,38 @@ describe("E2E: CosmosClient address derivation by chain", () => {
     expect(address).toBe("dym1npvwllfr9dqr8erajqqr6s0vxnk2ak55md7d65");
   });
 
+  // ── eth-address-gen chains with standard BaseAccount (not custom EthAccount) ──
+
+  it("XPLA — coinType 60, eth-address-gen, standard BaseAccount", async () => {
+    const chain = getChainConfig("dimension_37-1");
+    expect(chain?.bip44.coinType).toBe(60);
+    expect(chain?.features).toContain("eth-address-gen");
+
+    const address = await deriveAddress("dimension_37-1");
+    console.log(`  dimension_37-1 (XPLA): ${address}`);
+    expect(address).toBe("xpla1npvwllfr9dqr8erajqqr6s0vxnk2ak55hh2h5f");
+  });
+
+  it("ZetaChain — coinType 60, eth-address-gen, standard BaseAccount", async () => {
+    const chain = getChainConfig("zetachain_7000-1");
+    expect(chain?.bip44.coinType).toBe(60);
+    expect(chain?.features).toContain("eth-address-gen");
+
+    const address = await deriveAddress("zetachain_7000-1");
+    console.log(`  zetachain_7000-1: ${address}`);
+    expect(address).toBe("zeta1npvwllfr9dqr8erajqqr6s0vxnk2ak55l5u792");
+  });
+
+  it("Initia — coinType 60, eth-address-gen, standard BaseAccount", async () => {
+    const chain = getChainConfig("interwoven-1");
+    expect(chain?.bip44.coinType).toBe(60);
+    expect(chain?.features).toContain("eth-address-gen");
+
+    const address = await deriveAddress("interwoven-1");
+    console.log(`  interwoven-1 (Initia): ${address}`);
+    expect(address).toBe("init1npvwllfr9dqr8erajqqr6s0vxnk2ak558xjc5c");
+  });
+
   // ── Verify address changes vs old behavior ──
 
   it("Terra Classic address differs from old hardcoded 118 derivation", async () => {

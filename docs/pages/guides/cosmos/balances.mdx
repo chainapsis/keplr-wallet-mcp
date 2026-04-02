@@ -1,140 +1,24 @@
 # Check Balances
 
-View your token balances on Cosmos chains.
+View your token balances across chains.
 
-## Quick Commands
-
-**Single chain:**
-```
-User: Show my balance on Cosmos Hub
-```
-
-**Multiple chains:**
-```
-User: Show my balances on Osmosis and Celestia
-```
-
-**Full portfolio:**
-```
-User: Show all my Cosmos balances
-```
-
-## Detailed Balance Check
-
-### Single Chain Balance
+## How to Check
 
 ```
-User: What's my ATOM balance?
+You: "Show my balance on Cosmos Hub"
+You: "Show my balances on Osmosis and Celestia"
+You: "Show all my balances"
+You: "Show my portfolio"
 ```
 
-Response:
-
-```json
-{
-  "chain": "cosmoshub-4",
-  "address": "cosmos1abc...",
-  "balances": [
-    {
-      "denom": "uatom",
-      "amount": "150500000",
-      "formatted": "150.5 ATOM",
-      "valueUsd": "$1,505.00"
-    }
-  ]
-}
-```
-
-### Including Staked Tokens
+You can also check your total balance including staked tokens:
 
 ```
-User: Show my total ATOM including staked
+You: "Show my total ATOM including staked"
 ```
-
-This combines:
-- Liquid balance (spendable)
-- Staked amount (delegated)
-- Pending rewards (claimable)
-
-### IBC Tokens
-
-On Osmosis, you may have IBC tokens:
-
-```json
-{
-  "balances": [
-    { "formatted": "100 OSMO" },
-    { "formatted": "50 ATOM (IBC)" },
-    { "formatted": "1,000 USDC (IBC)" }
-  ]
-}
-```
-
-## Portfolio View
-
-```
-User: Show my portfolio
-```
-
-This uses `get-portfolio` to aggregate across all chains:
-
-```json
-{
-  "totalValueUsd": "$5,000.00",
-  "chains": {
-    "cosmoshub-4": {
-      "tokens": [{ "symbol": "ATOM", "amount": "150", "valueUsd": "$1,500" }]
-    },
-    "osmosis-1": {
-      "tokens": [
-        { "symbol": "OSMO", "amount": "500", "valueUsd": "$400" },
-        { "symbol": "ATOM", "amount": "50", "valueUsd": "$500" }
-      ]
-    }
-  }
-}
-```
-
-## Check Specific Address
-
-```
-User: Check balance of cosmos1recipient... on Cosmos Hub
-```
-
-## Understanding Denoms
-
-### Native Tokens
-
-| Symbol | Denom | Chain |
-|--------|-------|-------|
-| ATOM | `uatom` | Cosmos Hub |
-| OSMO | `uosmo` | Osmosis |
-| TIA | `utia` | Celestia |
-
-### IBC Tokens
-
-IBC tokens have long hashed denoms:
-
-```
-ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2
-```
-
-Keplr Wallet MCP displays the friendly name (ATOM) when known.
-
-## What Can I Do Next?
-
-After checking balances, common next steps:
-
-| Balance State | Suggested Action |
-|---------------|-----------------|
-| High liquid balance | Stake to earn rewards |
-| Pending rewards | Claim rewards |
-| Tokens on wrong chain | IBC transfer |
-| Need to send | Token transfer |
-
----
 
 ## Related
 
 - [Send Tokens](/guides/cosmos/send)
 - [Staking](/guides/cosmos/staking)
-- [IBC Transfer](/guides/cosmos/ibc)
+- [Osmosis Swap](/guides/cosmos/osmosis-swap)

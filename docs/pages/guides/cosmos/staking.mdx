@@ -1,215 +1,44 @@
 # Staking
 
-Stake tokens to earn rewards and secure the network.
+Stake tokens to earn rewards.
 
-## Quick Commands
-
-**Stake tokens:**
-```
-User: Stake 100 ATOM to a good validator
-```
-
-**Check staking:**
-```
-User: Show my staking info on Cosmos Hub
-```
-
-**Claim rewards:**
-```
-User: Claim all my staking rewards
-```
-
-## Understanding Staking
-
-### What is Staking?
-
-- **Delegate** tokens to validators
-- **Earn rewards** (~10-20% APY typically)
-- **Secure** the network through proof-of-stake
-- **Keep custody** of your tokens (not transferred to validator)
-
-### Key Terms
-
-| Term | Meaning |
-|------|---------|
-| Delegation | Tokens staked with a validator |
-| Rewards | Earnings from staking |
-| Unbonding | Process of unstaking (has waiting period) |
-| Commission | Validator's fee (deducted from rewards) |
-
-## Complete Staking Flow
-
-### 1. Check Available Balance
+## Stake
 
 ```
-User: How much ATOM do I have available to stake?
+You: "Stake 100 ATOM to a good validator"
+You: "Show my staking info on Cosmos Hub"
+You: "Claim all my staking rewards"
 ```
 
-### 2. Research Validators
+The AI will suggest validators and show you the expected APY before you confirm.
+
+## Unstake
 
 ```
-User: Show me the best validators on Cosmos Hub
+You: "Unstake 50 ATOM from Validator A"
 ```
 
-Consider:
-- **Commission**: Lower = more rewards for you
-- **Uptime**: Higher = more reliable
-- **Voting power**: Spread across validators for decentralization
-- **Self-stake**: Higher = validator has skin in game
-
-### 3. Delegate Tokens
+## Cancel Unstake
 
 ```
-User: Stake 100 ATOM to Coinbase Custody
+You: "Cancel my unbonding from Validator A"
 ```
 
-Preview:
-
-```json
-{
-  "preview": {
-    "summary": "Stake 100 ATOM to Coinbase Custody",
-    "validator": {
-      "name": "Coinbase Custody",
-      "commission": "10%",
-      "estimatedAPY": "~15%"
-    },
-    "amount": "100 ATOM",
-    "estimatedFee": "0.02 ATOM"
-  }
-}
-```
-
-### 4. Monitor Your Stake
+## Redelegate
 
 ```
-User: Show my staking positions
+You: "Move 100 ATOM from Validator A to Validator B"
 ```
 
-### 5. Claim Rewards
+## Compound Rewards
+
+Claim and re-stake in one go:
 
 ```
-User: Claim all my staking rewards on Cosmos Hub
+You: "Claim my rewards and stake them to Validator A"
 ```
-
-## Managing Stakes
-
-### View Current Delegations
-
-```
-User: Show my staking info
-```
-
-Response:
-
-```json
-{
-  "totalDelegated": "500 ATOM",
-  "totalRewards": "15.5 ATOM",
-  "delegations": [
-    {
-      "validator": "Coinbase Custody",
-      "amount": "300 ATOM",
-      "rewards": "9.3 ATOM"
-    },
-    {
-      "validator": "Kraken",
-      "amount": "200 ATOM",
-      "rewards": "6.2 ATOM"
-    }
-  ]
-}
-```
-
-### Add More to Existing Validator
-
-```
-User: Stake 50 more ATOM to Coinbase Custody
-```
-
-### Claim Rewards
-
-From one validator:
-```
-User: Claim rewards from Coinbase Custody
-```
-
-From all validators:
-```
-User: Claim all my staking rewards
-```
-
-## Unstaking
-
-### Start Unbonding
-
-```
-User: Unstake 50 ATOM from Coinbase Custody
-```
-
-:::warning Unbonding Period
-Unstaking takes time (21 days on Cosmos Hub). During this period:
-- Tokens don't earn rewards
-- Tokens can't be transferred
-- You can cancel unbonding
-:::
-
-### Check Unbonding Status
-
-```
-User: Show my unbonding delegations
-```
-
-### Cancel Unbonding
-
-```
-User: Cancel my unbonding from Coinbase Custody
-```
-
-## Redelegation
-
-Move stake between validators without unbonding:
-
-```
-User: Move 100 ATOM from Coinbase Custody to Kraken
-```
-
-Benefits:
-- No unbonding period
-- Continuous rewards
-- Immediate effect
-
-Limitation:
-- Can't redelegate the same tokens again for 21 days
-
-## Choosing Validators
-
-### Recommended Criteria
-
-| Factor | Guideline |
-|--------|-----------|
-| Commission | 5-10% is reasonable |
-| Uptime | 99%+ preferred |
-| Self-stake | Shows commitment |
-| Governance | Active participation |
-| Community | Good reputation |
-
-### Diversification
-
-Spread across multiple validators:
-- Reduces slashing risk
-- Supports decentralization
-- Different commission rates
-
-```
-User: Stake 50 ATOM each to 3 different validators
-```
-
----
 
 ## Related
 
 - [Governance](/guides/cosmos/governance)
 - [Check Balances](/guides/cosmos/balances)
-- [Cosmos Query Tools](/reference/tools/cosmos-query)
-- [Cosmos Transaction Tools](/reference/tools/cosmos-tx)

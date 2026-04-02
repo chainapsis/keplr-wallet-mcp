@@ -10,104 +10,268 @@ Prompts provide step-by-step guidance for common operations. Use them by typing 
 
 | Prompt | Description |
 |--------|-------------|
-| `/get-started` | New user onboarding guide |
-| `/create-account` | Create a new wallet |
-| `/import-account` | Import existing mnemonic |
-| `/setup-authentication` | Configure biometric auth |
-| `/security-check` | Security audit and recommendations |
+| `/get-started` | Get started with the wallet - check setup status and see what you can do |
+| `/create-account` | Create a new wallet account with a fresh mnemonic |
+| `/import-account` | Import an existing wallet using a mnemonic phrase |
+| `/delete-account` | Delete a wallet account (requires confirmation) |
+| `/switch-account` | Switch to a different wallet account |
+| `/list-accounts` | List all wallet accounts and their status |
+| `/setup-authentication` | Guide for setting up transaction authentication |
+| `/setup-totp` | Guide for setting up TOTP (Google Authenticator) 2FA |
+| `/security-check` | Review wallet security settings and recommendations |
+| `/keplr-guide` | Guide for discovering and using Keplr MCP tools efficiently via meta-tools |
 
 ### `/get-started`
 
 Complete onboarding flow for new users:
 
-1. Explains wallet types
-2. Helps choose the right type
-3. Guides through creation
-4. Sets up authentication
-5. Shows first operations
+1. Checks current setup via onboarding-status
+2. If no account, guides through creating one
+3. If account exists, shows addresses and available actions
+4. Gives overview of wallet capabilities
+5. Mentions optional biometric authentication
 
 ### `/create-account`
 
 Guided wallet creation:
 
-1. Generates secure mnemonic
-2. Shows important security warnings
-3. Provides address for all chains
-4. Suggests next steps (check balance, stake)
+**Parameters:**
+- `name` (optional) — Account name (e.g., 'trading', 'savings')
+- `words` (optional) — Mnemonic word count: 12 or 24 (default: 24)
+
+1. Creates account with create-account tool
+2. Shows account details and addresses
+
+### `/import-account`
+
+Import existing wallet:
+
+**Parameters:**
+- `name` (optional) — Account name for the imported wallet
+
+1. Asks for account name and mnemonic phrase
+2. Shows security warning about mnemonic visibility
+3. Imports using import-account tool
+
+### `/delete-account`
+
+Delete a wallet account:
+
+**Parameters:**
+- `name` (optional) — Name of the account to delete
+
+1. Lists accounts if name not provided
+2. Returns confirmation token via delete-account tool
+3. Asks for user confirmation
+4. Completes deletion with confirm-action
+
+### `/switch-account`
+
+Switch active account:
+
+**Parameters:**
+- `name` (optional) — Name of the account to switch to
+
+1. Lists available accounts if name not provided
+2. Switches with switch-account tool
+3. Shows new active account's addresses
+
+### `/list-accounts`
+
+List all wallet accounts:
+
+1. Shows account names
+2. Shows account types (mnemonic)
+3. Indicates which one is active
+4. Shows creation dates if available
 
 ### `/setup-authentication`
 
-Biometric authentication setup:
+Authentication setup guide:
 
-1. Checks available auth methods
-2. Configures Touch ID/Face ID
-3. Sets session timeout
-4. Tests authentication
+1. Checks available auth methods (auth-status)
+2. Guides through biometric or TOTP setup
+3. Enables authentication with auth-enable
+
+### `/setup-totp`
+
+TOTP (Google Authenticator) setup:
+
+1. Starts setup with auth-setup --provider totp
+2. Shows QR code for authenticator app
+3. Asks for 6-digit verification code
+4. Completes verification with auth-verify-setup
 
 ### `/security-check`
 
 Security audit:
 
-1. Checks authentication status
-2. Reviews account settings
-3. Identifies potential risks
-4. Provides recommendations
+1. Checks account type and security settings
+2. Reviews authentication settings
+3. Checks biometric availability and status
+4. Reviews session settings
+5. Provides security recommendations
 
----
+### `/keplr-guide`
+
+Meta-tool discovery guide:
+
+1. Explains search-tools and describe-tools workflow
+2. Lists all tool categories
+3. Provides quick examples for common operations
+4. Explains chain ID resolution
+
 
 ## Cosmos Operations
 
 | Prompt | Description |
 |--------|-------------|
-| `/check-balances` | Check token balances |
-| `/stake` | Staking walkthrough |
+| `/analyze-portfolio` | Analyze cross-chain Cosmos portfolio holdings and provide recommendations |
+| `/check-balances` | Check token balances on a specific chain or all chains |
+| `/check-staking` | Check staking delegations and rewards |
+| `/send` | Send tokens to an address (guided) |
+| `/wallet-overview` | Get a quick overview of wallet status and addresses |
+| `/stake` | Stake tokens to a validator (guided) |
 | `/claim-rewards` | Claim staking rewards |
-| `/governance` | Governance participation |
-| `/redelegate` | Move stake between validators |
-| `/ibc-transfer` | Cross-chain IBC transfer |
-| `/bridge` | Cross-chain bridging guide |
+| `/governance` | Participate in governance voting (guided) |
+| `/redelegate` | Move stake from one validator to another (guided) |
+| `/ibc-transfer` | Transfer tokens between chains via IBC (guided) |
+| `/bridge` | Bridge tokens between Cosmos chains |
+
+### `/analyze-portfolio`
+
+Cross-chain portfolio analysis:
+
+**Parameters:**
+- `chains` (optional) — Comma-separated chain IDs (default: all)
+
+1. Reads portfolio data for each chain
+2. Summarizes token holdings with USD values
+3. Shows staking positions and pending rewards
+4. Provides diversification assessment and recommendations
+
+### `/check-balances`
+
+Balance check:
+
+**Parameters:**
+- `chain` (optional) — Chain name (e.g., 'cosmos', 'osmosis'). Leave empty for all chains
+
+1. Checks balances using get-balances tool
+2. If no chain specified, lists all chains and checks each
+
+### `/check-staking`
+
+Staking overview:
+
+**Parameters:**
+- `chain` (optional) — Chain name. Leave empty for all chains
+
+1. Checks delegations and pending rewards using get-staking-info
+2. Shows validators delegated to
+3. Summarizes claimable rewards
+
+### `/send`
+
+Guided token send:
+
+**Parameters:**
+- `chain` (required) — Chain ID
+- `to` (optional) — Recipient address
+- `amount` (optional) — Amount to send
+
+1. Checks balance on the chain
+2. Prepares send-tokens transaction
+3. Shows summary before confirmation
+
+### `/wallet-overview`
+
+Quick wallet overview:
+
+1. Lists accounts (list-accounts)
+2. Shows Cosmos addresses
+3. Lists supported chains
 
 ### `/stake`
 
 Complete staking guide:
 
+**Parameters:**
+- `chain` (required) — Chain ID
+- `amount` (optional) — Amount to stake
+
 1. Checks available balance
-2. Lists top validators
-3. Explains selection criteria
-4. Creates delegation
-5. Shows expected rewards
+2. Shows top validators with commission rates
+3. Prepares delegation transaction
+4. Shows summary before confirmation
 
 ### `/claim-rewards`
 
 Reward claiming guide:
 
-1. Shows all pending rewards
-2. Explains options (claim one vs all)
-3. Estimates fees
-4. Executes claim
-5. Suggests re-staking
+**Parameters:**
+- `chain` (optional) — Chain name. Leave empty to check all chains
+
+1. Checks pending staking rewards
+2. Shows summary of all claimable rewards
+3. Helps claim rewards
 
 ### `/governance`
 
 Governance participation:
 
-1. Lists active proposals
-2. Explains voting options
-3. Shows your voting power
+**Parameters:**
+- `chain` (required) — Chain name (e.g., 'cosmos', 'osmosis')
+- `proposalId` (optional) — Specific proposal ID to vote on
+
+1. Lists active proposals or fetches specific proposal
+2. Explains proposal details
+3. Shows voting options
 4. Guides through voting
-5. Confirms submission
+
+### `/redelegate`
+
+Redelegation guide:
+
+**Parameters:**
+- `chain` (required) — Chain name (e.g., 'cosmos', 'osmosis')
+- `amount` (optional) — Amount to redelegate
+
+1. Checks current delegations (get-staking-info)
+2. Shows current validators
+3. Lists top validators with commission rates
+4. Prepares redelegate transaction
 
 ### `/ibc-transfer`
 
-Cross-chain transfer guide:
+Cross-chain IBC transfer guide:
 
-1. Selects source chain
-2. Selects destination chain
-3. Shows available channels
-4. Estimates transfer time
-5. Executes transfer
+**Parameters:**
+- `sourceChain` (required) — Source chain name (e.g., 'osmosis', 'cosmos')
+- `destChain` (optional) — Destination chain name
+- `token` (optional) — Token to transfer
+- `amount` (optional) — Amount to transfer
 
----
+1. Checks balance on source chain
+2. Finds correct IBC channel using list-ibc-channels
+3. Prepares IBC transfer transaction
+4. Shows summary including estimated arrival time
+
+### `/bridge`
+
+Cross-chain bridging guide:
+
+**Parameters:**
+- `from` (optional) — Source chain (e.g., 'osmosis', 'cosmoshub')
+- `to` (optional) — Destination ecosystem or chain
+- `token` (optional) — Token to bridge
+- `amount` (optional) — Amount to bridge
+
+1. Identifies best bridging route
+2. Checks balances on source chain
+3. Explains bridging process and fees
+4. Guides through required transactions
+
 
 ## Smart Contracts
 
@@ -124,25 +288,26 @@ Smart contract guide:
 3. Explains query vs execute
 4. Guides through interaction
 
----
 
 ## DeFi Protocols
 
 | Prompt | Description |
 |--------|-------------|
-| `/osmosis-swap` | Osmosis DEX swap |
+| `/osmosis-swap` | Swap tokens on Osmosis DEX (guided) |
 
 ### `/osmosis-swap`
 
 Osmosis swap guide:
 
-1. Checks balances
-2. Selects tokens
-3. Gets quote
-4. Explains slippage
-5. Executes swap
+**Parameters:**
+- `from` (optional) — Token to sell (symbol or denom)
+- `to` (optional) — Token to buy (symbol or denom)
+- `amount` (optional) — Amount to swap
 
----
+1. Gets quote using osmosis-quote
+2. Shows expected output, price impact, and routing
+3. Prepares swap transaction if approved
+
 
 ## Using Prompts
 
@@ -175,7 +340,6 @@ User: /stake cosmoshub-4
 AI: [Starts staking flow for Cosmos Hub specifically]
 ```
 
----
 
 ## Prompt vs Direct Commands
 

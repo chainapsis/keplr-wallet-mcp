@@ -1,0 +1,41 @@
+# Set Up Security
+
+Protect your wallet with Touch ID or an authenticator app.
+
+## Touch ID (macOS)
+
+**1.** Tell Claude:
+
+> "Enable biometric authentication"
+
+**2.** Your Mac will prompt for Touch ID. Once set up, sensitive actions like deleting an account will require your fingerprint.
+
+**3.** Verify it's working:
+
+> "Check my auth status"
+
+## Authenticator App (Google Authenticator, etc.)
+
+**1.** Tell Claude:
+
+> "Set up authenticator app"
+
+**2.** You'll see a QR code in your terminal. Scan it with your authenticator app (Google Authenticator or any TOTP-compatible app).
+
+**3.** Enter the 6-digit code from your app to verify:
+
+> "Verify TOTP with code 123456"
+
+Once set up, account deletion and mnemonic export will require a code from your authenticator app.
+
+## Which Should I Use?
+
+| Method | Good for |
+|--------|----------|
+| Touch ID | Quick and convenient — just tap your fingerprint |
+| Authenticator app | Works on any machine, doesn't require Touch ID |
+| Both | Maximum security — Touch ID first, authenticator as fallback |
+
+## Next Steps
+
+- [Check your balances](/guides/cosmos/balances)

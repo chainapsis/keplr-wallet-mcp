@@ -1,181 +1,19 @@
 # Governance
 
-Participate in on-chain governance voting.
+Vote on on-chain proposals.
 
-## Quick Commands
-
-**View proposals:**
-```
-User: Show active proposals on Cosmos Hub
-```
-
-**Vote:**
-```
-User: Vote yes on proposal 123
-```
-
-## Understanding Governance
-
-### How It Works
-
-1. **Proposal submitted** with deposit
-2. **Voting period** begins (typically 14 days)
-3. **Token holders vote** (weighted by stake)
-4. **Result determined** at end of voting
-5. **Execution** if passed
-
-### Voting Options
-
-| Vote | Meaning |
-|------|---------|
-| Yes | Support the proposal |
-| No | Oppose the proposal |
-| Abstain | Participate but neutral |
-| No With Veto | Strong opposition (can burn deposit) |
-
-### Voting Power
-
-Your voting power = your staked tokens.
-
-If you don't vote, your validator's vote counts for your delegation.
-
-## Viewing Proposals
-
-### List Active Proposals
+## How to Vote
 
 ```
-User: Show voting proposals on Cosmos Hub
+You: "Show active proposals on Cosmos Hub"
+You: "Vote yes on proposal 123"
+You: "Vote no with veto on proposal 456"
 ```
 
-### View Proposal Details
+You can vote **Yes**, **No**, **Abstain**, or **No With Veto**.
 
-```
-User: Tell me about proposal 123 on Cosmos Hub
-```
-
-Response:
-
-```json
-{
-  "id": "123",
-  "title": "Increase Validator Set Size",
-  "status": "voting",
-  "type": "ParameterChangeProposal",
-  "description": "This proposal increases the active validator set from 175 to 180...",
-  "submitTime": "2024-01-01T00:00:00Z",
-  "votingEndTime": "2024-01-15T00:00:00Z",
-  "tally": {
-    "yes": "45%",
-    "no": "10%",
-    "abstain": "5%",
-    "noWithVeto": "2%"
-  }
-}
-```
-
-### Filter by Status
-
-```
-User: Show passed proposals on Osmosis
-User: Show rejected proposals on Cosmos Hub
-```
-
-## Casting Your Vote
-
-### Vote Yes
-
-```
-User: Vote yes on proposal 123 on Cosmos Hub
-```
-
-### Vote No
-
-```
-User: Vote no on proposal 456 on Osmosis
-```
-
-### Vote Abstain
-
-```
-User: Vote abstain on proposal 789
-```
-
-### Vote No With Veto
-
-Use carefully - can burn the proposer's deposit:
-
-```
-User: Vote no with veto on proposal 999
-```
-
-## Proposal Types
-
-### Parameter Changes
-
-Modify chain parameters:
-- Inflation rate
-- Voting period
-- Max validators
-
-### Software Upgrades
-
-Schedule chain upgrades to new versions.
-
-### Community Pool Spend
-
-Fund projects from community treasury.
-
-### Text Proposals
-
-Non-binding signaling proposals.
-
-## Voting Strategy
-
-### When to Vote Yes
-
-- Proposal benefits the chain
-- Well-researched and discussed
-- Reasonable implementation
-
-### When to Vote No
-
-- Disagree with direction
-- Poor implementation
-- Better alternatives exist
-
-### When to Abstain
-
-- Unsure about implications
-- Want to participate but neutral
-- Technical complexity beyond understanding
-
-### When to Vote No With Veto
-
-- Proposal is spam
-- Proposal is harmful
-- Violates chain constitution
-
-:::warning Veto Threshold
-If "No With Veto" exceeds 33.4%, the proposal fails AND the deposit is burned.
-:::
-
-## Check Your Voting History
-
-```
-User: How did I vote on recent proposals?
-```
-
-## Delegator Voting
-
-Your stake can vote even if you don't:
-- Validators vote on your behalf by default
-- Your explicit vote overrides validator vote
-- Always vote on important proposals
-
----
+Your voting power is based on how much you've staked. If you don't vote, your validator votes on your behalf.
 
 ## Related
 
 - [Staking](/guides/cosmos/staking)
-- [Cosmos Query Tools](/reference/tools/cosmos-query)
-- [Cosmos Transaction Tools](/reference/tools/cosmos-tx)

@@ -9,7 +9,6 @@ Tools for arbitrary message signing using ADR-36 standard.
 | `cosmos-sign-arbitrary` | Sign arbitrary message (ADR-36) | No |
 | `cosmos-verify-signature` | Verify ADR-36 signature | Yes |
 
----
 
 ## ADR-36 Standard
 
@@ -29,7 +28,6 @@ ADR-36 (Arbitrary Data Signing) is the Cosmos ecosystem standard for signing arb
 - **Message verification**: Proving address ownership
 - **dApp authorization**: Wallet connection verification
 
----
 
 ## `cosmos-sign-arbitrary`
 
@@ -53,6 +51,7 @@ Sign an arbitrary message using ADR-36 standard.
 | Akash | akash | akashnet-2 |
 | Injective | inj | injective-1 |
 | Celestia | celestia | celestia |
+| Secret Network | secret | secret-4 |
 | dYdX | dydx | dydx-mainnet-1 |
 
 ### Response
@@ -120,7 +119,6 @@ Response: {
 }
 ```
 
----
 
 ## `cosmos-verify-signature`
 
@@ -176,7 +174,6 @@ Response: {
 }
 ```
 
----
 
 ## ADR-36 Sign Document Format
 
@@ -209,7 +206,6 @@ The ADR-36 standard uses a special amino sign document format:
 - **Single message**: Exactly one `MsgSignData` message
 - **Base64 data**: Message encoded for consistent serialization
 
----
 
 ## Integration Example
 
@@ -264,7 +260,6 @@ async function verifyAdr36Signature(
 }
 ```
 
----
 
 ## Related
 

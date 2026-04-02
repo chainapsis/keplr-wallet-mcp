@@ -342,15 +342,12 @@ describe("Cosmos Transaction Tools", () => {
         };
       }>(result);
 
-      // May include LARGE_AMOUNT warning
-      if (parsed.preview.warnings) {
-        const largeAmountWarning = parsed.preview.warnings.find(
-          (w) => w.code === "LARGE_AMOUNT",
-        );
-        if (largeAmountWarning) {
-          expect(largeAmountWarning.level).toBe("warning");
-        }
-      }
+      expect(parsed.preview.warnings).toBeDefined();
+      const largeAmountWarning = parsed.preview.warnings!.find(
+        (w) => w.code === "LARGE_AMOUNT",
+      );
+      expect(largeAmountWarning).toBeDefined();
+      expect(largeAmountWarning!.level).toBe("warning");
     });
 
     it("should use default denom when not specified", async () => {

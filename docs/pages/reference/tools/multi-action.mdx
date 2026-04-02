@@ -1,0 +1,260 @@
+# Multi-Action Tools
+
+Combine multiple operations into a single transaction. Saves on gas fees and ensures all operations succeed or fail together (atomic).
+
+## Overview
+
+| Tool | Description | Read-Only |
+|------|-------------|-----------|
+| `multi-action-create` | Start a new multi-action transaction | No |
+| `multi-action-add` | Add an action to your multi-action | No |
+| `multi-action-remove` | Remove an action by index | No |
+| `multi-action-preview` | Preview with gas estimate before execution | No |
+| `multi-action-execute` | Execute — returns a confirmation token | No |
+| `multi-action-cancel` | Cancel and discard a multi-action | No |
+| `multi-action-list` | List all pending multi-actions | Yes |
+
+### Supported Action Types
+
+`send`, `delegate`, `undelegate`, `redelegate`, `cancel-unbonding`, `claim-rewards`, `vote`, `ibc-transfer`, `cosmwasm-execute`
+
+Maximum 30 actions per multi-action.
+
+
+## `multi-action-create`
+
+Start a new multi-action transaction to combine multiple operations into a single transaction.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `chain` | `string` | Yes | Chain ID (e.g., `cosmoshub-4`, `osmosis-1`) |
+
+### Response
+
+```json
+{
+  "status": "created",
+  "actionId": "ma-001",
+  "chain": "cosmoshub-4",
+  "ecosystem": "cosmos",
+  "actionCount": 0,
+  "message": "Multi-action created. Add your actions using multi-action-add.",
+  "suggestedActions": [
+    { "tool": "multi-action-add", "reason": "Add an action to this multi-action", "priority": 1 }
+  ]
+}
+```
+
+
+## `multi-action-add`
+
+Add an action to your multi-action transaction.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `actionId` | `string` | Yes | The multi-action ID from `multi-action-create` |
+| `type` | `string` | Yes | Action type (see supported types above) |
+| `params` | `object` | Yes | Action parameters (varies by type) |
+| `label` | `string` | No | Optional human-readable label |
+
+#### Parameter Examples by Type
+
+- **send**: `{ "recipientAddress": "cosmos1...", "amount": "100", "denom": "uatom" }`
+- **delegate**: `{ "validatorAddress": "cosmosvaloper1...", "amount": "100", "denom": "uatom" }`
+- **claim-rewards**: `{ "validatorAddress": "cosmosvaloper1..." }`
+- **vote**: `{ "proposalId": "1", "option": "YES" }`
+
+### Response
+
+```json
+{
+  "status": "action_added",
+  "actionId": "ma-001",
+  "chain": "cosmoshub-4",
+  "actionCount": 2,
+  "actions": [
+    { "index": 0, "type": "delegate", "summary": "Delegate 100 ATOM" },
+    { "index": 1, "type": "claim-rewards", "summary": "Claim rewards" }
+  ],
+  "suggestedActions": [
+    { "tool": "multi-action-add", "reason": "Add another action", "priority": 1 },
+    { "tool": "multi-action-preview", "reason": "Preview and simulate the multi-action", "priority": 2 }
+  ]
+}
+```
+
+
+## `multi-action-remove`
+
+Remove an action from your multi-action transaction by index.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `actionId` | `string` | Yes | The multi-action ID |
+| `index` | `number` | Yes | Index of the action to remove (0-based) |
+
+### Response
+
+```json
+{
+  "status": "action_removed",
+  "actionId": "ma-001",
+  "chain": "cosmoshub-4",
+  "actionCount": 1,
+  "actions": [
+    { "index": 0, "type": "delegate", "summary": "Delegate 100 ATOM" }
+  ],
+  "message": "Action at index 1 removed."
+}
+```
+
+
+## `multi-action-preview`
+
+Preview and simulate your multi-action transaction before execution. Shows estimated gas, fee, and balance changes. After preview, the session is locked — no further modifications allowed.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `actionId` | `string` | Yes | The multi-action ID |
+| `feeDenom` | `string` | No | Fee token denomination (auto-selects if not specified) |
+
+### Response
+
+```json
+{
+  "status": "preview",
+  "actionId": "ma-001",
+  "chain": "cosmoshub-4",
+  "actionCount": 2,
+  "actions": [
+    { "index": 0, "type": "delegate", "summary": "Delegate 100 ATOM" },
+    { "index": 1, "type": "claim-rewards", "summary": "Claim rewards" }
+  ],
+  "simulation": {
+    "gasEstimate": "250000",
+    "gasEstimateIndividual": "400000",
+    "gasSavings": "~37%"
+  },
+  "message": "Multi-action preview. Estimated gas: 250000 (save ~37% vs individual transactions). Session is now locked.",
+  "suggestedActions": [
+    { "tool": "multi-action-execute", "reason": "Execute all actions", "priority": 1 },
+    { "tool": "multi-action-cancel", "reason": "Cancel this multi-action", "priority": 3 }
+  ]
+}
+```
+
+
+## `multi-action-execute`
+
+Execute all actions in your multi-action transaction. Returns a confirmation token that must be confirmed with `confirm-action`. Requires `multi-action-preview` to be called first.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `actionId` | `string` | Yes | The multi-action ID |
+| `feeDenom` | `string` | No | Fee token denomination |
+
+### Response
+
+```json
+{
+  "status": "pending_confirmation",
+  "actionId": "ma-001",
+  "chain": "cosmoshub-4",
+  "actionCount": 2,
+  "confirmationToken": "token-abc123",
+  "expiresIn": "5 minutes",
+  "instruction": "Call confirm-action with this token to execute all actions.",
+  "message": "Multi-action ready for execution. Confirm with confirm-action."
+}
+```
+
+
+## `multi-action-cancel`
+
+Cancel and discard a multi-action transaction.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `actionId` | `string` | Yes | The multi-action ID to cancel |
+
+### Response
+
+```json
+{
+  "status": "cancelled",
+  "actionId": "ma-001",
+  "message": "Multi-action cancelled and discarded.",
+  "suggestedActions": [
+    { "tool": "multi-action-create", "reason": "Create a new multi-action", "priority": 1 }
+  ]
+}
+```
+
+
+## `multi-action-list`
+
+List all pending multi-action transactions.
+
+### Parameters
+
+None.
+
+### Response
+
+```json
+{
+  "status": "success",
+  "count": 1,
+  "multiActions": [
+    {
+      "actionId": "ma-001",
+      "chain": "cosmoshub-4",
+      "ecosystem": "cosmos",
+      "actionCount": 2,
+      "locked": false,
+      "actions": [
+        { "index": 0, "type": "delegate", "summary": "Delegate 100 ATOM" }
+      ],
+      "expiresIn": "8 minutes"
+    }
+  ]
+}
+```
+
+
+## Workflow
+
+```
+1. multi-action-create
+   → Start a new session for a chain
+
+2. multi-action-add (repeat)
+   → Add actions one by one
+
+3. multi-action-preview
+   → Simulate and lock the session
+
+4. multi-action-execute
+   → Get a confirmation token
+
+5. confirm-action
+   → Execute the transaction
+```
+
+
+## Related
+
+- [Transaction Confirm](/reference/tools/transaction-confirm) - Confirm and execute pending transactions
+- [Cosmos Transaction](/reference/tools/cosmos-tx) - Individual transaction tools

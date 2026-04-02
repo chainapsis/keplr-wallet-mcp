@@ -26,7 +26,6 @@ Common issues and their solutions.
    ```
 4. Check Claude Desktop logs for errors
 
----
 
 ## Transaction Issues
 
@@ -62,7 +61,6 @@ Example:
 1. Re-initiate the transaction
 2. Default TTL is 5 minutes (configurable via `KEPLR_TX_TTL_MINUTES`)
 
----
 
 ## Network Issues
 
@@ -83,7 +81,6 @@ Example:
 1. Check internet connection
 2. RPC endpoint may be down temporarily
 
----
 
 ## Authentication Issues
 
@@ -107,7 +104,6 @@ Example:
 2. Set up provider: `auth-setup`
 3. Or, ensure you're using the correct account type
 
----
 
 ## Swap Issues
 
@@ -129,7 +125,6 @@ Example:
 2. Try intermediate token (e.g., OSMO or ETH)
 3. Verify token addresses are correct
 
----
 
 ## IBC Issues
 
@@ -152,7 +147,6 @@ Example:
 2. Verify chain pair is supported
 3. Use correct destination chain ID
 
----
 
 ## Portfolio & Price Issues
 
@@ -182,7 +176,6 @@ Example:
 2. Use `chains` parameter to query specific chains: `get-portfolio` with `chains: ["osmosis-1"]`
 3. Some chain RPCs may be temporarily unavailable. Check the `errors` field in the response
 
----
 
 ## Common Error Messages
 
@@ -194,7 +187,6 @@ Example:
 | "Sequence mismatch" | Nonce issue, likely pending tx | Wait for pending tx |
 | "Gas estimation failed" | Contract will likely revert | Check parameters |
 
----
 
 ## Getting Help
 
