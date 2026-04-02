@@ -103,7 +103,7 @@ describe("CosmosClient.simulateMultiActionWithSavings", () => {
       makeMsgSend(),
     ]);
 
-    expect(result.gasEstimate).toBe("130000"); // 100k * 1.3
+    expect(result.gasEstimate).toBe("140000"); // 100k * 1.4
     expect(result.gasEstimateIndividual).toBeUndefined();
     expect(result.gasSavingsPercent).toBeUndefined();
     expect(mockSimulate).toHaveBeenCalledTimes(1);
@@ -123,11 +123,11 @@ describe("CosmosClient.simulateMultiActionWithSavings", () => {
       makeMsgSend(),
     ]);
 
-    // Batched: ceil(200k * 1.3) = 260000
-    expect(result.gasEstimate).toBe("260000");
-    // Individual: 3 * ceil(100k * 1.3) = 3 * 130000 = 390000
-    expect(result.gasEstimateIndividual).toBe("390000");
-    // Savings: round((1 - 260000/390000) * 100) = 33
+    // Batched: ceil(200k * 1.4) = 280000
+    expect(result.gasEstimate).toBe("280000");
+    // Individual: 3 * ceil(100k * 1.4) = 3 * 140000 = 420000
+    expect(result.gasEstimateIndividual).toBe("420000");
+    // Savings: round((1 - 280000/420000) * 100) = 33
     expect(result.gasSavingsPercent).toBe(33);
 
     // 1 batch + 3 individual simulations
@@ -145,11 +145,11 @@ describe("CosmosClient.simulateMultiActionWithSavings", () => {
       makeMsgSend(),
     ]);
 
-    // Batched: ceil(300k * 1.3) = 390000
-    // Individual: 2 * ceil(100k * 1.3) = 260000
-    // Savings: (1 - 390000/260000) * 100 = -50 → undefined
-    expect(result.gasEstimate).toBe("390000");
-    expect(result.gasEstimateIndividual).toBe("260000");
+    // Batched: ceil(300k * 1.4) = 420000
+    // Individual: 2 * ceil(100k * 1.4) = 280000
+    // Savings: (1 - 420000/280000) * 100 = -50 → undefined
+    expect(result.gasEstimate).toBe("420000");
+    expect(result.gasEstimateIndividual).toBe("280000");
     expect(result.gasSavingsPercent).toBeUndefined();
   });
 
@@ -167,12 +167,12 @@ describe("CosmosClient.simulateMultiActionWithSavings", () => {
     ]);
 
     // Should return batched estimate only
-    expect(result.gasEstimate).toBe("260000"); // ceil(200k * 1.3)
+    expect(result.gasEstimate).toBe("280000"); // ceil(200k * 1.4)
     expect(result.gasEstimateIndividual).toBeUndefined();
     expect(result.gasSavingsPercent).toBeUndefined();
   });
 
-  it("should apply 1.3x buffer consistently", async () => {
+  it("should apply gas adjustment buffer consistently", async () => {
     mockSimulate.mockResolvedValueOnce(150000); // batch
     mockSimulate.mockResolvedValueOnce(80000); // individual 1
     mockSimulate.mockResolvedValueOnce(90000); // individual 2
@@ -182,9 +182,9 @@ describe("CosmosClient.simulateMultiActionWithSavings", () => {
       makeMsgSend(),
     ]);
 
-    // Batched: ceil(150000 * 1.3) = 195000
-    expect(result.gasEstimate).toBe("195000");
-    // Individual: ceil(80000 * 1.3) + ceil(90000 * 1.3) = 104000 + 117000 = 221000
-    expect(result.gasEstimateIndividual).toBe("221000");
+    // Batched: ceil(150000 * 1.4) = 210000
+    expect(result.gasEstimate).toBe("210000");
+    // Individual: ceil(80000 * 1.4) + ceil(90000 * 1.4) = 112000 + 126000 = 238000
+    expect(result.gasEstimateIndividual).toBe("238000");
   });
 });

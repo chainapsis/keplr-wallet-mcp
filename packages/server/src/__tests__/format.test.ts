@@ -200,14 +200,14 @@ describe("parseGasPrice", () => {
 
 describe("calculateFee", () => {
   it("should calculate fee from gas estimate", () => {
-    // 100000 gas * 0.025 * 1.3 = 3250
+    // 100000 gas * 0.025 * 1.4 = 3500
     const fee = calculateFee(100000, "0.025uatom");
-    expect(fee).toBe("3250");
+    expect(fee).toBe("3500");
   });
 
   it("should accept string gas estimate", () => {
     const fee = calculateFee("100000", "0.025uatom");
-    expect(fee).toBe("3250");
+    expect(fee).toBe("3500");
   });
 
   it("should use custom multiplier", () => {

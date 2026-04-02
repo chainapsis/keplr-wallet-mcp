@@ -167,7 +167,7 @@ export const GAS_SETTINGS_SCHEMA = {
       description: "Multiply estimated gas by this factor (1.0-3.0)",
       minimum: 1.0,
       maximum: 3.0,
-      default: 1.3,
+      default: 1.4,
     },
     gasPriority: {
       type: "string" as const,

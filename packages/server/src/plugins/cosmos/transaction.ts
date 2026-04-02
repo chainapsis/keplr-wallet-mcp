@@ -42,7 +42,11 @@ import {
   parseHumanAmount,
 } from "../../utils/amount-parser.js";
 import { wrapForBabylon } from "../../utils/babylon.js";
-import { formatCurrencyAmount, parseGasPrice } from "../../utils/format.js";
+import {
+  formatCurrencyAmount,
+  getGasAdjustment,
+  parseGasPrice,
+} from "../../utils/format.js";
 import { resolveIbcDenom } from "../../utils/ibc-resolver.js";
 import { resolveIbcChannelViaSkip } from "../../utils/skip-ibc.js";
 import { formatPreviewForElicitation } from "../../utils/tx-elicitation.js";
@@ -611,7 +615,7 @@ async function buildTransactionPreview(
       feeEstimate = {
         gasEstimate: initialEstimate.gasEstimate,
         feeAmount: Math.ceil(
-          gasEstimate * parsedGasPrice.amount * 1.3,
+          gasEstimate * parsedGasPrice.amount * getGasAdjustment(chain),
         ).toString(),
         feeDenom: selectedFeeDenom,
       };
@@ -627,7 +631,9 @@ async function buildTransactionPreview(
     try {
       // Try to select a fee denom the user has balance for
       const defaultGas = 200000;
-      const defaultFeeAmount = BigInt(Math.ceil(defaultGas * 0.1 * 1.3)); // Rough estimate
+      const defaultFeeAmount = BigInt(
+        Math.ceil(defaultGas * 0.1 * getGasAdjustment(chain)),
+      );
 
       const feeSelection = await selectFeeDenom(
         client,
@@ -642,7 +648,7 @@ async function buildTransactionPreview(
       feeEstimate = {
         gasEstimate: defaultGas.toString(),
         feeAmount: Math.ceil(
-          defaultGas * parsedGasPrice.amount * 1.3,
+          defaultGas * parsedGasPrice.amount * getGasAdjustment(chain),
         ).toString(),
         feeDenom: selectedFeeDenom,
       };
@@ -653,7 +659,7 @@ async function buildTransactionPreview(
       feeEstimate = {
         gasEstimate: defaultGas.toString(),
         feeAmount: Math.ceil(
-          defaultGas * parsedGasPrice.amount * 1.3,
+          defaultGas * parsedGasPrice.amount * getGasAdjustment(chain),
         ).toString(),
         feeDenom: parsedGasPrice.denom,
       };
