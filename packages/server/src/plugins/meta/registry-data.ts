@@ -540,32 +540,34 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     keywords: ["multi", "action", "list", "pending"],
   },
 
-  // ─── Keplr RPC (common) ─────────────────────────────────────
+  // ─── Keplr Infra (common) ────────────────────────────────────
   {
-    name: "kr_validate_key",
-    description: "Validate an existing Keplr Endpoints API key",
-    category: "keplr-rpc",
-    ecosystem: "common",
-    risk: "safe",
-    keywords: ["keplr", "api", "key", "validate", "check"],
-  },
-  {
-    name: "kr_get_payment_link",
-    description: "Get a Stripe payment link to add credits",
-    category: "keplr-rpc",
-    ecosystem: "common",
-    risk: "safe",
-    keywords: ["keplr", "payment", "stripe", "credits", "buy"],
-  },
-  {
-    name: "kr_get_usage_summary",
+    name: "keplr_api_validate_key",
     description:
-      "Get usage summary (balance, requests, credits, per-chain breakdown)",
+      "Validate a Keplr Infra API key used for dedicated RPC/REST endpoints",
+    category: "keplr-rpc",
+    ecosystem: "common",
+    risk: "safe",
+    keywords: ["keplr", "infra", "api", "key", "validate", "check"],
+  },
+  {
+    name: "keplr_api_get_payment_link",
+    description: "Get a Stripe payment link to add Keplr Infra credits",
+    category: "keplr-rpc",
+    ecosystem: "common",
+    risk: "safe",
+    keywords: ["keplr", "infra", "payment", "stripe", "credits", "buy"],
+  },
+  {
+    name: "keplr_api_get_usage_summary",
+    description:
+      "Get Keplr Infra usage summary (balance, requests, credits, per-chain breakdown)",
     category: "keplr-rpc",
     ecosystem: "common",
     risk: "safe",
     keywords: [
       "keplr",
+      "infra",
       "usage",
       "summary",
       "balance",
@@ -575,20 +577,21 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     ],
   },
   {
-    name: "kr_get_usage_history",
-    description: "Get usage history with optional date/chain/endpoint filters",
+    name: "keplr_api_get_usage_history",
+    description:
+      "Get Keplr Infra usage history with optional date/chain/endpoint filters",
     category: "keplr-rpc",
     ecosystem: "common",
     risk: "safe",
-    keywords: ["keplr", "usage", "history", "timeline", "filter"],
+    keywords: ["keplr", "infra", "usage", "history", "timeline", "filter"],
   },
   {
-    name: "kr_list_chains",
-    description: "List all chains available on Keplr Endpoints",
+    name: "keplr_api_list_chains",
+    description: "List all chains available on Keplr Infra",
     category: "keplr-rpc",
     ecosystem: "common",
     risk: "safe",
-    keywords: ["keplr", "chains", "list", "endpoints", "available"],
+    keywords: ["keplr", "infra", "chains", "list", "available"],
   },
 
   // ─── Meta-tools (common) ─────────────────────────────────────

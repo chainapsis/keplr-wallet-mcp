@@ -10,7 +10,7 @@ const mockResponse = (body: string, status = 200) =>
 vi.mock("../../rpc/resolver.js", () => ({
   getRpcResolver: () => ({
     resolveLcdEndpoint: () => ({
-      url: "https://endpoints.keplr.app/lcd/cosmoshub",
+      url: "https://api.keplr.app/rest/cosmoshub",
     }),
   }),
 }));

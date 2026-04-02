@@ -8,7 +8,7 @@ const ALWAYS_REGISTER = new Set([
   "confirm", // transaction confirmation flow
   "auth", // authentication
   "adapter-info", // ecosystem info
-  "keplr-rpc", // Keplr Endpoints API key & usage management
+  "keplr-rpc", // Keplr Infra API key & usage management
 ]);
 
 /**

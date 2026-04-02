@@ -75,7 +75,7 @@ const createKeplrSetupResponse = (toolName?: string) => ({
         {
           status: "setup_required",
           message:
-            "A valid Keplr Endpoints API key is required. Create one from the dashboard.",
+            "A valid Keplr Infra API key is required. Create one from the dashboard.",
           setupGuide: {
             dashboardUrl: "https://api.keplr.app",
             steps: [
@@ -108,7 +108,7 @@ const makeErrorResponse = (error: unknown, toolName?: string) => {
   if (error instanceof KeplrApiError && error.status === 402) {
     extra.suggestedActions = [
       {
-        tool: "kr_get_payment_link",
+        tool: "keplr_api_get_payment_link",
         reason: "Add credits to your account",
         priority: 1,
       },
@@ -131,11 +131,11 @@ const keplrRpcPlugin: KeplrPlugin = {
   name: "keplr-rpc",
 
   register(server, store) {
-    // ── kr_validate_key ──────────────────────────────────────────
+    // ── keplr_api_validate_key ──────────────────────────────────────────
     server.registerTool(
-      "kr_validate_key",
+      "keplr_api_validate_key",
       {
-        description: "Validate an existing Keplr Endpoints API key",
+        description: "Validate an existing Keplr Infra API key",
         inputSchema: {
           apiKey: z.string().describe("API key to validate"),
         },
@@ -153,19 +153,19 @@ const keplrRpcPlugin: KeplrPlugin = {
           const suggestedActions: SuggestedAction[] = valid
             ? [
                 {
-                  tool: "kr_get_usage_summary",
+                  tool: "keplr_api_get_usage_summary",
                   reason: "Check credits and usage",
                   priority: 1,
                 },
                 {
-                  tool: "kr_list_chains",
+                  tool: "keplr_api_list_chains",
                   reason: "See available chains",
                   priority: 2,
                 },
               ]
             : [
                 {
-                  tool: "kr_list_chains",
+                  tool: "keplr_api_list_chains",
                   reason: "Browse available chains (no key required)",
                   priority: 1,
                 },
@@ -180,14 +180,14 @@ const keplrRpcPlugin: KeplrPlugin = {
             ],
           };
         } catch (error) {
-          return makeErrorResponse(error, "kr_validate_key");
+          return makeErrorResponse(error, "keplr_api_validate_key");
         }
       },
     );
 
-    // ── kr_get_payment_link ──────────────────────────────────────
+    // ── keplr_api_get_payment_link ──────────────────────────────────────
     server.registerTool(
-      "kr_get_payment_link",
+      "keplr_api_get_payment_link",
       {
         description: "Get a Stripe payment link to add credits",
         inputSchema: {
@@ -205,7 +205,7 @@ const keplrRpcPlugin: KeplrPlugin = {
 
           const suggestedActions: SuggestedAction[] = [
             {
-              tool: "kr_get_usage_summary",
+              tool: "keplr_api_get_usage_summary",
               reason: "Check updated balance after payment",
               priority: 1,
             },
@@ -220,14 +220,14 @@ const keplrRpcPlugin: KeplrPlugin = {
             ],
           };
         } catch (error) {
-          return makeErrorResponse(error, "kr_get_payment_link");
+          return makeErrorResponse(error, "keplr_api_get_payment_link");
         }
       },
     );
 
-    // ── kr_get_usage_summary ─────────────────────────────────────
+    // ── keplr_api_get_usage_summary ─────────────────────────────────────
     server.registerTool(
-      "kr_get_usage_summary",
+      "keplr_api_get_usage_summary",
       {
         description:
           "Get usage summary (balance, requests, credits, per-chain breakdown)",
@@ -250,13 +250,13 @@ const keplrRpcPlugin: KeplrPlugin = {
           const suggestedActions: SuggestedAction[] = [];
           if (lowBalance) {
             suggestedActions.push({
-              tool: "kr_get_payment_link",
+              tool: "keplr_api_get_payment_link",
               reason: "Low balance — add credits",
               priority: 1,
             });
           }
           suggestedActions.push({
-            tool: "kr_get_usage_history",
+            tool: "keplr_api_get_usage_history",
             reason: "View detailed usage over time",
             priority: 2,
           });
@@ -270,14 +270,14 @@ const keplrRpcPlugin: KeplrPlugin = {
             ],
           };
         } catch (error) {
-          return makeErrorResponse(error, "kr_get_usage_summary");
+          return makeErrorResponse(error, "keplr_api_get_usage_summary");
         }
       },
     );
 
-    // ── kr_get_usage_history ─────────────────────────────────────
+    // ── keplr_api_get_usage_history ─────────────────────────────────────
     server.registerTool(
-      "kr_get_usage_history",
+      "keplr_api_get_usage_history",
       {
         description:
           "Get usage history with optional date/chain/endpoint filters",
@@ -309,7 +309,7 @@ const keplrRpcPlugin: KeplrPlugin = {
 
           const suggestedActions: SuggestedAction[] = [
             {
-              tool: "kr_get_usage_summary",
+              tool: "keplr_api_get_usage_summary",
               reason: "View aggregated usage summary",
               priority: 1,
             },
@@ -324,17 +324,17 @@ const keplrRpcPlugin: KeplrPlugin = {
             ],
           };
         } catch (error) {
-          return makeErrorResponse(error, "kr_get_usage_history");
+          return makeErrorResponse(error, "keplr_api_get_usage_history");
         }
       },
     );
 
-    // ── kr_list_chains ───────────────────────────────────────────
+    // ── keplr_api_list_chains ───────────────────────────────────────────
     server.registerTool(
-      "kr_list_chains",
+      "keplr_api_list_chains",
       {
         description:
-          "List all chains available on Keplr Endpoints (no auth required)",
+          "List all chains available on Keplr Infra (no auth required)",
         annotations: { readOnlyHint: true },
       },
       async () => {
@@ -353,7 +353,7 @@ const keplrRpcPlugin: KeplrPlugin = {
             ],
           };
         } catch (error) {
-          return makeErrorResponse(error, "kr_list_chains");
+          return makeErrorResponse(error, "keplr_api_list_chains");
         }
       },
     );
