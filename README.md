@@ -200,7 +200,6 @@ Configuration is stored in `~/.keplr-mcp/`.
 - `search-tools` — Search tools by keyword, category, or ecosystem
 - `describe-tools` — Get full parameter details for specific tools
 - `list-installed-adapters` — List loaded ecosystem adapters
-- `list-installed-protocols` — List loaded DeFi protocol plugins
 
 ### Prompts (Slash Commands)
 

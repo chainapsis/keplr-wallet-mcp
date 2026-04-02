@@ -66,7 +66,6 @@ When modifying tools, update the relevant docs:
 ```
 packages/
   server/           # Core MCP server + Cosmos
-  protocol-osmosis/ # Osmosis DEX
 ```
 
 ### 3-Layer Key Abstraction
