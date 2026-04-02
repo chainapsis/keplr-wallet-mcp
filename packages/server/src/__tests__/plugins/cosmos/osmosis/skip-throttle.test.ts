@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SkipThrottle } from "../skip-throttle.js";
+import { SkipThrottle } from "../../../../plugins/cosmos/osmosis/skip-throttle.js";
 
 describe("SkipThrottle", () => {
   let throttle: SkipThrottle;

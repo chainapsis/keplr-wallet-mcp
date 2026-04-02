@@ -1,9 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { QuoteResult } from "../../client.js";
-import { registerQuoteTool } from "../../tools/quote.js";
+import type { QuoteResult } from "../../../../../plugins/cosmos/osmosis/client.js";
+import { registerQuoteTool } from "../../../../../plugins/cosmos/osmosis/tools/quote.js";
 
 // Mock SDK
-vi.mock("@keplr-wallet/keplr-wallet-mcp/sdk", () => ({
+vi.mock("../../../../../sdk.js", () => ({
+  getChainConfig: vi.fn((chainId: string) => ({
+    chainId,
+    chainName: "Osmosis",
+    bech32Config: { bech32PrefixAccAddr: "osmo" },
+  })),
   classifyError: vi.fn((err: Error) => ({
     category: "UNKNOWN",
     message: err.message,
@@ -24,16 +29,16 @@ vi.mock("@keplr-wallet/keplr-wallet-mcp/sdk", () => ({
 }));
 
 // Mock client
-vi.mock("../../client.js", () => ({
+vi.mock("../../../../../plugins/cosmos/osmosis/client.js", () => ({
   getOsmosisClient: vi.fn(),
 }));
 
 // Mock skip-assets
-vi.mock("../../skip-assets.js", () => ({
+vi.mock("../../../../../plugins/cosmos/osmosis/skip-assets.js", () => ({
   getSkipOsmosisAssets: vi.fn().mockResolvedValue([]),
 }));
 
-import { getOsmosisClient } from "../../client.js";
+import { getOsmosisClient } from "../../../../../plugins/cosmos/osmosis/client.js";
 
 const mockGetOsmosisClient = vi.mocked(getOsmosisClient);
 

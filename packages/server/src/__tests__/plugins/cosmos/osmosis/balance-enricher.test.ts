@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SkipAsset } from "../skip-api.js";
-import { _resetCache } from "../skip-assets.js";
+import type { SkipAsset } from "../../../../plugins/cosmos/osmosis/skip-api.js";
+import { _resetCache } from "../../../../plugins/cosmos/osmosis/skip-assets.js";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -69,7 +69,9 @@ afterEach(() => {
 
 // Dynamic import to avoid hoisting issues with mocks
 const loadEnricher = async () => {
-  const mod = await import("../balance-enricher.js");
+  const mod = await import(
+    "../../../../plugins/cosmos/osmosis/balance-enricher.js"
+  );
   return mod.enrichOsmosisBalances;
 };
 

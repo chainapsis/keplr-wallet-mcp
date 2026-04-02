@@ -12,7 +12,6 @@ This is a **pnpm monorepo** with a plugin-based architecture for multi-ecosystem
 | Package | Description |
 |---------|-------------|
 | `@keplr-wallet/keplr-wallet-mcp` | Core MCP server with Cosmos built-in + account/chain management |
-| `@keplr-wallet/protocol-osmosis` | Osmosis DEX token swaps |
 
 ## Prerequisites
 
@@ -105,7 +104,6 @@ Configuration is stored in `~/.keplr-mcp/`.
 |----------|----------|-------------|
 | `KEPLR_MNEMONIC` | No | BIP39 mnemonic (overrides keychain) |
 | `KEPLR_ADAPTERS` | No | Additional adapter packages to load (comma-separated) |
-| `KEPLR_PROTOCOLS` | No | Additional protocol plugins to load (comma-separated) |
 | `KEPLR_RPC_API_KEY` | No | Keplr RPC API key for premium endpoints (falls back to public RPC if unset) |
 | `KEPLR_TX_TTL_MINUTES` | No | Transaction confirmation token TTL in minutes (default: 5) |
 | `COINGECKO_API_KEY` | No | CoinGecko Pro API key for portfolio price data |

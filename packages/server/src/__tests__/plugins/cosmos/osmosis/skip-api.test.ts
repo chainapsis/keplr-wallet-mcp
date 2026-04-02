@@ -5,8 +5,8 @@ import {
   getSkipRoute,
   skipFetch,
   skipMsgToEncodeObject,
-} from "../skip-api.js";
-import { skipThrottle } from "../skip-throttle.js";
+} from "../../../../plugins/cosmos/osmosis/skip-api.js";
+import { skipThrottle } from "../../../../plugins/cosmos/osmosis/skip-throttle.js";
 
 // Mock global fetch
 const mockFetch = vi.fn();

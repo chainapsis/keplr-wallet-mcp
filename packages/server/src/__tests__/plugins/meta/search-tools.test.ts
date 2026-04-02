@@ -1,6 +1,16 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { describe, expect, it, vi } from "vitest";
+import { TOOL_REGISTRY } from "../../../plugins/meta/registry-data.js";
 import { registerSearchTools } from "../../../plugins/meta/search-tools.js";
+
+/**
+ * Build a mock _registeredTools map from the static registry.
+ * In a real server, all registered tools appear here.
+ */
+const buildMockRegisteredTools = () =>
+  Object.fromEntries(
+    TOOL_REGISTRY.map((t) => [t.name, { description: t.description }]),
+  );
 
 describe("search-tools registration", () => {
   it("should register the search-tools tool", () => {
@@ -17,7 +27,10 @@ describe("search-tools registration", () => {
 
   it("should return matching tools for a query", async () => {
     const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
+    const mockServer = {
+      registerTool,
+      _registeredTools: buildMockRegisteredTools(),
+    } as unknown as McpServer;
 
     registerSearchTools(mockServer);
 
@@ -34,7 +47,10 @@ describe("search-tools registration", () => {
 
   it("should include categories summary when no query", async () => {
     const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
+    const mockServer = {
+      registerTool,
+      _registeredTools: buildMockRegisteredTools(),
+    } as unknown as McpServer;
 
     registerSearchTools(mockServer);
 
@@ -48,7 +64,10 @@ describe("search-tools registration", () => {
 
   it("should filter by ecosystem", async () => {
     const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
+    const mockServer = {
+      registerTool,
+      _registeredTools: buildMockRegisteredTools(),
+    } as unknown as McpServer;
 
     registerSearchTools(mockServer);
 
@@ -74,7 +93,10 @@ describe("search-tools registration", () => {
 
   it("should filter by category", async () => {
     const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
+    const mockServer = {
+      registerTool,
+      _registeredTools: buildMockRegisteredTools(),
+    } as unknown as McpServer;
 
     registerSearchTools(mockServer);
 
@@ -90,7 +112,10 @@ describe("search-tools registration", () => {
 
   it("should provide hint about describe-tools", async () => {
     const registerTool = vi.fn();
-    const mockServer = { registerTool } as unknown as McpServer;
+    const mockServer = {
+      registerTool,
+      _registeredTools: buildMockRegisteredTools(),
+    } as unknown as McpServer;
 
     registerSearchTools(mockServer);
 
@@ -121,5 +146,26 @@ describe("search-tools registration", () => {
     expect(
       parsed.results.some((r: any) => r.name === "custom-plugin-tool"),
     ).toBe(true);
+  });
+
+  it("should not show static registry entries for unregistered tools", async () => {
+    const registerTool = vi.fn();
+    const mockServer = {
+      registerTool,
+      _registeredTools: {
+        "send-tokens": { description: "Send tokens" },
+        // osmosis tools are NOT registered (protocol not loaded)
+      },
+    } as unknown as McpServer;
+
+    registerSearchTools(mockServer);
+
+    const handler = registerTool.mock.calls[0][2];
+    const result = await handler({ query: "swap" }, {} as any);
+
+    const parsed = JSON.parse(result.content[0].text);
+    expect(parsed.results.some((r: any) => r.name === "osmosis-swap")).toBe(
+      false,
+    );
   });
 });

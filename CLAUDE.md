@@ -132,31 +132,6 @@ Categories: `account-management`, `authentication`, `transaction-confirm`, `cosm
 3. `export default () => new MyAdapter()`
 4. Add to `optionalDependencies`
 
-### New Protocol Plugin
-
-1. Create `packages/protocol-<name>/`
-2. Implement `ProtocolPlugin` (extends `KeplrPlugin` with `protocolId`, `ecosystem`, `supportedChains`)
-3. `export default () => new MyProtocol()` (factory function required by loader)
-4. Add to `optionalDependencies`
-
-```typescript
-import type { ProtocolPlugin } from "@keplr-wallet/keplr-wallet-mcp/protocol-types";
-
-const myProtocol: ProtocolPlugin = {
-  name: "my-protocol",
-  protocolId: "my-protocol",
-  ecosystem: "cosmos",
-  supportedChains: ["osmosis-1"],
-  register(server, store) {
-    // Register tools, balance enrichers, etc.
-  },
-};
-
-export default () => myProtocol;
-```
-
-Discovery: `@keplr-wallet/protocol-*` prefix auto-detected, or set `KEPLR_PROTOCOLS` env var.
-
 ### New KeyProvider (Registry Pattern)
 
 ```typescript
@@ -212,7 +187,6 @@ import { EcosystemAdapter } from "@keplr-wallet/keplr-wallet-mcp/ecosystem";
 
 // Plugins
 import { KeplrPlugin, pluginRegistry, createPluginContext } from "@keplr-wallet/keplr-wallet-mcp/plugin-types";
-import type { ProtocolPlugin } from "@keplr-wallet/keplr-wallet-mcp/protocol-types";
 
 // SDK & Utilities
 import { balanceEnricherRegistry } from "@keplr-wallet/keplr-wallet-mcp/sdk";
@@ -224,4 +198,4 @@ import { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
 import { getRpcResolver, RpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 ```
 
-All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./protocol-types`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`
+All subpath exports: `.`, `./sdk`, `./ecosystem`, `./store`, `./errors`, `./plugin-types`, `./keys`, `./keys/providers/mnemonic`, `./keys/providers/passkey`, `./keys/signers`, `./keys/accounts`, `./keys/adapter-bridge`, `./keys/registry`, `./config`, `./rpc`, `./utils/lcd-fetch`

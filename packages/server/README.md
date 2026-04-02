@@ -81,7 +81,6 @@ Configuration is stored in `~/.keplr-mcp/`.
 |----------|----------|-------------|
 | `KEPLR_MNEMONIC` | No | BIP39 mnemonic (overrides keychain) |
 | `KEPLR_ADAPTERS` | No | Additional adapter packages to load (comma-separated) |
-| `KEPLR_PROTOCOLS` | No | Additional protocol plugins to load (comma-separated) |
 | `KEPLR_RPC_API_KEY` | No | Keplr RPC API key for premium endpoints (falls back to public RPC if unset) |
 | `KEPLR_TX_TTL_MINUTES` | No | Transaction confirmation token TTL in minutes (default: 5) |
 | `COINGECKO_API_KEY` | No | CoinGecko Pro API key for portfolio price data |
@@ -178,7 +177,6 @@ Configuration is stored in `~/.keplr-mcp/`.
 - `search-tools` — Search tools by keyword, category, or ecosystem
 - `describe-tools` — Get full parameter details for specific tools
 - `list-installed-adapters` — List loaded ecosystem adapters
-- `list-installed-protocols` — List loaded DeFi protocol plugins
 
 ## Prompts (Slash Commands)
 
@@ -220,7 +218,6 @@ import { keyProviderRegistry, adapterBridgeRegistry } from "@keplr-wallet/keplr-
 import { EcosystemAdapter } from "@keplr-wallet/keplr-wallet-mcp/ecosystem";
 import { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
 import { KeplrPlugin, pluginRegistry } from "@keplr-wallet/keplr-wallet-mcp/plugin-types";
-import type { ProtocolPlugin } from "@keplr-wallet/keplr-wallet-mcp/protocol-types";
 import { balanceEnricherRegistry } from "@keplr-wallet/keplr-wallet-mcp/sdk";
 import { loadConfig } from "@keplr-wallet/keplr-wallet-mcp/config";
 import { getRpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";

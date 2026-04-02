@@ -20,7 +20,6 @@ import {
   type KeyProvider,
   type MnemonicKeyProviderConfig,
 } from "./keys/index.js";
-import type { ProtocolPlugin } from "./plugins/protocol-types.js";
 
 const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const TTL_MS = process.env.KEPLR_TX_TTL_MINUTES
@@ -146,7 +145,6 @@ export interface PendingMultiAction {
 
 interface KeplrState {
   adapters: Map<string, EcosystemAdapter>;
-  protocols: Map<string, ProtocolPlugin>;
   clients: Map<string, EcosystemClient>;
   mnemonicSource: MnemonicSource;
   pending: Map<string, PendingAction>;
@@ -166,10 +164,6 @@ interface KeplrActions {
   getAdapters: () => Map<string, EcosystemAdapter>;
   /** Register an ecosystem adapter */
   registerAdapter: (adapter: EcosystemAdapter) => void;
-  /** Return all registered protocols */
-  getProtocols: () => Map<string, ProtocolPlugin>;
-  /** Register a protocol plugin */
-  registerProtocol: (protocol: ProtocolPlugin) => void;
   /**
    * Get KeyProvider for the active account.
    * Used by adapters that implement createClientWithProvider.
@@ -248,7 +242,6 @@ export type KeplrStore = KeplrState & KeplrActions;
 export const store = createStore<KeplrStore>()((set, get) => ({
   // --- State ---
   adapters: new Map(),
-  protocols: new Map(),
   clients: new Map(),
   mnemonicSource: null,
   pending: new Map(),
@@ -267,15 +260,6 @@ export const store = createStore<KeplrStore>()((set, get) => ({
     const next = new Map(adapters);
     next.set(adapter.type, adapter);
     set({ adapters: next });
-  },
-
-  getProtocols: () => get().protocols,
-
-  registerProtocol: (protocol) => {
-    const { protocols } = get();
-    const next = new Map(protocols);
-    next.set(protocol.protocolId, protocol);
-    set({ protocols: next });
   },
 
   getKeyProvider: async (): Promise<KeyProvider> => {

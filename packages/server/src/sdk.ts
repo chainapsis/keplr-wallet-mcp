@@ -142,8 +142,6 @@ export {
   KeyProviderError,
   KeyProviderErrorCode,
 } from "./keys/types.js";
-export type { ProtocolPlugin } from "./plugins/protocol-types.js";
-export { isProtocolPlugin } from "./plugins/protocol-types.js";
 // ============================================
 // Plugin Types
 // ============================================
@@ -196,4 +194,3 @@ export { elicitTxConfirmation } from "./utils/tx-elicitation.js";
 // ============================================
 // Version
 // ============================================
-export { checkVersionCompatibility, SDK_VERSION } from "./version.js";

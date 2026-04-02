@@ -187,8 +187,33 @@ describe("ToolIndex", () => {
       const server = {} as unknown as McpServer;
       const liveIndex = buildLiveIndex(server, staticRegistry);
       const results = liveIndex.search({});
-      expect(results).toHaveLength(1);
-      expect(results[0].name).toBe("send-tokens");
+      // No tools registered → no results, even if static registry has entries
+      expect(results).toHaveLength(0);
+    });
+
+    it("should exclude static entries not registered at runtime", () => {
+      const extendedStaticRegistry: ToolEntry[] = [
+        ...staticRegistry,
+        {
+          name: "osmosis-swap",
+          description: "Execute Osmosis DEX swap",
+          category: "defi-osmosis",
+          ecosystem: "cosmos",
+          risk: "destructive",
+          keywords: ["osmosis", "swap"],
+        },
+      ];
+      const server = {
+        _registeredTools: {
+          "send-tokens": { description: "Send tokens" },
+          // osmosis-swap is NOT registered (protocol plugin not loaded)
+        },
+      } as unknown as McpServer;
+
+      const liveIndex = buildLiveIndex(server, extendedStaticRegistry);
+      const results = liveIndex.search({});
+      expect(results.map((r) => r.name)).toContain("send-tokens");
+      expect(results.map((r) => r.name)).not.toContain("osmosis-swap");
     });
 
     it("should use tool name parts as keywords for discovered tools", () => {
