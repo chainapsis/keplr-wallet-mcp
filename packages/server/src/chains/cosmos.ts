@@ -1664,9 +1664,9 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
         coinDecimals: 18,
         coinGeckoId: "mantra",
         gasPriceStep: {
-          low: 0.01,
-          average: 0.025,
-          high: 0.03,
+          low: 40000000000,
+          average: 80000000000,
+          high: 120000000000,
         },
       },
     ],
