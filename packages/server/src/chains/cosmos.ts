@@ -1663,7 +1663,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
         coinMinimalDenom: "amantra",
         coinDecimals: 18,
         coinGeckoId: "mantra",
->>>>>>> e3b700d (fix(chain): update MANTRA denom from uom to amantra)
         gasPriceStep: {
           low: 0.01,
           average: 0.025,
