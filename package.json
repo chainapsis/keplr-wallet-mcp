@@ -4,7 +4,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter @keplr-wallet/keplr-wallet-mcp build && pnpm --filter '@keplr-wallet/*' --filter '!@keplr-wallet/keplr-wallet-mcp' -r build",
+    "build": "pnpm --filter @keplr-wallet/keplr-wallet-mcp build",
     "dev": "pnpm --filter @keplr-wallet/keplr-wallet-mcp dev",
     "start": "pnpm --filter @keplr-wallet/keplr-wallet-mcp start",
     "lint": "biome check .",
