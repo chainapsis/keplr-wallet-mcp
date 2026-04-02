@@ -211,28 +211,6 @@ export const getGasAdjustment = (chain: {
 }): number => (chain.features?.includes("feemarket") ? 1.6 : 1.4);
 
 /**
- * Calculate fee amount from gas estimate and gas price.
- *
- * @param gasEstimate - Estimated gas units
- * @param gasPriceStr - Gas price string (e.g., "0.025uatom")
- * @param multiplier - Safety multiplier for gas estimate (default: 1.4)
- * @returns Fee amount in minimal denomination
- */
-export function calculateFee(
-  gasEstimate: number | string,
-  gasPriceStr: string,
-  multiplier: number = 1.4,
-): string {
-  const { amount: gasPriceAmount } = parseGasPrice(gasPriceStr);
-  const gas =
-    typeof gasEstimate === "string" ? parseInt(gasEstimate, 10) : gasEstimate;
-  const gasWithBuffer = Math.ceil(gas * multiplier);
-  const feeAmount = Math.ceil(gasWithBuffer * gasPriceAmount);
-
-  return feeAmount.toString();
-}
-
-/**
  * Format a value with appropriate decimal places for display.
  * Handles very small and very large numbers.
  *
