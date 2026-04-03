@@ -2228,42 +2228,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: ["cosmwasm"],
   },
-  "archway-1": {
-    rpc: "https://rpc.mainnet.archway.io",
-    rest: "https://api.mainnet.archway.io",
-    chainId: "archway-1",
-    chainName: "Archway",
-    stakeCurrency: {
-      coinDenom: "ARCH",
-      coinMinimalDenom: "aarch",
-      coinDecimals: 18,
-      coinGeckoId: "archway",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("archway"),
-    currencies: [
-      {
-        coinDenom: "ARCH",
-        coinMinimalDenom: "aarch",
-        coinDecimals: 18,
-        coinGeckoId: "archway",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "ARCH",
-        coinMinimalDenom: "aarch",
-        coinDecimals: 18,
-        coinGeckoId: "archway",
-        gasPriceStep: {
-          low: 140000000000,
-          average: 196000000000,
-          high: 225400000000,
-        },
-      },
-    ],
-    features: ["cosmwasm"],
-  },
 };
 
 /**

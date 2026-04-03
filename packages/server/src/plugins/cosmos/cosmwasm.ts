@@ -22,7 +22,6 @@ const COSMWASM_CHAINS = new Set([
   "juno-1",
   "stargaze-1",
   "injective-1",
-  "archway-1",
   "columbus-5",
   "sei-pacific-1",
 ]);
