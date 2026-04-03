@@ -3,7 +3,7 @@
 > [!WARNING]
 > **Beta Notice:** Keplr Wallet MCP is in beta and may contain bugs or unexpected behavior. By using this software, you acknowledge that you do so at your own risk. The developers are not liable for any loss of funds or damages arising from the use of this software.
 
-AI agents can interact with Cosmos ecosystem chains via the [Model Context Protocol](https://modelcontextprotocol.io/).
+Your AI-powered wallet for Cosmos. Send, stake, swap — just ask. Currently supporting 40+ chains via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## Architecture
 
@@ -12,6 +12,7 @@ This is a **pnpm monorepo** with a plugin-based architecture for multi-ecosystem
 | Package | Description |
 |---------|-------------|
 | `@keplr-wallet/keplr-wallet-mcp` | Core MCP server with Cosmos built-in + account/chain management |
+| `@keplr-wallet/biometric-darwin` | macOS biometric authentication binary (private) |
 
 ## Prerequisites
 
@@ -20,14 +21,21 @@ This is a **pnpm monorepo** with a plugin-based architecture for multi-ecosystem
 
 ## Quick Start
 
+### Using the published package
+
 ```bash
-# Install dependencies
+# Claude Code
+claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp
+
+# Or install directly
+npm install @keplr-wallet/keplr-wallet-mcp
+```
+
+### Development (from source)
+
+```bash
 pnpm install
-
-# Build all packages
 pnpm build
-
-# Run the server
 pnpm start
 ```
 
@@ -51,8 +59,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "keplr": {
-      "command": "node",
-      "args": ["/path/to/keplr-mcp-server/packages/server/dist/index.js"]
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"]
     }
   }
 }
@@ -60,7 +68,11 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ### Claude Code
 
-Copy the template and fill in your API keys:
+```bash
+claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp
+```
+
+For development, copy the template and fill in your API keys:
 
 ```bash
 cp .mcp.json.example .mcp.json

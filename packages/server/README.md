@@ -3,7 +3,7 @@
 > [!WARNING]
 > **Beta Notice:** Keplr Wallet MCP is in beta and may contain bugs or unexpected behavior. By using this software, you acknowledge that you do so at your own risk. The developers are not liable for any loss of funds or damages arising from the use of this software.
 
-AI agents can interact with Cosmos ecosystem chains via the [Model Context Protocol](https://modelcontextprotocol.io/).
+Your AI-powered wallet for Cosmos. Send, stake, swap — just ask. Currently supporting 40+ chains via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## Installation
 
