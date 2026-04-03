@@ -2,20 +2,32 @@
 
 Swap tokens on Osmosis DEX.
 
-## How to Swap
+## How to swap
 
 ```
 You: "Swap 100 OSMO for ATOM"
-You: "How much ATOM can I get for 100 OSMO?"
+You: "Swap 50 ATOM for USDC on Osmosis"
 ```
 
-The AI will show you the exchange rate, fees, and minimum received before you confirm.
+### What to expect
 
-For large swaps, ask for a quote first to check the price impact:
+The AI shows you:
+- Exchange rate and the amount you'll receive
+- Swap fee and price impact
+- Minimum received (accounting for slippage)
+
+Nothing executes until you confirm.
+
+## Get a quote first
+
+For larger trades, check the rate before committing:
 
 ```
-You: "Quote swapping 1000 OSMO for ATOM"
+You: "How much ATOM would I get for 1000 OSMO?"
+You: "Quote swapping 500 USDC for OSMO"
 ```
+
+Quotes show the exchange rate and price impact without creating a transaction. This is useful for checking whether the current rate is favorable or if price impact is too high on a large order.
 
 ## Slippage
 
@@ -24,6 +36,13 @@ You can set a custom slippage tolerance:
 ```
 You: "Swap 100 OSMO for ATOM with 2% slippage"
 ```
+
+If the price moves beyond your slippage tolerance between the quote and execution, the swap will be rejected to protect you.
+
+## Tips
+
+- **Check price impact on large swaps** — A quote will show you the price impact percentage. High impact means you're moving the price against yourself.
+- **Tokens must be on Osmosis** — Your tokens need to be on the Osmosis chain. If they're on another chain, [IBC transfer](/guides/cosmos/send#cross-chain-transfer-ibc) them to Osmosis first.
 
 ## Related
 

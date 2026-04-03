@@ -1,0 +1,61 @@
+# Portfolio Overview
+
+View a unified summary of your holdings across all Cosmos chains.
+
+## How to use
+
+```
+You: "Show my portfolio"
+You: "Analyze my portfolio"
+```
+
+### What you'll see
+
+The portfolio aggregates data across all your chains:
+- **Liquid balances** — Available tokens per chain
+- **Staked tokens** — Active delegations and their value
+- **Pending rewards** — Unclaimed staking rewards
+- **Total value** — Everything summed up in USD
+
+You can also filter to specific chains:
+
+```
+You: "Show my portfolio for Cosmos Hub and Osmosis"
+```
+
+## USD prices
+
+Portfolio values in USD require price data from CoinGecko.
+
+**Without an API key** (default), the free tier is used:
+- Prices are cached for 5 minutes
+- Requests are throttled to avoid rate limits
+- Works fine for occasional use
+
+**With a CoinGecko Pro API key**, you get faster, more reliable pricing. To set it up, add the key to your MCP server config:
+
+```json
+{
+  "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"],
+      "env": {
+        "COINGECKO_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+See [Environment Variables](/reference/environment) for all configuration options.
+
+:::tip
+Use the `/analyze-portfolio` slash command for a guided analysis with recommendations.
+:::
+
+## Related
+
+- [Check Balances](/guides/cosmos/balances)
+- [Staking](/guides/cosmos/staking)
+- [Environment Variables](/reference/environment)

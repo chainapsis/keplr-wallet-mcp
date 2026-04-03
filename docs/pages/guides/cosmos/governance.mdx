@@ -2,17 +2,34 @@
 
 Vote on on-chain proposals.
 
-## How to Vote
+## View proposals
 
 ```
 You: "Show active proposals on Cosmos Hub"
-You: "Vote yes on proposal 123"
-You: "Vote no with veto on proposal 456"
+You: "Show me proposal 123 on Cosmos Hub"
 ```
 
-You can vote **Yes**, **No**, **Abstain**, or **No With Veto**.
+When viewing a specific proposal, the AI shows the title, description, current tally, and voting deadline so you can make an informed decision.
 
-Your voting power is based on how much you've staked. If you don't vote, your validator votes on your behalf.
+## Vote
+
+```
+You: "Vote yes on proposal 123"
+You: "Vote no with veto on proposal 456 on Osmosis"
+```
+
+You can vote **Yes**, **No**, **Abstain**, or **No With Veto**. The AI previews your vote and the fee before you confirm.
+
+Your voting power equals the amount you have staked on that chain. If you haven't voted by the deadline, your validator votes on your behalf.
+
+:::tip
+Use the `/governance` slash command for a guided flow — it shows active proposals, lets you read the details, and walks you through voting.
+:::
+
+## Tips
+
+- **Vote before the deadline** — The AI shows the voting end date. Once it passes, your vote can't be submitted.
+- **Specify the chain** — If you're active on multiple chains, include the chain name: `"Vote yes on proposal 123 on Cosmos Hub"`.
 
 ## Related
 

@@ -2,28 +2,47 @@
 
 Interact with smart contracts on Cosmos chains.
 
-## How to Use
+## Query a contract
 
-**Query a contract:**
+Read contract state without spending gas:
+
 ```
 You: "What's my balance on CW20 token juno1abc...?"
 You: "Show info about contract juno1abc... on Juno"
-```
-
-**Execute a contract:**
-```
-You: "Transfer 100 tokens on CW20 juno1abc... to juno1def..."
-```
-
-You can also pass raw JSON messages:
-```
 You: "Query juno1abc... with {"token_info": {}}"
 ```
 
+:::tip
+Start with `"Show info about contract juno1abc..."` to get the contract's label and code ID before querying — this helps you understand what messages the contract accepts.
+:::
+
+## Execute a contract
+
+Call a contract function (requires confirmation):
+
+```
+You: "Transfer 100 tokens on CW20 juno1abc... to juno1def..."
+You: "Execute juno1abc... with {"increment": {}} on Neutron"
+```
+
+The AI shows the contract address, message, and estimated fee before you confirm.
+
+## Instantiate a contract
+
+Deploy a new contract instance from an uploaded code ID:
+
+```
+You: "Instantiate code 42 on Juno with label 'my-counter' and message {"count": 0}"
+```
+
+## Which chains support CosmWasm?
+
+Most Cosmos chains with smart contract support, including **Juno**, **Neutron**, **Osmosis**, **Stargaze**, **Archway**, **Secret Network**, and others. If a chain doesn't support CosmWasm, the AI will let you know.
+
 ## Troubleshooting
 
-- **"Contract not found"** — Verify the contract address and chain.
-- **"Execution reverted"** — Check that you have the required permissions and correct parameters.
+- **"Contract not found"** — Verify the contract address and that you're on the right chain.
+- **"Execution reverted"** — Check that you have the required permissions and the correct message format. Query the contract info first to confirm the expected schema.
 
 ## Related
 

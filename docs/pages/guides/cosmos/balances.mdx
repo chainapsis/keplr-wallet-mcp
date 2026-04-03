@@ -2,23 +2,45 @@
 
 View your token balances across chains.
 
-## How to Check
+## Single chain
 
 ```
 You: "Show my balance on Cosmos Hub"
-You: "Show my balances on Osmosis and Celestia"
-You: "Show all my balances"
-You: "Show my portfolio"
+You: "Show my balances on Osmosis"
 ```
 
-You can also check your total balance including staked tokens:
+The AI will list your tokens with amounts and denominations. If you have staked tokens, it shows those separately.
 
 ```
 You: "Show my total ATOM including staked"
 ```
 
+## Multiple chains
+
+```
+You: "Show my balances on Osmosis and Celestia"
+You: "Show all my balances"
+```
+
+## Portfolio overview
+
+For a full cross-chain summary with USD values:
+
+```
+You: "Show my portfolio"
+```
+
+This aggregates balances across all chains, including staked tokens and pending rewards. See [Portfolio](/guides/cosmos/portfolio) for details.
+
+## Tips
+
+- **IBC tokens** — Tokens transferred via IBC may show as long hash denominations (e.g., `ibc/27394...`). The AI resolves these to friendly names when possible.
+- **USD prices** — Portfolio values require price data. Without a CoinGecko API key, prices use the free tier (rate-limited). See [Environment Variables](/reference/environment) to configure a key.
+- **Be specific about chains** — With 50+ chains supported, specifying the chain avoids unnecessary prompting: `"Show my ATOM on Cosmos Hub"` is faster than `"Show my ATOM"`.
+
 ## Related
 
+- [Portfolio](/guides/cosmos/portfolio)
 - [Send Tokens](/guides/cosmos/send)
 - [Staking](/guides/cosmos/staking)
 - [Osmosis Swap](/guides/cosmos/osmosis-swap)

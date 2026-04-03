@@ -1,0 +1,70 @@
+# Multi-Action Transactions
+
+Batch multiple operations into a single transaction — saves gas and executes atomically.
+
+## When to use
+
+Multi-action is useful when you want to do several things at once:
+- Claim rewards from multiple validators and restake them
+- Send tokens to several recipients
+- Vote on multiple proposals
+- Any combination of supported actions in one atomic transaction
+
+If any action in the batch fails, the entire transaction is rolled back — nothing executes partially.
+
+## How it works
+
+The flow is: **create** a batch, **add** actions to it, **preview** the gas estimate, then **execute**.
+
+### Example: claim and restake
+
+```
+You: "Create a multi-action transaction on Cosmos Hub"
+You: "Add claim rewards from Validator A"
+You: "Add delegate 50 ATOM to Validator A"
+You: "Preview the multi-action"
+You: "Execute it"
+```
+
+### Example: send to multiple recipients
+
+```
+You: "Create a multi-action on Cosmos Hub"
+You: "Add send 10 ATOM to cosmos1abc..."
+You: "Add send 20 ATOM to cosmos1def..."
+You: "Add send 5 ATOM to cosmos1ghi..."
+You: "Preview and execute"
+```
+
+## Manage your batch
+
+Before executing, you can review and adjust:
+
+```
+You: "Show my pending multi-action"
+You: "Remove the second action"
+You: "Cancel the multi-action"
+```
+
+## Supported actions
+
+You can batch any combination of:
+- Send tokens
+- Delegate / undelegate / redelegate
+- Claim rewards
+- Vote on governance
+- CosmWasm execute
+- IBC transfers
+
+All actions in a batch must be on the **same chain**.
+
+## Tips
+
+- **Preview before executing** — The preview shows estimated gas and fees for the entire batch, which is typically lower than executing each action separately.
+- **One chain per batch** — All actions must target the same chain. For cross-chain workflows, create separate batches.
+
+## Related
+
+- [Staking](/guides/cosmos/staking)
+- [Send Tokens](/guides/cosmos/send)
+- [Multi-Action Tools](/reference/tools/multi-action)

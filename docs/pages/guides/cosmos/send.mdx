@@ -2,18 +2,24 @@
 
 Transfer tokens on Cosmos chains.
 
-## How to Send
+## How to send
 
 ```
 You: "Send 10 ATOM to cosmos1abc..."
 You: "Send 100 OSMO to osmo1abc... on Osmosis"
 ```
 
-The AI will show you a preview (amount, recipient, fee) before executing. Nothing happens until you confirm.
+### What to expect
 
-## Cross-Chain Transfer
+1. The AI shows a **preview** — amount, recipient, estimated fee. Nothing moves yet.
+2. You **review and confirm** — say "yes" to proceed or "no" to cancel.
+3. The AI executes the transaction and shows you the result with a transaction hash.
 
-To send tokens to a different chain, just ask — the AI will automatically use IBC:
+The confirmation token expires after 5 minutes. If it expires, just ask again.
+
+## Cross-chain transfer (IBC)
+
+To send tokens to a different chain, just describe what you want — the AI uses IBC automatically:
 
 ```
 You: "Send 50 ATOM from Cosmos Hub to Osmosis"
@@ -21,14 +27,23 @@ You: "Send 50 ATOM from Cosmos Hub to osmo1abc... on Osmosis"
 You: "Send my ATOM from Osmosis back to Cosmos Hub"
 ```
 
-- **Transfer taking long** — The AI may take some time to find the right channel. Once the transaction is submitted, it usually completes quickly.
-- **Tokens not appearing** — Check the destination chain balance. IBC tokens may show as a different denom — the AI will display the friendly name when possible.
+### What to expect
 
-## Common Issues
+- The AI finds the right IBC channel automatically (this may take a moment the first time).
+- IBC transfers typically complete within 30 seconds to a few minutes.
+- Tokens arrive on the destination chain as IBC-wrapped denominations, but the AI displays friendly names.
+
+## Tips
+
+- **Leave enough for fees** — Don't send your entire balance. Keep a small amount for the transaction fee.
+- **Double-check addresses** — Each chain has its own prefix (`cosmos1...` for Cosmos Hub, `osmo1...` for Osmosis, `celestia1...` for Celestia). The AI will warn you if the prefix doesn't match the chain.
+
+## Common issues
 
 - **"Insufficient funds"** — Your balance is too low for the amount + fee. Try a smaller amount.
-- **"Invalid address"** — Check that the address prefix matches the chain (e.g. `cosmos1...` for Cosmos Hub, `osmo1...` for Osmosis).
+- **"Invalid address"** — Check that the address prefix matches the chain.
 - **"Account does not exist"** — Your account needs to receive tokens at least once before it can send. Fund it first.
+- **IBC transfer stuck** — IBC transfers occasionally time out on congested channels. Check your balance on both chains — the tokens are never lost, they'll either arrive or be refunded.
 
 ## Related
 
