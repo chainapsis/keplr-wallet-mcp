@@ -58,7 +58,7 @@ None required.
     "tool": "create-account"
   },
   "setupOptions": [
-    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Keys stored in OS Keychain", "ecosystems": ["Cosmos"] },
+    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Encrypted locally, decryption key in OS Keychain", "ecosystems": ["Cosmos"] },
     { "tool": "import-account", "description": "Import existing wallet with your mnemonic phrase", "security": "⚠️ Mnemonic visible in chat history - use with caution", "ecosystems": ["Cosmos"] }
   ]
 }
@@ -92,7 +92,7 @@ Response: {
   "message": "Next step: Create your first wallet to get started",
   "nextAction": { "tool": "create-account" },
   "setupOptions": [
-    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Keys stored in OS Keychain", "ecosystems": ["Cosmos"] }
+    { "tool": "create-account", "description": "Generate a new wallet with a fresh mnemonic phrase", "security": "Encrypted locally, decryption key in OS Keychain", "ecosystems": ["Cosmos"] }
   ]
 }
 ```
@@ -126,7 +126,7 @@ Generate a new wallet with a BIP39 mnemonic phrase.
   "addresses": { "Cosmos": "cosmos1..." },
   "warning": "⚠️ This mnemonic was transmitted through your AI provider's servers. Store it in a secure location immediately and consider deleting this conversation.",
   "security": {
-    "storage": "OS Keychain (secure)",
+    "storage": "Encrypted locally (AES-256-GCM), decryption key in OS Keychain",
     "backupRecommendation": "Consider backing up your recovery phrase in a secure location."
   },
   "nextSteps": [
@@ -158,7 +158,7 @@ Response: {
   "addresses": { "Cosmos": "cosmos1..." },
   "warning": "⚠️ This mnemonic was transmitted through your AI provider's servers. ...",
   "security": {
-    "storage": "OS Keychain (secure)",
+    "storage": "Encrypted locally (AES-256-GCM), decryption key in OS Keychain",
     "backupRecommendation": "Consider backing up your recovery phrase in a secure location."
   },
   "nextSteps": [
@@ -221,8 +221,8 @@ If declined, the response includes alternatives:
   },
   "addresses": { "Cosmos": "cosmos1..." },
   "security": {
-    "storage": "OS Keychain (secure)",
-    "note": "Your recovery phrase is now stored securely in your system keychain.",
+    "storage": "Encrypted locally (AES-256-GCM), decryption key in OS Keychain",
+    "note": "Your recovery phrase is encrypted and stored locally. The decryption key is in your system keychain.",
     "warnings": [
       "🚨 IMPORTANT: Your mnemonic was provided as a tool parameter and is visible in this conversation",
       "🔒 Consider clearing chat history if this is a high-value wallet",

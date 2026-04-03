@@ -227,14 +227,14 @@ import { getRpcResolver } from "@keplr-wallet/keplr-wallet-mcp/rpc";
 
 ## Security
 
-- Mnemonics are stored in the OS Keychain (macOS Keychain, Windows Credential Manager, Linux Secret Service)
-- All state-changing operations require explicit confirmation via `confirm-action`
+- Mnemonics are encrypted with AES-256-GCM and stored in `~/.keplr-mcp/vaults/<account>.enc`. The decryption key is stored in your OS credential store (e.g. macOS Keychain)
+- All transactions (send, delegate, swap, etc.) require explicit confirmation via `confirm-action`
 - Confirmation tokens expire after 5 minutes
 - Use dedicated wallets with limited funds for AI agent usage
 
 ### Optional: Two-Factor Authentication
 
-For additional security, you can enable authentication for destructive actions (e.g., account deletion). Two methods are available:
+For additional security, you can enable authentication for destructive actions (account deletion, mnemonic export). Authentication is handled separately from transaction confirmation — it applies at the tool layer, not via `confirm-action`. Two methods are available:
 
 #### Biometric (Touch ID / Face ID)
 ```
@@ -249,6 +249,8 @@ auth-verify-setup provider=totp code=123456  # Step 2: Verify with 6-digit code
 ```
 
 When enabled, you'll need to authenticate before performing protected actions.
+
+TOTP secrets are stored in your OS credential store (e.g. macOS Keychain), not in the config file.
 
 **Supported authenticator apps:** Google Authenticator, Authy, Microsoft Authenticator, 1Password, and any RFC 6238 compatible app.
 
