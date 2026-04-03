@@ -7,8 +7,8 @@ export default defineConfig({
   logoUrl: "/logo.svg",
   iconUrl: "/favicon.ico",
   rootDir: ".",
-  basePath: "/mcp/docs",
-  baseUrl: "https://www.keplr.app/mcp/docs",
+  basePath: process.env.VOCS_BASE_PATH || "/",
+  ...(process.env.VOCS_BASE_URL && { baseUrl: process.env.VOCS_BASE_URL }),
   topNav: [
     { text: "Tutorials", link: "/guides/cosmos/balances" },
     { text: "Reference", link: "/reference" },
