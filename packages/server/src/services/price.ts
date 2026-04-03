@@ -227,6 +227,7 @@ export const DENOM_TO_COINGECKO: Record<string, string> = {
   NTRN: "neutron-3",
   AKT: "akash-network",
   REGEN: "regen",
+  ARCH: "archway",
   ATONE: "atomone",
   AXL: "axelar",
   BABY: "babylon",
