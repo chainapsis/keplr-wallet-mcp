@@ -14,7 +14,7 @@ const tipPool: Readonly<Record<string, string[]>> = {
   ],
   "get-staking-info": [
     "Use get-portfolio to see staking status and liquid assets across all chains at a glance",
-    "Use list-validators to compare fees and uptime to find the best validator",
+    "Use list-validators to compare fees and voting power to find the best validator",
   ],
   "get-portfolio": [
     "Set includePrices: false for faster queries without USD prices",
