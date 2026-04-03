@@ -1,6 +1,6 @@
 {
   "name": "@keplr-wallet/keplr-wallet-mcp",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "description": "Keplr MCP Server — AI agents can interact with Cosmos chains via Model Context Protocol",
   "type": "module",
