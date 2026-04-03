@@ -445,15 +445,6 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     risk: "safe",
     keywords: ["adapters", "installed", "list", "ecosystem", "plugins"],
   },
-  {
-    name: "list-installed-protocols",
-    description: "List installed protocol plugins",
-    category: "meta",
-    ecosystem: "common",
-    risk: "safe",
-    keywords: ["protocols", "installed", "list", "plugins", "defi"],
-  },
-
   // ─── DeFi: Osmosis (cosmos) ─────────────────────────────────
   {
     name: "osmosis-quote",

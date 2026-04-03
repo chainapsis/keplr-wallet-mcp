@@ -46,7 +46,13 @@ export function buildLiveIndex(
     )._registeredTools ?? {};
 
   const registryMap = new Map(staticRegistry.map((t) => [t.name, t]));
-  const combined: ToolEntry[] = [...staticRegistry];
+  const registeredNames = new Set(Object.keys(registeredTools));
+
+  // Only include static entries that are actually registered at runtime.
+  // This prevents phantom tools from appearing when a protocol plugin isn't loaded.
+  const combined: ToolEntry[] = staticRegistry.filter((t) =>
+    registeredNames.has(t.name),
+  );
 
   for (const [name, tool] of Object.entries(registeredTools)) {
     // Don't skip meta-tools — they should be discoverable too

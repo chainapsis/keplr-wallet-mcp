@@ -3,7 +3,7 @@
  * Uses Skip `/v2/fungible/assets` for dynamic token lookup with 5-minute TTL cache.
  */
 
-import { getTokenDecimals } from "@keplr-wallet/keplr-wallet-mcp/sdk";
+import { getTokenDecimals } from "../../../sdk.js";
 import { OSMOSIS_CHAIN_ID } from "./constants.js";
 import { type SkipAsset, skipFetch } from "./skip-api.js";
 

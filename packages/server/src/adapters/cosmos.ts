@@ -6,6 +6,7 @@ import { MnemonicKeyProvider } from "../keys/providers/mnemonic.js";
 import type { KeyProvider } from "../keys/types.js";
 import cosmosCosmwasmPlugin from "../plugins/cosmos/cosmwasm.js";
 import cosmosMultiActionPlugin from "../plugins/cosmos/multi-action.js";
+import cosmosOsmosisPlugin from "../plugins/cosmos/osmosis/index.js";
 import cosmosQueryPlugin from "../plugins/cosmos/query.js";
 import cosmosSigningPlugin from "../plugins/cosmos/signing.js";
 import cosmosTransactionPlugin from "../plugins/cosmos/transaction.js";
@@ -101,6 +102,7 @@ export class CosmosAdapter implements EcosystemAdapter {
       cosmosSigningPlugin,
       cosmosCosmwasmPlugin,
       cosmosMultiActionPlugin,
+      cosmosOsmosisPlugin,
     ];
   }
 }

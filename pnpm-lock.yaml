@@ -41,19 +41,6 @@ importers:
 
   packages/biometric-darwin: {}
 
-  packages/protocol-osmosis:
-    dependencies:
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
-    devDependencies:
-      '@keplr-wallet/keplr-wallet-mcp':
-        specifier: workspace:*
-        version: link:../server
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.12.1
-        version: 1.25.3(hono@4.11.7)(zod@3.25.76)
-
   packages/server:
     dependencies:
       '@babylonlabs-io/babylon-proto-ts':
@@ -80,9 +67,6 @@ importers:
       '@keplr-wallet/cosmos':
         specifier: ^0.13.1
         version: 0.13.1(bitcoinjs-lib@6.1.7)(starknet@8.9.2)
-      '@keplr-wallet/protocol-osmosis':
-        specifier: workspace:*
-        version: link:../protocol-osmosis
       '@keplr-wallet/types':
         specifier: ^0.13.1
         version: 0.13.1(starknet@8.9.2)

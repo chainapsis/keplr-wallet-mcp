@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { QuoteResult } from "../../client.js";
-import { registerSwapTool } from "../../tools/swap.js";
+import type { QuoteResult } from "../../../../../plugins/cosmos/osmosis/client.js";
+import { registerSwapTool } from "../../../../../plugins/cosmos/osmosis/tools/swap.js";
 
 // Mock SDK
-vi.mock("@keplr-wallet/keplr-wallet-mcp/sdk", () => ({
+vi.mock("../../../../../sdk.js", () => ({
   classifyError: vi.fn((err: Error) => ({
     category: "UNKNOWN",
     message: err.message,
@@ -31,7 +31,7 @@ vi.mock("@keplr-wallet/keplr-wallet-mcp/sdk", () => ({
 }));
 
 // Mock store module
-vi.mock("@keplr-wallet/keplr-wallet-mcp/store", async (importOriginal) => {
+vi.mock("../../../../../store.js", async (importOriginal) => {
   const original = await importOriginal<Record<string, unknown>>();
   return {
     ...original,
@@ -44,11 +44,11 @@ vi.mock("@keplr-wallet/keplr-wallet-mcp/store", async (importOriginal) => {
 });
 
 // Mock client
-vi.mock("../../client.js", () => ({
+vi.mock("../../../../../plugins/cosmos/osmosis/client.js", () => ({
   getOsmosisClient: vi.fn(),
 }));
 
-import { getOsmosisClient } from "../../client.js";
+import { getOsmosisClient } from "../../../../../plugins/cosmos/osmosis/client.js";
 
 const mockGetOsmosisClient = vi.mocked(getOsmosisClient);
 

@@ -30,35 +30,6 @@ const adapterInfoPlugin: KeplrPlugin = {
         };
       },
     );
-
-    server.registerTool(
-      "list-installed-protocols",
-      {
-        description:
-          "List all DeFi protocol plugins currently loaded in this server",
-      },
-      async () => {
-        const protocols = store.getProtocols();
-        const entries = [...protocols.values()].map((p) => ({
-          protocolId: p.protocolId,
-          name: p.name,
-          ecosystem: p.ecosystem,
-          supportedChains: p.supportedChains,
-        }));
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(
-                { protocols: entries, count: entries.length },
-                null,
-                2,
-              ),
-            },
-          ],
-        };
-      },
-    );
   },
 };
 

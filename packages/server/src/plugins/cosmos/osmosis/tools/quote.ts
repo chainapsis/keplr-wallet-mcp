@@ -2,10 +2,10 @@
  * Osmosis quote tool
  */
 
-import type { SuggestedAction } from "@keplr-wallet/keplr-wallet-mcp/sdk";
-import type { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { getChainConfig, type SuggestedAction } from "../../../../sdk.js";
+import type { KeplrStore } from "../../../../store.js";
 import { getOsmosisClient } from "../client.js";
 import {
   AMOUNT_IN_SCHEMA,
@@ -67,11 +67,11 @@ export function registerQuoteTool(server: McpServer, store: KeplrStore): void {
         let hasInsufficientBalance = false;
 
         try {
+          const osmosisChain = getChainConfig(OSMOSIS_CHAIN_ID);
+          if (!osmosisChain) throw new Error("no chain config");
           const cosmosClient =
             await store.getClientFor<CosmosClientLike>("cosmos");
-          const balances = await cosmosClient.getBalances({
-            chainId: OSMOSIS_CHAIN_ID,
-          });
+          const balances = await cosmosClient.getBalances(osmosisChain);
           const tokenBalance = balances.find(
             (b) => b.denom === quote.tokenIn.denom,
           );

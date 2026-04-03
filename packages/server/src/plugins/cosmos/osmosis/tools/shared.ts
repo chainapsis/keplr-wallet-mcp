@@ -3,7 +3,7 @@ import {
   createSetupRequiredResponse,
   formatClassifiedError,
   isSetupRequiredError,
-} from "@keplr-wallet/keplr-wallet-mcp/sdk";
+} from "../../../../sdk.js";
 
 export const handleError = (
   error: unknown,

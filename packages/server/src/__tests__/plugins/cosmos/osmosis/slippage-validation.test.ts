@@ -1,19 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { OsmosisClient } from "../client.js";
+import { OsmosisClient } from "../../../../plugins/cosmos/osmosis/client.js";
 
 // Mock skip-api and skip-assets (same as client.test.ts)
-vi.mock("../skip-api.js", () => ({
+vi.mock("../../../../plugins/cosmos/osmosis/skip-api.js", () => ({
   getSkipRoute: vi.fn(),
   getSkipMsgsDirect: vi.fn(),
   skipMsgToEncodeObject: vi.fn(),
 }));
 
-vi.mock("../skip-assets.js", () => ({
+vi.mock("../../../../plugins/cosmos/osmosis/skip-assets.js", () => ({
   resolveOsmosisDenom: vi.fn(),
 }));
 
-import { getSkipRoute } from "../skip-api.js";
-import { resolveOsmosisDenom } from "../skip-assets.js";
+import { getSkipRoute } from "../../../../plugins/cosmos/osmosis/skip-api.js";
+import { resolveOsmosisDenom } from "../../../../plugins/cosmos/osmosis/skip-assets.js";
 
 const mockResolve = vi.mocked(resolveOsmosisDenom);
 const mockRoute = vi.mocked(getSkipRoute);

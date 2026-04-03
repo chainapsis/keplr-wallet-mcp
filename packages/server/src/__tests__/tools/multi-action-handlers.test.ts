@@ -46,7 +46,7 @@ let mockServer: MockMcpServer;
 const resetStore = () => {
   store.setState({
     adapters: new Map(),
-    protocols: new Map(),
+
     clients: new Map(),
     mnemonicSource: null,
     pending: new Map(),

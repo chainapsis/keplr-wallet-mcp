@@ -8,8 +8,8 @@ import {
   getSkipMsgsDirect,
   getSkipRoute,
   skipMsgToEncodeObject,
-} from "../skip-api.js";
-import { resolveOsmosisDenom } from "../skip-assets.js";
+} from "../../../../plugins/cosmos/osmosis/skip-api.js";
+import { resolveOsmosisDenom } from "../../../../plugins/cosmos/osmosis/skip-assets.js";
 
 const OSMOSIS = "osmosis-1";
 

@@ -2,12 +2,9 @@
  * Osmosis protocol constants
  */
 
-import {
-  getRpcResolver,
-  getTokenDecimals,
-} from "@keplr-wallet/keplr-wallet-mcp/sdk";
 import type { Currency } from "@keplr-wallet/types";
 import { z } from "zod";
+import { getRpcResolver, getTokenDecimals } from "../../../sdk.js";
 
 export const OSMOSIS_CHAIN_ID = "osmosis-1";
 

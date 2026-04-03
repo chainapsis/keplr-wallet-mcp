@@ -7,7 +7,6 @@ import { wrapExternalPlugin } from "../config/plugin-adapter.js";
 import { shouldRegisterPlugin } from "../config/toolset-filter.js";
 import type { KeplrMcpPlugin } from "../config/types.js";
 import type { EcosystemAdapter } from "../ecosystem.js";
-import { discoverProtocolPlugins } from "../protocol-loader.js";
 import type { KeplrStore } from "../store.js";
 import accountsPlugin from "./accounts.js";
 import adapterInfoPlugin from "./adapter-info.js";
@@ -87,19 +86,5 @@ export async function registerAll(
     for (const plugin of adapter.getPlugins()) {
       await plugin.register(server, store);
     }
-  }
-
-  // 5. Protocol plugins (Uniswap, Aave, etc.)
-  const adapterTypes = new Set(allAdapters.map((a) => a.type));
-  const protocolPlugins = await discoverProtocolPlugins();
-  for (const protocol of protocolPlugins) {
-    if (!adapterTypes.has(protocol.ecosystem)) {
-      console.error(
-        `[keplr] Skipping protocol "${protocol.protocolId}" — requires "${protocol.ecosystem}" adapter.`,
-      );
-      continue;
-    }
-    store.registerProtocol(protocol);
-    await protocol.register(server, store);
   }
 }

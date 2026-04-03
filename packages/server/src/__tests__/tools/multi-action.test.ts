@@ -16,7 +16,7 @@ describe("Multi-action Store Methods", () => {
     // Reset store state before each test
     store.setState({
       adapters: new Map(),
-      protocols: new Map(),
+
       clients: new Map(),
       mnemonicSource: null,
       pending: new Map(),
@@ -401,7 +401,7 @@ describe("Multi-action Action Types", () => {
   beforeEach(() => {
     store.setState({
       adapters: new Map(),
-      protocols: new Map(),
+
       clients: new Map(),
       mnemonicSource: null,
       pending: new Map(),

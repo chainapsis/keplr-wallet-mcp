@@ -16,7 +16,6 @@ describe("KeplrStore", () => {
     // Reset store state before each test
     store.setState({
       adapters: new Map(),
-      protocols: new Map(),
       clients: new Map(),
       mnemonicSource: null,
       pending: new Map(),

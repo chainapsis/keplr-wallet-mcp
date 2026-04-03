@@ -2,17 +2,17 @@
  * Osmosis swap tool
  */
 
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 import {
   elicitTxConfirmation,
   getChainConfig,
   pickTip,
   type SuggestedAction,
   type TransactionPreview,
-} from "@keplr-wallet/keplr-wallet-mcp/sdk";
-import type { KeplrStore } from "@keplr-wallet/keplr-wallet-mcp/store";
-import { getTtlInfo } from "@keplr-wallet/keplr-wallet-mcp/store";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+} from "../../../../sdk.js";
+import type { KeplrStore } from "../../../../store.js";
+import { getTtlInfo } from "../../../../store.js";
 import { getOsmosisClient } from "../client.js";
 import {
   AMOUNT_IN_SCHEMA,

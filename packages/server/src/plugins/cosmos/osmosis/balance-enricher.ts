@@ -6,7 +6,7 @@
  * and IBC denoms that the static chain config doesn't cover.
  */
 
-import type { BalanceResult } from "@keplr-wallet/keplr-wallet-mcp/sdk";
+import type { BalanceResult } from "../../../sdk.js";
 import { toDisplayAmount } from "./client.js";
 import { getSkipOsmosisAssets } from "./skip-assets.js";
 

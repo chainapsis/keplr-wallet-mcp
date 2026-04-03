@@ -1,15 +1,13 @@
 /**
  * Keplr MCP Server SDK
  *
- * Single entry point for external packages (adapters, protocols).
+ * Single entry point for external packages (adapters).
  * Import from "@keplr-wallet/mcp-server/sdk" to access all SDK exports.
  *
  * @example
  * ```typescript
  * import {
- *   SDK_VERSION,
  *   type EcosystemAdapter,
- *   type ProtocolPlugin,
  *   store,
  *   KeplrEventTypes,
  *   formatCurrencyAmount,
@@ -142,8 +140,6 @@ export {
   KeyProviderError,
   KeyProviderErrorCode,
 } from "./keys/types.js";
-export type { ProtocolPlugin } from "./plugins/protocol-types.js";
-export { isProtocolPlugin } from "./plugins/protocol-types.js";
 // ============================================
 // Plugin Types
 // ============================================
@@ -192,7 +188,3 @@ export {
 // ============================================
 export type { TxElicitationResult } from "./utils/tx-elicitation.js";
 export { elicitTxConfirmation } from "./utils/tx-elicitation.js";
-// ============================================
-// Version
-// ============================================
-export { checkVersionCompatibility, SDK_VERSION } from "./version.js";

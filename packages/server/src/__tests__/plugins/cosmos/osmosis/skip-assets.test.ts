@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SkipAsset } from "../skip-api.js";
+import type { SkipAsset } from "../../../../plugins/cosmos/osmosis/skip-api.js";
 import {
   _resetCache,
   getSkipOsmosisAssets,
   isStructuralDenom,
   resolveOsmosisDenom,
-} from "../skip-assets.js";
-import { skipThrottle } from "../skip-throttle.js";
+} from "../../../../plugins/cosmos/osmosis/skip-assets.js";
+import { skipThrottle } from "../../../../plugins/cosmos/osmosis/skip-throttle.js";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
