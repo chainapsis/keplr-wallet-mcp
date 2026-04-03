@@ -604,7 +604,8 @@ const accountsPlugin: KeplrPlugin = {
                   warning:
                     "⚠️ This mnemonic was transmitted through your AI provider's servers. Store it in a secure location immediately and consider deleting this conversation.",
                   security: {
-                    storage: "OS Keychain (secure)",
+                    storage:
+                      "Encrypted locally (AES-256-GCM), decryption key in OS Keychain",
                     backupRecommendation:
                       "Consider backing up your recovery phrase in a secure location.",
                   },
@@ -897,7 +898,8 @@ const accountsPlugin: KeplrPlugin = {
                     addressErrors,
                   }),
                   security: {
-                    storage: "OS Keychain (secure)",
+                    storage:
+                      "Encrypted locally (AES-256-GCM), decryption key in OS Keychain",
                     note: "Your recovery phrase is now stored securely in your system keychain.",
                     warnings: usedSecureInput
                       ? ["🚫 Never share your mnemonic phrase with anyone"]
