@@ -104,12 +104,6 @@ describe("getEthermintPubkeyTypeUrl", () => {
     );
   });
 
-  it("returns Stratos-specific pubkey typeUrl for stratos chain", () => {
-    expect(getEthermintPubkeyTypeUrl(makeChain("stratos-1"))).toBe(
-      "/stratos.crypto.v1.ethsecp256k1.PubKey",
-    );
-  });
-
   it("returns cosmos.evm pubkey typeUrl for eth-secp256k1-cosmos feature", () => {
     expect(
       getEthermintPubkeyTypeUrl(

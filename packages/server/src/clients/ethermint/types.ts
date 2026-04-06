@@ -20,7 +20,6 @@ export type EthermintAccountTypeUrl =
  */
 export const ETHERMINT_PUBKEY_TYPE_MAP: Record<string, string> = {
   injective: "/injective.crypto.v1beta1.ethsecp256k1.PubKey",
-  stratos: "/stratos.crypto.v1.ethsecp256k1.PubKey",
   interwoven: "/initia.crypto.v1beta1.ethsecp256k1.PubKey",
 };
 
