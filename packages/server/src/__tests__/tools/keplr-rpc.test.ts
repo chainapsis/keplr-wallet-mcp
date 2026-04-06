@@ -365,7 +365,7 @@ describe("keplr_api_configure_key multi-client", () => {
     }
   });
 
-  it("should return validated status with manualSetup for unknown client", async () => {
+  it("should return unsupported_client for unknown client", async () => {
     const unknownServer = createMockMcpServer({ clientName: "cursor-vscode" });
     const unknownStore = createMockStore({
       storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
@@ -379,19 +379,12 @@ describe("keplr_api_configure_key multi-client", () => {
     const tool = unknownServer.getTool("keplr_api_configure_key")!;
     const result = await tool.handler({ apiKey: "keplr_unknown123" });
     const parsed = parseToolResponse(result);
-    expect(parsed).toHaveProperty("status", "validated");
-    expect(parsed).toHaveProperty("manualSetup");
-    expect(
-      (parsed as { manualSetup: { envVar: string; value: string } })
-        .manualSetup,
-    ).toEqual({
-      envVar: "KEPLR_RPC_API_KEY",
-      value: "keplr_unknown123",
-    });
+    expect(parsed).toHaveProperty("status", "unsupported_client");
     expect(parsed).not.toHaveProperty("configPath");
+    expect(parsed).not.toHaveProperty("manualSetup");
   });
 
-  it("should return validated status when no client info is available", async () => {
+  it("should return unsupported_client when no client info is available", async () => {
     const noClientServer = createMockMcpServer();
     const noClientStore = createMockStore({
       storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
@@ -405,8 +398,7 @@ describe("keplr_api_configure_key multi-client", () => {
     const tool = noClientServer.getTool("keplr_api_configure_key")!;
     const result = await tool.handler({ apiKey: "keplr_noclient123" });
     const parsed = parseToolResponse(result);
-    expect(parsed).toHaveProperty("status", "validated");
-    expect(parsed).toHaveProperty("manualSetup");
+    expect(parsed).toHaveProperty("status", "unsupported_client");
   });
 });
 

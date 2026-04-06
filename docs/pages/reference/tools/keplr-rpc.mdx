@@ -68,19 +68,7 @@ Configure a Keplr Infra API key. Validates the key, then saves it to the MCP con
 }
 ```
 
-**Other clients:**
-
-```json
-{
-  "status": "validated",
-  "message": "API key is valid. Set the environment variable in your MCP client configuration.",
-  "manualSetup": {
-    "envVar": "KEPLR_RPC_API_KEY",
-    "value": "keplr_..."
-  },
-  "suggestedActions": [...]
-}
-```
+**Other clients:** Returns `unsupported_client` status. Only Claude Code and Claude Desktop are supported.
 
 ---
 

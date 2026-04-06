@@ -264,7 +264,6 @@ const keplrRpcPlugin: KeplrPlugin = {
           // Step 2: Detect client type
           const clientType = detectClientType(server.server);
 
-          // Unknown client — return validation result with manual setup instructions
           if (clientType === "unknown") {
             return {
               content: [
@@ -272,14 +271,10 @@ const keplrRpcPlugin: KeplrPlugin = {
                   type: "text" as const,
                   text: JSON.stringify(
                     {
-                      status: "validated",
+                      status: "unsupported_client",
                       message:
-                        "API key is valid. Set the environment variable in your MCP client configuration.",
-                      manualSetup: {
-                        envVar: "KEPLR_RPC_API_KEY",
-                        value: apiKey,
-                      },
-                      suggestedActions,
+                        "This MCP client is not supported for automatic configuration. " +
+                        "Set the KEPLR_RPC_API_KEY environment variable manually in your MCP client configuration.",
                     },
                     null,
                     2,
