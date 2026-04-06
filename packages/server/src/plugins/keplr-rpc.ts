@@ -215,7 +215,30 @@ const keplrRpcPlugin: KeplrPlugin = {
       },
       async ({ apiKey, scope }) => {
         try {
-          // Step 1: Validate the API key
+          // Step 1: Detect client type (local-only, no network)
+          const clientType = detectClientType(server.server);
+
+          if (clientType === "unknown") {
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: JSON.stringify(
+                    {
+                      status: "unsupported_client",
+                      message:
+                        "This MCP client is not supported for automatic configuration. " +
+                        "Set the KEPLR_RPC_API_KEY environment variable manually in your MCP client configuration.",
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
+            };
+          }
+
+          // Step 2: Validate the API key
           const validation = await keplrApiFetch<{ valid?: boolean }>({
             method: "POST",
             path: "/v1/keys/validate",
@@ -260,29 +283,6 @@ const keplrRpcPlugin: KeplrPlugin = {
               priority: 2,
             },
           ];
-
-          // Step 2: Detect client type
-          const clientType = detectClientType(server.server);
-
-          if (clientType === "unknown") {
-            return {
-              content: [
-                {
-                  type: "text" as const,
-                  text: JSON.stringify(
-                    {
-                      status: "unsupported_client",
-                      message:
-                        "This MCP client is not supported for automatic configuration. " +
-                        "Set the KEPLR_RPC_API_KEY environment variable manually in your MCP client configuration.",
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-            };
-          }
 
           const { homedir } = await import("node:os");
           const { readFileSync, writeFileSync, mkdirSync } = await import(

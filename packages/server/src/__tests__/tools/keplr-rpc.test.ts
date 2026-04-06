@@ -375,13 +375,13 @@ describe("keplr_api_configure_key multi-client", () => {
       unknownStore as never,
     );
 
-    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = unknownServer.getTool("keplr_api_configure_key")!;
     const result = await tool.handler({ apiKey: "keplr_unknown123" });
     const parsed = parseToolResponse(result);
     expect(parsed).toHaveProperty("status", "unsupported_client");
     expect(parsed).not.toHaveProperty("configPath");
     expect(parsed).not.toHaveProperty("manualSetup");
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("should return unsupported_client when no client info is available", async () => {
@@ -394,11 +394,11 @@ describe("keplr_api_configure_key multi-client", () => {
       noClientStore as never,
     );
 
-    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = noClientServer.getTool("keplr_api_configure_key")!;
     const result = await tool.handler({ apiKey: "keplr_noclient123" });
     const parsed = parseToolResponse(result);
     expect(parsed).toHaveProperty("status", "unsupported_client");
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
 
