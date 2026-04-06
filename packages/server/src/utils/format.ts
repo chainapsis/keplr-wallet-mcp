@@ -205,6 +205,9 @@ export function parseGasPrice(gasPriceStr: string): ParsedGasPrice {
  * Gas adjustment multiplier matching Keplr Extension's tx-executor behavior.
  * - feemarket chains: 1.6 (higher volatility in base fee)
  * - standard chains: 1.4
+ *
+ * Chains where simulation underestimates are handled by auto-retry
+ * on out-of-gas (code 11) in signAndBroadcastSafe.
  */
 export const getGasAdjustment = (chain: {
   features?: readonly string[];
