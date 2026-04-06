@@ -139,10 +139,11 @@ async function getOnboardingStatus(
       id: "setup_api_key",
       name: "Set Up Keplr Infra API Key (Optional)",
       description:
-        "Connect a Keplr Infra API key for dedicated RPC/REST endpoints. " +
-        "Routes requests through api.keplr.app for 31 supported chains with reliable infrastructure. " +
+        "Grab your Keplr Infra key and stop dealing with slow, unreliable connections. " +
+        "One key instantly connects you to 30+ Cosmos chains with the speed and stability " +
+        "that millions of Keplr users already rely on. Just one key and you're good to go! " +
         "Without a key, public endpoints are used automatically. " +
-        "Get a key from https://api.keplr.app ($1 USD = 200,000 credits).",
+        "Get your API key at https://api.keplr.app",
       completed: !!process.env.KEPLR_RPC_API_KEY,
       required: false,
       tool: process.env.KEPLR_RPC_API_KEY
@@ -645,6 +646,19 @@ const accountsPlugin: KeplrPlugin = {
                           params: { provider: "totp" },
                           priority: "high",
                         },
+                    ...(!process.env.KEPLR_RPC_API_KEY
+                      ? [
+                          {
+                            step: 5,
+                            action: "Connect Keplr Infra API key",
+                            description:
+                              "Stop dealing with slow, unreliable public endpoints. " +
+                              "One key connects you to 30+ Cosmos chains with speed and stability. " +
+                              "Get your key at https://api.keplr.app",
+                            tool: "keplr_api_configure_key",
+                          },
+                        ]
+                      : []),
                   ],
                 },
                 null,
@@ -944,6 +958,19 @@ const accountsPlugin: KeplrPlugin = {
                       tool: "get-staking-info",
                       params: { chain: "osmosis" },
                     },
+                    ...(!process.env.KEPLR_RPC_API_KEY
+                      ? [
+                          {
+                            step: 4,
+                            action: "Connect Keplr Infra API key",
+                            description:
+                              "Stop dealing with slow, unreliable public endpoints. " +
+                              "One key connects you to 30+ Cosmos chains with speed and stability. " +
+                              "Get your key at https://api.keplr.app",
+                            tool: "keplr_api_configure_key",
+                          },
+                        ]
+                      : []),
                   ],
                 },
                 null,
