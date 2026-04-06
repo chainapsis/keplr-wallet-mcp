@@ -204,6 +204,7 @@ export interface RegisteredTool {
  */
 export interface MockInnerServer {
   getClientCapabilities: ReturnType<typeof vi.fn>;
+  getClientVersion: ReturnType<typeof vi.fn>;
   elicitInput: ReturnType<typeof vi.fn>;
 }
 
@@ -229,6 +230,7 @@ export interface MockMcpServer {
  */
 export function createMockMcpServer(options?: {
   elicitationSupported?: boolean;
+  clientName?: string;
 }): MockMcpServer {
   const tools = new Map<string, RegisteredTool>();
   const elicitationSupported = options?.elicitationSupported ?? false;
@@ -243,10 +245,15 @@ export function createMockMcpServer(options?: {
     },
   );
 
-  // Mock inner server for elicitation
+  // Mock inner server for elicitation and client detection
   const server: MockInnerServer = {
     getClientCapabilities: vi.fn(() =>
       elicitationSupported ? { elicitation: {} } : null,
+    ),
+    getClientVersion: vi.fn(() =>
+      options?.clientName
+        ? { name: options.clientName, version: "1.0.0" }
+        : undefined,
     ),
     elicitInput: vi.fn(),
   };
