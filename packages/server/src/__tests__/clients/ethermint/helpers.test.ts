@@ -36,28 +36,28 @@ describe("needsEthermintSigning", () => {
     ).toBe(true);
   });
 
-  it("returns false for zetachain (uses standard BaseAccount)", () => {
+  it("returns true for zetachain", () => {
     expect(
       needsEthermintSigning(
         makeChain("zetachain_7000-1", ["eth-address-gen", "eth-key-sign"]),
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 
-  it("returns false for XPLA (uses standard BaseAccount)", () => {
+  it("returns true for XPLA", () => {
     expect(
       needsEthermintSigning(
         makeChain("dimension_37-1", ["eth-address-gen", "eth-key-sign"]),
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 
-  it("returns false for Initia (uses standard BaseAccount)", () => {
+  it("returns true for Initia", () => {
     expect(
       needsEthermintSigning(
         makeChain("interwoven-1", ["eth-address-gen", "eth-key-sign"]),
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("returns false for non-ethermint chain", () => {
@@ -102,5 +102,27 @@ describe("getEthermintPubkeyTypeUrl", () => {
     expect(getEthermintPubkeyTypeUrl(makeChain("interwoven-2"))).toBe(
       "/initia.crypto.v1beta1.ethsecp256k1.PubKey",
     );
+  });
+
+  it("returns Stratos-specific pubkey typeUrl for stratos chain", () => {
+    expect(getEthermintPubkeyTypeUrl(makeChain("stratos-1"))).toBe(
+      "/stratos.crypto.v1.ethsecp256k1.PubKey",
+    );
+  });
+
+  it("returns cosmos.evm pubkey typeUrl for eth-secp256k1-cosmos feature", () => {
+    expect(
+      getEthermintPubkeyTypeUrl(
+        makeChain("somechain-1", ["eth-key-sign", "eth-secp256k1-cosmos"]),
+      ),
+    ).toBe("/cosmos.evm.crypto.v1.ethsecp256k1.PubKey");
+  });
+
+  it("returns initia pubkey typeUrl for eth-secp256k1-initia feature", () => {
+    expect(
+      getEthermintPubkeyTypeUrl(
+        makeChain("somechain-1", ["eth-key-sign", "eth-secp256k1-initia"]),
+      ),
+    ).toBe("/initia.crypto.v1beta1.ethsecp256k1.PubKey");
   });
 });

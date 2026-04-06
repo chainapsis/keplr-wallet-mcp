@@ -20,19 +20,10 @@ export type EthermintAccountTypeUrl =
  */
 export const ETHERMINT_PUBKEY_TYPE_MAP: Record<string, string> = {
   injective: "/injective.crypto.v1beta1.ethsecp256k1.PubKey",
+  stratos: "/stratos.crypto.v1.ethsecp256k1.PubKey",
   interwoven: "/initia.crypto.v1beta1.ethsecp256k1.PubKey",
 };
 
 /** Default ethermint pubkey typeUrl for chains without a specific override */
 export const DEFAULT_ETHERMINT_PUBKEY_TYPE_URL =
   "/ethermint.crypto.v1.ethsecp256k1.PubKey";
-
-/**
- * ChainId prefixes known to use custom EthAccount types (verified via API).
- * Other eth-address-gen chains (ZetaChain, XPLA, Initia) use standard BaseAccount.
- */
-export const ETHERMINT_SIGNING_CHAIN_PREFIXES = [
-  "injective",
-  "dymension",
-  "xrplevm",
-] as const;
