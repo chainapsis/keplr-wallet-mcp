@@ -1,3 +1,6 @@
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockMcpServer, MockStore } from "../helpers/mocks.js";
 import {
@@ -5,6 +8,24 @@ import {
   createMockStore,
   parseToolResponse,
 } from "../helpers/mocks.js";
+
+// Passthrough wrappers — by default these call the real implementations.
+// Individual describe blocks can override via mockImplementation/mockReturnValue;
+// vi.restoreAllMocks() in afterEach restores the passthrough.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return {
+    ...actual,
+    readFileSync: vi.fn(actual.readFileSync),
+    writeFileSync: vi.fn(actual.writeFileSync),
+    mkdirSync: vi.fn(actual.mkdirSync),
+  };
+});
+
+vi.mock("node:os", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:os")>();
+  return { ...actual, homedir: vi.fn(actual.homedir) };
+});
 
 // Dynamic import to avoid hoisting issues
 let keplrRpcPlugin: typeof import("../../plugins/keplr-rpc.js").default;
@@ -126,38 +147,58 @@ describe("keplr_api_configure_key", () => {
 
 // ─── keplr_api_configure_key: multi-client ─────────────────────────────────
 describe("keplr_api_configure_key multi-client", () => {
-  it("should use default scope 'user' when scope is not provided (Claude Code)", async () => {
-    const { join } = await import("node:path");
-    const { homedir } = await import("node:os");
-    const { unlinkSync, existsSync } = await import("node:fs");
-    const configPath = join(homedir(), ".claude.json");
+  const mockReadFileSync = vi.mocked(readFileSync);
+  const mockWriteFileSync = vi.mocked(writeFileSync);
+  const mockMkdirSync = vi.mocked(mkdirSync);
+  const mockHomedir = vi.mocked(homedir);
 
-    // Save original if exists
-    let originalContent: string | undefined;
-    try {
-      const { readFileSync } = await import("node:fs");
-      originalContent = readFileSync(configPath, "utf-8");
-    } catch {
-      // doesn't exist
+  const desktopConfigPath = (() => {
+    const home = "/mock-home";
+    switch (process.platform) {
+      case "darwin":
+        return join(
+          home,
+          "Library",
+          "Application Support",
+          "Claude",
+          "claude_desktop_config.json",
+        );
+      case "win32":
+        return join(
+          process.env.APPDATA ?? join(home, "AppData", "Roaming"),
+          "Claude",
+          "claude_desktop_config.json",
+        );
+      default:
+        return join(home, ".config", "Claude", "claude_desktop_config.json");
     }
+  })();
+
+  beforeEach(() => {
+    mockHomedir.mockReturnValue("/mock-home");
+    mockReadFileSync.mockImplementation(() => {
+      throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+    });
+    mockWriteFileSync.mockImplementation(() => undefined);
+    mockMkdirSync.mockReturnValue(undefined as unknown as string);
+  });
+
+  it("should use default scope 'user' when scope is not provided (Claude Code)", async () => {
+    const configPath = join("/mock-home", ".claude.json");
 
     mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = server.getTool("keplr_api_configure_key")!;
-    try {
-      const result = await tool.handler({ apiKey: "keplr_defaultscope" });
-      const parsed = parseToolResponse(result);
-      expect(parsed).toHaveProperty("status", "configured");
-      expect(parsed).toHaveProperty("scope", "user");
-      expect((parsed as { configPath: string }).configPath).toBe(configPath);
-    } finally {
-      // Restore original or clean up
-      if (originalContent !== undefined) {
-        const { writeFileSync } = await import("node:fs");
-        writeFileSync(configPath, originalContent, "utf-8");
-      } else if (existsSync(configPath)) {
-        unlinkSync(configPath);
-      }
-    }
+    const result = await tool.handler({ apiKey: "keplr_defaultscope" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect(parsed).toHaveProperty("scope", "user");
+    expect((parsed as { configPath: string }).configPath).toBe(configPath);
+
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      configPath,
+      expect.any(String),
+      "utf-8",
+    );
   });
 
   it("should write to Desktop config for Claude Desktop client", async () => {
@@ -170,61 +211,26 @@ describe("keplr_api_configure_key multi-client", () => {
       desktopStore as never,
     );
 
-    const { join } = await import("node:path");
-    const { homedir } = await import("node:os");
-    const { unlinkSync, existsSync, readFileSync } = await import("node:fs");
-
-    const home = homedir();
-    const desktopConfigPath =
-      process.platform === "darwin"
-        ? join(
-            home,
-            "Library",
-            "Application Support",
-            "Claude",
-            "claude_desktop_config.json",
-          )
-        : process.platform === "win32"
-          ? join(
-              process.env.APPDATA ?? join(home, "AppData", "Roaming"),
-              "Claude",
-              "claude_desktop_config.json",
-            )
-          : join(home, ".config", "Claude", "claude_desktop_config.json");
-
-    // Save original if exists
-    let originalContent: string | undefined;
-    try {
-      originalContent = readFileSync(desktopConfigPath, "utf-8");
-    } catch {
-      // doesn't exist
-    }
-
     mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = desktopServer.getTool("keplr_api_configure_key")!;
-    try {
-      const result = await tool.handler({ apiKey: "keplr_desktop123" });
-      const parsed = parseToolResponse(result);
-      expect(parsed).toHaveProperty("status", "configured");
-      expect(parsed).toHaveProperty("configPath", desktopConfigPath);
-      expect(parsed).not.toHaveProperty("scope");
-      expect((parsed as { restartGuide: string }).restartGuide).toMatch(
-        /Claude Desktop/,
-      );
+    const result = await tool.handler({ apiKey: "keplr_desktop123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect(parsed).toHaveProperty("configPath", desktopConfigPath);
+    expect(parsed).not.toHaveProperty("scope");
+    expect((parsed as { restartGuide: string }).restartGuide).toMatch(
+      /Claude Desktop/,
+    );
 
-      // Verify the file was actually written
-      const written = JSON.parse(readFileSync(desktopConfigPath, "utf-8"));
-      expect(written.mcpServers.keplr.env.KEPLR_RPC_API_KEY).toBe(
-        "keplr_desktop123",
-      );
-    } finally {
-      if (originalContent !== undefined) {
-        const { writeFileSync } = await import("node:fs");
-        writeFileSync(desktopConfigPath, originalContent, "utf-8");
-      } else if (existsSync(desktopConfigPath)) {
-        unlinkSync(desktopConfigPath);
-      }
-    }
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      desktopConfigPath,
+      expect.any(String),
+      "utf-8",
+    );
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+    expect(written.mcpServers.keplr.env.KEPLR_RPC_API_KEY).toBe(
+      "keplr_desktop123",
+    );
   });
 
   it("should ignore scope parameter for Claude Desktop", async () => {
@@ -237,56 +243,18 @@ describe("keplr_api_configure_key multi-client", () => {
       desktopStore as never,
     );
 
-    const { join } = await import("node:path");
-    const { homedir } = await import("node:os");
-    const { unlinkSync, existsSync, readFileSync } = await import("node:fs");
-
-    const home = homedir();
-    const desktopConfigPath =
-      process.platform === "darwin"
-        ? join(
-            home,
-            "Library",
-            "Application Support",
-            "Claude",
-            "claude_desktop_config.json",
-          )
-        : process.platform === "win32"
-          ? join(
-              process.env.APPDATA ?? join(home, "AppData", "Roaming"),
-              "Claude",
-              "claude_desktop_config.json",
-            )
-          : join(home, ".config", "Claude", "claude_desktop_config.json");
-
-    let originalContent: string | undefined;
-    try {
-      originalContent = readFileSync(desktopConfigPath, "utf-8");
-    } catch {
-      // doesn't exist
-    }
-
     mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = desktopServer.getTool("keplr_api_configure_key")!;
-    try {
-      // Pass scope: "project" — should be ignored for Desktop
-      const result = await tool.handler({
-        apiKey: "keplr_desktop_scope",
-        scope: "project",
-      });
-      const parsed = parseToolResponse(result);
-      expect(parsed).toHaveProperty("status", "configured");
-      expect((parsed as { configPath: string }).configPath).toBe(
-        desktopConfigPath,
-      );
-    } finally {
-      if (originalContent !== undefined) {
-        const { writeFileSync } = await import("node:fs");
-        writeFileSync(desktopConfigPath, originalContent, "utf-8");
-      } else if (existsSync(desktopConfigPath)) {
-        unlinkSync(desktopConfigPath);
-      }
-    }
+    // Pass scope: "project" — should be ignored for Desktop
+    const result = await tool.handler({
+      apiKey: "keplr_desktop_scope",
+      scope: "project",
+    });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect((parsed as { configPath: string }).configPath).toBe(
+      desktopConfigPath,
+    );
   });
 
   it("should use alternative key when 'keplr' key exists for another server (Desktop)", async () => {
@@ -299,70 +267,28 @@ describe("keplr_api_configure_key multi-client", () => {
       desktopStore as never,
     );
 
-    const { join } = await import("node:path");
-    const { homedir } = await import("node:os");
-    const { unlinkSync, existsSync, readFileSync, writeFileSync, mkdirSync } =
-      await import("node:fs");
-    const { dirname } = await import("node:path");
-
-    const home = homedir();
-    const desktopConfigPath =
-      process.platform === "darwin"
-        ? join(
-            home,
-            "Library",
-            "Application Support",
-            "Claude",
-            "claude_desktop_config.json",
-          )
-        : process.platform === "win32"
-          ? join(
-              process.env.APPDATA ?? join(home, "AppData", "Roaming"),
-              "Claude",
-              "claude_desktop_config.json",
-            )
-          : join(home, ".config", "Claude", "claude_desktop_config.json");
-
-    let originalContent: string | undefined;
-    try {
-      originalContent = readFileSync(desktopConfigPath, "utf-8");
-    } catch {
-      // doesn't exist
-    }
-
-    // Pre-seed config with a "keplr" key pointing to a different server
-    mkdirSync(dirname(desktopConfigPath), { recursive: true });
-    writeFileSync(
-      desktopConfigPath,
+    // Pre-seed: readFileSync returns existing config with a "keplr" key for another server
+    mockReadFileSync.mockReturnValueOnce(
       JSON.stringify({
         mcpServers: {
           keplr: { command: "some-other-server", args: [] },
         },
       }),
-      "utf-8",
     );
 
     mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
     const tool = desktopServer.getTool("keplr_api_configure_key")!;
-    try {
-      const result = await tool.handler({ apiKey: "keplr_conflict123" });
-      const parsed = parseToolResponse(result);
-      expect(parsed).toHaveProperty("status", "configured");
+    const result = await tool.handler({ apiKey: "keplr_conflict123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
 
-      const written = JSON.parse(readFileSync(desktopConfigPath, "utf-8"));
-      // Original "keplr" key should be preserved
-      expect(written.mcpServers.keplr.command).toBe("some-other-server");
-      // New entry should use alternative key
-      expect(written.mcpServers["keplr-wallet-mcp"].env.KEPLR_RPC_API_KEY).toBe(
-        "keplr_conflict123",
-      );
-    } finally {
-      if (originalContent !== undefined) {
-        writeFileSync(desktopConfigPath, originalContent, "utf-8");
-      } else if (existsSync(desktopConfigPath)) {
-        unlinkSync(desktopConfigPath);
-      }
-    }
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+    // Original "keplr" key should be preserved
+    expect(written.mcpServers.keplr.command).toBe("some-other-server");
+    // New entry should use alternative key
+    expect(written.mcpServers["keplr-wallet-mcp"].env.KEPLR_RPC_API_KEY).toBe(
+      "keplr_conflict123",
+    );
   });
 
   it("should return unsupported_client for unknown client", async () => {
