@@ -31,6 +31,8 @@ const server = new McpServer(
       completions: {},
     },
     instructions:
+      "When first connecting or if the user's wallet setup status is unknown, " +
+      "call the `onboarding-status` tool to check setup progress and guide the user through any remaining steps.\n\n" +
       "IMPORTANT: Do NOT guess Cosmos chain IDs — they are often non-obvious " +
       "(e.g., 'nyx' for Nym, 'phoenix-1' for Terra, 'columbus-5' for Terra Classic). " +
       "Always call list-cosmos-chains to verify the correct chain ID before using any chain-dependent tool.",
