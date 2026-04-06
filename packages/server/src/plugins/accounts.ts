@@ -25,6 +25,7 @@ import {
   loadPreferences,
   markOnboardingCompleted,
 } from "../preferences.js";
+import { getRpcResolver } from "../rpc/resolver.js";
 import { getTtlInfo } from "../store.js";
 import { isNativeKeychainAvailable } from "../vault-key.js";
 import type { KeplrPlugin } from "./types.js";
@@ -144,11 +145,9 @@ async function getOnboardingStatus(
         "that millions of Keplr users already rely on. Just one key and you're good to go! " +
         "Without a key, public endpoints are used automatically. " +
         "Get your API key at https://api.keplr.app",
-      completed: !!process.env.KEPLR_RPC_API_KEY,
+      completed: getRpcResolver().hasApiKey,
       required: false,
-      tool: process.env.KEPLR_RPC_API_KEY
-        ? undefined
-        : "keplr_api_configure_key",
+      tool: getRpcResolver().hasApiKey ? undefined : "keplr_api_configure_key",
     },
   ];
 
@@ -646,7 +645,7 @@ const accountsPlugin: KeplrPlugin = {
                           params: { provider: "totp" },
                           priority: "high",
                         },
-                    ...(!process.env.KEPLR_RPC_API_KEY
+                    ...(!getRpcResolver().hasApiKey
                       ? [
                           {
                             step: 5,
@@ -958,7 +957,7 @@ const accountsPlugin: KeplrPlugin = {
                       tool: "get-staking-info",
                       params: { chain: "osmosis" },
                     },
-                    ...(!process.env.KEPLR_RPC_API_KEY
+                    ...(!getRpcResolver().hasApiKey
                       ? [
                           {
                             step: 4,
