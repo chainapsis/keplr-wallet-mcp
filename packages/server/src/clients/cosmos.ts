@@ -345,9 +345,9 @@ export class CosmosClient implements EcosystemClient {
 
     let client: SigningStargateClient;
     if (isEthermint) {
-      // Ethermint chains (Injective, Dymension) use CometBFT which returns
-      // plain-text event attributes. The Tendermint34 adaptor tries to base64-decode
-      // them and fails. Force Tendermint37Client which handles plain text.
+      // ethsecp256k1 chains use CometBFT which returns plain-text event
+      // attributes. The Tendermint34 adaptor tries to base64-decode them and
+      // fails. Force Tendermint37Client which handles plain text.
       const tmClient = await this.getTmClient(chain);
       client = await SigningStargateClient.createWithSigner(
         tmClient,
@@ -611,8 +611,8 @@ export class CosmosClient implements EcosystemClient {
       };
     }
 
-    // For ethermint chains: sign with CosmJS, broadcast via LCD REST API.
-    // CosmJS's broadcastTx() fails parsing ethermint event attributes / pubkeys.
+    // For ethsecp256k1 chains: sign with CosmJS, broadcast via LCD REST API.
+    // CosmJS's broadcastTx() fails parsing event attributes / pubkeys.
     const resolvedFee =
       fee === "auto"
         ? this.calculateEthermintFallbackFee(chain, messages)

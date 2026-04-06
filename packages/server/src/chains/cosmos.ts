@@ -1882,7 +1882,7 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
         },
       },
     ],
-    features: ["eth-address-gen", "eth-key-sign"],
+    features: ["eth-address-gen", "eth-key-sign", "eth-secp256k1-initia"],
   },
   "atomone-1": {
     rpc: "https://atomone-rpc.polkachu.com",

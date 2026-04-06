@@ -2,7 +2,6 @@ import type { ChainInfo } from "@keplr-wallet/types";
 import {
   DEFAULT_ETHERMINT_PUBKEY_TYPE_URL,
   ETHERMINT_PUBKEY_TYPE_MAP,
-  ETHERMINT_SIGNING_CHAIN_PREFIXES,
 } from "./types.js";
 
 /**
@@ -13,24 +12,26 @@ export const isEthermintLike = (chain: ChainInfo): boolean =>
   chain.features?.includes("eth-address-gen") ?? false;
 
 /**
- * Whether a chain needs custom ethermint signing (accountParser + wallet).
- * Only chains with custom EthAccount types need this (Injective, Dymension, XRPL EVM).
- * Chains like ZetaChain/XPLA/Initia use standard BaseAccount despite having eth-address-gen.
+ * Whether a chain needs ethsecp256k1 signing infrastructure
+ * (accountParser, LCD broadcast, fallback gas estimation).
+ * Based on the "eth-key-sign" feature flag, matching the Keplr extension.
  */
-export const needsEthermintSigning = (chain: ChainInfo): boolean => {
-  if (!isEthermintLike(chain)) return false;
-  return ETHERMINT_SIGNING_CHAIN_PREFIXES.some((prefix) =>
-    chain.chainId.startsWith(prefix),
-  );
-};
+export const needsEthermintSigning = (chain: ChainInfo): boolean =>
+  chain.features?.includes("eth-key-sign") ?? false;
 
 /**
  * Get the ethsecp256k1 pubkey typeUrl for a chain.
- * Injective uses its own variant; others use the standard ethermint type.
+ * Resolution order: chainId prefix overrides → feature flag overrides → default.
  */
 export const getEthermintPubkeyTypeUrl = (chain: ChainInfo): string => {
   for (const [prefix, typeUrl] of Object.entries(ETHERMINT_PUBKEY_TYPE_MAP)) {
     if (chain.chainId.startsWith(prefix)) return typeUrl;
+  }
+  if (chain.features?.includes("eth-secp256k1-cosmos")) {
+    return "/cosmos.evm.crypto.v1.ethsecp256k1.PubKey";
+  }
+  if (chain.features?.includes("eth-secp256k1-initia")) {
+    return "/initia.crypto.v1beta1.ethsecp256k1.PubKey";
   }
   return DEFAULT_ETHERMINT_PUBKEY_TYPE_URL;
 };
