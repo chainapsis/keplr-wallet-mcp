@@ -37,6 +37,10 @@ export default defineConfig({
           text: "Set Up Security",
           link: "/getting-started/set-up-security",
         },
+        {
+          text: "Connect to Keplr Infra",
+          link: "/getting-started/keplr-infra",
+        },
       ],
     },
     {

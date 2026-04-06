@@ -2,97 +2,60 @@
 
 Complete list of supported blockchains.
 
+Chains marked with ✦ use [Keplr Infra](/getting-started/keplr-infra) dedicated endpoints when an API key is configured. All other chains use public chain-registry endpoints.
+
 ## Cosmos Ecosystem
 
-### Mainnet Chains
-
-| Chain | Chain ID | Token | Bech32 Prefix | Features |
-|-------|----------|-------|---------------|----------|
-| Cosmos Hub | `cosmoshub-4` | ATOM | cosmos | Staking, Governance, IBC |
-| Osmosis | `osmosis-1` | OSMO | osmo | DEX, Staking, CosmWasm |
-| Celestia | `celestia` | TIA | celestia | Staking, Data Availability |
-| Stargaze | `stargaze-1` | STARS | stars | NFT, CosmWasm |
-| Noble | `noble-1` | USDC | noble | Native USDC |
-| Neutron | `neutron-1` | NTRN | neutron | CosmWasm, IBC |
-| Injective | `injective-1` | INJ | inj | DeFi, CosmWasm |
-| Akash | `akashnet-2` | AKT | akash | Cloud Compute |
-| Stride | `stride-1` | STRD | stride | Liquid Staking |
-| dYdX | `dydx-mainnet-1` | DYDX | dydx | Perpetuals |
-| Juno | `juno-1` | JUNO | juno | CosmWasm |
-| Kava | `kava_2222-10` | KAVA | kava | DeFi |
-| Terra | `phoenix-1` | LUNA | terra | CosmWasm |
-| Secret Network | `secret-4` | SCRT | secret | Privacy, CosmWasm |
-| Crypto.org | `crypto-org-chain-mainnet-1` | CRO | cro | DeFi |
-| IRISnet | `irishub-1` | IRIS | iaa | IBC |
-| Regen | `regen-1` | REGEN | regen | Ecological Credits |
-| Persistence | `core-1` | XPRT | persistence | Liquid Staking |
-| Sentinel | `sentinelhub-2` | P2P | sent | dVPN |
-| Sommelier | `sommelier-3` | SOMM | somm | DeFi Vaults |
-| UX Chain | `umee-1` | UX | umee | Lending |
-| Agoric | `agoric-3` | BLD | agoric | Smart Contracts |
-| Axelar | `axelar-dojo-1` | AXL | axelar | Cross-chain Bridge |
-| Terra Classic | `columbus-5` | LUNC | terra | Legacy |
-| Bostrom | `bostrom` | BOOT | bostrom | Knowledge Graph |
-| Quicksilver | `quicksilver-2` | QCK | quick | Liquid Staking |
-| KYVE | `kyve-1` | KYVE | kyve | Data Lake |
-| Chihuahua | `chihuahua-1` | HUAHUA | chihuahua | Meme, CosmWasm |
-| Passage | `passage-2` | PASG | pasg | CosmWasm |
-| Dymension | `dymension_1100-1` | DYM | dym | RollApps |
-| XPLA | `dimension_37-1` | XPLA | xpla | Gaming |
-| Saga | `ssc-1` | SAGA | saga | Chainlets |
-| SEDA | `seda-1` | SEDA | seda | Oracle |
-| ZetaChain | `zetachain_7000-1` | ZETA | zeta | Omnichain |
-| Lava | `lava-mainnet-1` | LAVA | lava@ | RPC Infrastructure |
-| MANTRA | `mantra-1` | OM | mantra | RWA |
-| Nolus | `pirin-1` | NLS | nolus | DeFi Lease |
-| XION | `xion-mainnet-1` | XION | xion | Account Abstraction |
-| Jackal | `jackal-1` | JKL | jkl | Decentralized Storage |
-| THORChain | `thorchain-1` | RUNE | thor | Cross-chain Swap |
-| Babylon Genesis | `bbn-1` | BABY | bbn | Bitcoin Staking |
-| Initia | `interwoven-1` | INIT | init | Move VM |
-| AtomOne | `atomone-1` | ATONE | atone | Governance |
-| Pocket Network | `pocket` | POKT | pokt | RPC Network |
-| XRPL EVM | `xrplevm_1440000-1` | XRP | ethm | EVM Sidechain |
-| Lumera | `lumera-mainnet-1` | LUME | lumera | NFT |
-| ZIGChain | `zigchain-1` | ZIG | zig | Investment |
-| Provenance | `pio-mainnet-1` | HASH | pb | Financial Services |
-| Nym | `nyx` | NYM | n | Mixnet Privacy |
-
-### Keplr Infrastructure
-
-When `KEPLR_RPC_API_KEY` is configured, the following chains use Keplr's dedicated RPC/REST endpoints (`api.keplr.app`) instead of public fallbacks. Unsupported chains automatically fall back to public chain-registry endpoints. See [Environment Variables](/reference/environment#keplr_rpc_api_key) for setup.
-
-| Chain | Chain ID | Endpoint Name |
-|-------|----------|---------------|
-| AtomOne | `atomone-1` | atomone |
-| Axelar | `axelar-dojo-1` | axelar |
-| Babylon Genesis | `bbn-1` | babylon |
-| Celestia | `celestia` | celestia |
-| Cosmos Hub | `cosmoshub-4` | cosmoshub |
-| Cronos POS | `crypto-org-chain-mainnet-1` | cronos-pos |
-| dYdX | `dydx-mainnet-1` | dydx |
-| Initia | `interwoven-1` | initia |
-| Injective | `injective-1` | injective |
-| Juno | `juno-1` | juno |
-| Kava | `kava_2222-10` | kava |
-| KYVE | `kyve-1` | kyve |
-| Lava | `lava-mainnet-1` | lava |
-| Lumera | `lumera-mainnet-1` | lumera |
-| MANTRA | `mantra-1` | mantra |
-| Neutron | `neutron-1` | neutron |
-| Noble | `noble-1` | noble |
-| Nym | `nyx` | nym |
-| Osmosis | `osmosis-1` | osmosis |
-| Provenance | `pio-mainnet-1` | provenance |
-| Saga | `ssc-1` | saga |
-| SEDA | `seda-1` | seda |
-| Stargaze | `stargaze-1` | stargaze |
-| Stride | `stride-1` | stride |
-| Terra | `phoenix-1` | terra |
-| Terra Classic | `columbus-5` | terra-classic |
-| XPLA | `dimension_37-1` | xpla |
-| XRPL EVM | `xrplevm_1440000-1` | xrplevm |
-| ZetaChain | `zetachain_7000-1` | zetachain |
-| ZigChain | `zigchain-1` | zigchain |
+| Chain | Chain ID | Token | Bech32 Prefix | Features | Infra |
+|-------|----------|-------|---------------|----------|:-----:|
+| Cosmos Hub | `cosmoshub-4` | ATOM | cosmos | Staking, Governance, IBC | ✦ |
+| Osmosis | `osmosis-1` | OSMO | osmo | DEX, Staking, CosmWasm | ✦ |
+| Celestia | `celestia` | TIA | celestia | Staking, Data Availability | ✦ |
+| Stargaze | `stargaze-1` | STARS | stars | NFT, CosmWasm | ✦ |
+| Noble | `noble-1` | USDC | noble | Native USDC | ✦ |
+| Neutron | `neutron-1` | NTRN | neutron | CosmWasm, IBC | ✦ |
+| Injective | `injective-1` | INJ | inj | DeFi, CosmWasm | ✦ |
+| Akash | `akashnet-2` | AKT | akash | Cloud Compute | |
+| Stride | `stride-1` | STRD | stride | Liquid Staking | ✦ |
+| dYdX | `dydx-mainnet-1` | DYDX | dydx | Perpetuals | ✦ |
+| Juno | `juno-1` | JUNO | juno | CosmWasm | ✦ |
+| Kava | `kava_2222-10` | KAVA | kava | DeFi | ✦ |
+| Terra | `phoenix-1` | LUNA | terra | CosmWasm | ✦ |
+| Secret Network | `secret-4` | SCRT | secret | Privacy, CosmWasm | |
+| Crypto.org | `crypto-org-chain-mainnet-1` | CRO | cro | DeFi | ✦ |
+| IRISnet | `irishub-1` | IRIS | iaa | IBC | |
+| Regen | `regen-1` | REGEN | regen | Ecological Credits | |
+| Persistence | `core-1` | XPRT | persistence | Liquid Staking | |
+| Sentinel | `sentinelhub-2` | P2P | sent | dVPN | |
+| Sommelier | `sommelier-3` | SOMM | somm | DeFi Vaults | |
+| UX Chain | `umee-1` | UX | umee | Lending | |
+| Agoric | `agoric-3` | BLD | agoric | Smart Contracts | |
+| Axelar | `axelar-dojo-1` | AXL | axelar | Cross-chain Bridge | ✦ |
+| Terra Classic | `columbus-5` | LUNC | terra | Legacy | ✦ |
+| Bostrom | `bostrom` | BOOT | bostrom | Knowledge Graph | |
+| Quicksilver | `quicksilver-2` | QCK | quick | Liquid Staking | |
+| KYVE | `kyve-1` | KYVE | kyve | Data Lake | ✦ |
+| Chihuahua | `chihuahua-1` | HUAHUA | chihuahua | Meme, CosmWasm | |
+| Passage | `passage-2` | PASG | pasg | CosmWasm | |
+| Dymension | `dymension_1100-1` | DYM | dym | RollApps | |
+| XPLA | `dimension_37-1` | XPLA | xpla | Gaming | ✦ |
+| Saga | `ssc-1` | SAGA | saga | Chainlets | ✦ |
+| SEDA | `seda-1` | SEDA | seda | Oracle | ✦ |
+| ZetaChain | `zetachain_7000-1` | ZETA | zeta | Omnichain | ✦ |
+| Lava | `lava-mainnet-1` | LAVA | lava@ | RPC Infrastructure | ✦ |
+| MANTRA | `mantra-1` | OM | mantra | RWA | ✦ |
+| Nolus | `pirin-1` | NLS | nolus | DeFi Lease | |
+| XION | `xion-mainnet-1` | XION | xion | Account Abstraction | |
+| Jackal | `jackal-1` | JKL | jkl | Decentralized Storage | |
+| THORChain | `thorchain-1` | RUNE | thor | Cross-chain Swap | |
+| Babylon Genesis | `bbn-1` | BABY | bbn | Bitcoin Staking | ✦ |
+| Initia | `interwoven-1` | INIT | init | Move VM | ✦ |
+| AtomOne | `atomone-1` | ATONE | atone | Governance | ✦ |
+| Pocket Network | `pocket` | POKT | pokt | RPC Network | |
+| XRPL EVM | `xrplevm_1440000-1` | XRP | ethm | EVM Sidechain | ✦ |
+| Lumera | `lumera-mainnet-1` | LUME | lumera | NFT | ✦ |
+| ZIGChain | `zigchain-1` | ZIG | zig | Investment | ✦ |
+| Provenance | `pio-mainnet-1` | HASH | pb | Financial Services | ✦ |
+| Nym | `nyx` | NYM | n | Mixnet Privacy | ✦ |
 
 
