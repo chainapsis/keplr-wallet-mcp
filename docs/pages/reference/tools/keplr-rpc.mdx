@@ -6,7 +6,7 @@ Tools for managing Keplr Infra API keys, credits, and usage analytics via `api.k
 
 | Tool | Description | Read-Only |
 |------|-------------|-----------|
-| `keplr_api_configure_key` | Configure API key in MCP config (user/project scope) | No |
+| `keplr_api_configure_key` | Configure API key (auto-detects Claude Code, Desktop, or other clients) | No |
 | `keplr_api_validate_key` | Validate an API key | Yes |
 | `keplr_api_get_payment_link` | Get Stripe payment link to add credits | Yes |
 | `keplr_api_get_usage_summary` | Get balance and usage summary with per-chain breakdown | Yes |
@@ -27,30 +27,48 @@ Keplr Infra provides dedicated RPC and REST endpoints for Cosmos chains:
 
 ## `keplr_api_configure_key`
 
-Configure a Keplr Infra API key by writing it to the MCP configuration file. Validates the key first, then saves it to the selected scope. Requires a server restart after configuration.
+Configure a Keplr Infra API key. Validates the key, then saves it to the MCP configuration file based on the detected client. Restart required after configuration.
 
 ### Parameters
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `apiKey` | `string` | Yes | Keplr Infra API key (starts with `keplr_`) |
-| `scope` | `"user" \| "project"` | Yes | `user` for `~/.claude.json` (all projects), `project` for `.mcp.json` (this project only) |
+| `scope` | `"user" \| "project"` | No | Claude Code only: `user` for `~/.claude.json` (all projects), `project` for `.mcp.json` (this project only). Defaults to `user`. Ignored for other clients. |
 
 ### Response
+
+**Claude Code:**
 
 ```json
 {
   "status": "configured",
-  "message": "API key saved to ~/.claude.json (user scope). Restart the MCP server for the key to take effect.",
+  "message": "API key saved to ~/.claude.json (user scope).",
   "configPath": "/Users/you/.claude.json",
   "scope": "user",
   "restartRequired": true,
+  "restartGuide": "The API key will take effect after restarting the MCP server...",
   "suggestedActions": [
     { "tool": "keplr_api_get_usage_summary", "reason": "Check your credit balance and usage", "priority": 1 },
     { "tool": "keplr_api_list_chains", "reason": "See which chains are available", "priority": 2 }
   ]
 }
 ```
+
+**Claude Desktop:**
+
+```json
+{
+  "status": "configured",
+  "message": "API key saved to Claude Desktop config.",
+  "configPath": "/Users/you/Library/Application Support/Claude/claude_desktop_config.json",
+  "restartRequired": true,
+  "restartGuide": "Quit and reopen Claude Desktop to apply the new API key.",
+  "suggestedActions": [...]
+}
+```
+
+**Other clients:** Returns `unsupported_client` status. Only Claude Code and Claude Desktop are supported.
 
 ---
 

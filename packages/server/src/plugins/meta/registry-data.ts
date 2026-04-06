@@ -535,7 +535,7 @@ export const TOOL_REGISTRY: ToolEntry[] = [
   {
     name: "keplr_api_configure_key",
     description:
-      "Configure a Keplr Infra API key in MCP config (user or project scope)",
+      "Configure a Keplr Infra API key (auto-detects Claude Code, Desktop, or other clients)",
     category: "keplr-rpc",
     ecosystem: "common",
     risk: "destructive",

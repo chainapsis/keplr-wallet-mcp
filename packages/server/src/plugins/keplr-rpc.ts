@@ -1,3 +1,4 @@
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { z } from "zod";
 import type { SuggestedAction } from "../errors.js";
 import { classifyError, formatClassifiedError } from "../errors.js";
@@ -151,6 +152,42 @@ const makeErrorResponse = (error: unknown, toolName?: string) => {
   };
 };
 
+// ─── Client detection ───────────────────────────────────────────────
+type McpClientType = "claude-code" | "claude-desktop" | "unknown";
+
+const detectClientType = (server: Server): McpClientType => {
+  const name = server.getClientVersion()?.name;
+  switch (name) {
+    case "claude-code":
+      return "claude-code";
+    case "claude-ai":
+      return "claude-desktop";
+    default:
+      return "unknown";
+  }
+};
+
+const findServerKey = (
+  servers: Record<string, Record<string, unknown>>,
+): string | null => {
+  for (const [key, entry] of Object.entries(servers)) {
+    if (!entry || typeof entry !== "object") continue;
+    if (
+      Array.isArray(entry.args) &&
+      entry.args.some(
+        (a: unknown) => typeof a === "string" && a.includes("keplr-wallet-mcp"),
+      )
+    )
+      return key;
+    if (
+      typeof entry.command === "string" &&
+      entry.command.includes("keplr-wallet-mcp")
+    )
+      return key;
+  }
+  return null;
+};
+
 // ─── Plugin ──────────────────────────────────────────────────────────
 const keplrRpcPlugin: KeplrPlugin = {
   name: "keplr-rpc",
@@ -161,24 +198,47 @@ const keplrRpcPlugin: KeplrPlugin = {
       "keplr_api_configure_key",
       {
         description:
-          "Configure a Keplr Infra API key by writing it to the MCP configuration file. " +
-          "Validates the key first, then saves it to either user scope (~/.claude.json, all projects) " +
-          "or project scope (.mcp.json, shared via version control). Restart the MCP server after configuration.",
+          "Configure a Keplr Infra API key. Validates the key, then saves it to the MCP configuration file " +
+          "based on the detected client. Restart required after configuration.",
         inputSchema: {
           apiKey: z
             .string()
             .describe("Keplr Infra API key (starts with 'keplr_')"),
           scope: z
             .enum(["user", "project"])
+            .optional()
             .describe(
-              "Where to store the key: 'user' for ~/.claude.json (all projects), " +
-                "'project' for .mcp.json (this project only)",
+              "Where to store the key (Claude Code only): 'user' for ~/.claude.json (all projects), " +
+                "'project' for .mcp.json (this project only). Ignored for other clients.",
             ),
         },
       },
       async ({ apiKey, scope }) => {
         try {
-          // Step 1: Validate the API key
+          // Step 1: Detect client type (local-only, no network)
+          const clientType = detectClientType(server.server);
+
+          if (clientType === "unknown") {
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: JSON.stringify(
+                    {
+                      status: "unsupported_client",
+                      message:
+                        "This MCP client is not supported for automatic configuration. " +
+                        "Set the KEPLR_RPC_API_KEY environment variable manually in your MCP client configuration.",
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
+            };
+          }
+
+          // Step 2: Validate the API key
           const validation = await keplrApiFetch<{ valid?: boolean }>({
             method: "POST",
             path: "/v1/keys/validate",
@@ -211,63 +271,6 @@ const keplrRpcPlugin: KeplrPlugin = {
             };
           }
 
-          // Step 2: Determine config file path
-          const { homedir } = await import("node:os");
-          const { readFileSync, writeFileSync } = await import("node:fs");
-          const { join } = await import("node:path");
-
-          const configPath =
-            scope === "user"
-              ? join(homedir(), ".claude.json")
-              : join(process.cwd(), ".mcp.json");
-
-          // Step 3: Read existing config (or start fresh)
-          let config: Record<string, unknown> = {};
-          let raw: string | undefined;
-          try {
-            raw = readFileSync(configPath, "utf-8");
-          } catch {
-            // File doesn't exist — start fresh
-          }
-          if (raw !== undefined) {
-            try {
-              config = JSON.parse(raw);
-            } catch {
-              throw new Error(
-                `Cannot parse ${configPath} — please fix the JSON syntax before configuring the API key.`,
-              );
-            }
-          }
-
-          // Step 4: Deep merge the env var
-          if (!config.mcpServers || typeof config.mcpServers !== "object") {
-            config.mcpServers = {};
-          }
-          const servers = config.mcpServers as Record<
-            string,
-            Record<string, unknown>
-          >;
-
-          if (!servers.keplr || typeof servers.keplr !== "object") {
-            servers.keplr = {
-              command: "npx",
-              args: ["@keplr-wallet/keplr-wallet-mcp"],
-            };
-          }
-
-          if (!servers.keplr.env || typeof servers.keplr.env !== "object") {
-            servers.keplr.env = {};
-          }
-          (servers.keplr.env as Record<string, string>).KEPLR_RPC_API_KEY =
-            apiKey;
-
-          // Step 5: Write back
-          writeFileSync(
-            configPath,
-            `${JSON.stringify(config, null, 2)}\n`,
-            "utf-8",
-          );
-
           const suggestedActions: SuggestedAction[] = [
             {
               tool: "keplr_api_get_usage_summary",
@@ -281,6 +284,172 @@ const keplrRpcPlugin: KeplrPlugin = {
             },
           ];
 
+          const { homedir } = await import("node:os");
+          const { readFileSync, writeFileSync, mkdirSync } = await import(
+            "node:fs"
+          );
+          const { join, dirname } = await import("node:path");
+
+          if (clientType === "claude-code") {
+            // Claude Code — write to ~/.claude.json or .mcp.json based on scope
+            const resolvedScope = scope ?? "user";
+            const configPath =
+              resolvedScope === "user"
+                ? join(homedir(), ".claude.json")
+                : join(process.cwd(), ".mcp.json");
+
+            let config: Record<string, unknown> = {};
+            let raw: string | undefined;
+            try {
+              raw = readFileSync(configPath, "utf-8");
+            } catch {
+              // File doesn't exist — start fresh
+            }
+            if (raw !== undefined) {
+              try {
+                config = JSON.parse(raw);
+              } catch {
+                throw new Error(
+                  `Cannot parse ${configPath} — please fix the JSON syntax before configuring the API key.`,
+                );
+              }
+            }
+
+            if (!config.mcpServers || typeof config.mcpServers !== "object") {
+              config.mcpServers = {};
+            }
+            const servers = config.mcpServers as Record<
+              string,
+              Record<string, unknown>
+            >;
+            if (!servers.keplr || typeof servers.keplr !== "object") {
+              servers.keplr = {
+                command: "npx",
+                args: ["@keplr-wallet/keplr-wallet-mcp"],
+              };
+            }
+            if (!servers.keplr.env || typeof servers.keplr.env !== "object") {
+              servers.keplr.env = {};
+            }
+            (servers.keplr.env as Record<string, string>).KEPLR_RPC_API_KEY =
+              apiKey;
+
+            writeFileSync(
+              configPath,
+              `${JSON.stringify(config, null, 2)}\n`,
+              "utf-8",
+            );
+
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: JSON.stringify(
+                    {
+                      status: "configured",
+                      message: `API key saved to ${resolvedScope === "user" ? "~/.claude.json (user scope)" : ".mcp.json (project scope)"}.`,
+                      configPath,
+                      scope: resolvedScope,
+                      restartRequired: true,
+                      restartGuide:
+                        "The API key will take effect after restarting the MCP server. " +
+                        "Please exit Claude Code (/exit) and start a new session. " +
+                        "Note: /mcp reconnect reuses the existing process and will NOT pick up the new environment variable.",
+                      suggestedActions,
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
+            };
+          }
+
+          // Claude Desktop — write to platform-specific config
+          const home = homedir();
+          const desktopConfigPath = (() => {
+            switch (process.platform) {
+              case "darwin":
+                return join(
+                  home,
+                  "Library",
+                  "Application Support",
+                  "Claude",
+                  "claude_desktop_config.json",
+                );
+              case "win32":
+                return join(
+                  process.env.APPDATA ?? join(home, "AppData", "Roaming"),
+                  "Claude",
+                  "claude_desktop_config.json",
+                );
+              case "linux":
+                return join(
+                  home,
+                  ".config",
+                  "Claude",
+                  "claude_desktop_config.json",
+                );
+              default:
+                throw new Error(`Unsupported platform: ${process.platform}`);
+            }
+          })();
+
+          let config: Record<string, unknown> = {};
+          let raw: string | undefined;
+          try {
+            raw = readFileSync(desktopConfigPath, "utf-8");
+          } catch {
+            // File doesn't exist — start fresh
+          }
+          if (raw !== undefined) {
+            try {
+              config = JSON.parse(raw);
+            } catch {
+              throw new Error(
+                `Cannot parse ${desktopConfigPath} — please fix the JSON syntax before configuring the API key.`,
+              );
+            }
+          }
+
+          if (!config.mcpServers || typeof config.mcpServers !== "object") {
+            config.mcpServers = {};
+          }
+          const servers = config.mcpServers as Record<
+            string,
+            Record<string, unknown>
+          >;
+
+          // Find existing keplr-wallet-mcp entry or create one
+          let serverKey = findServerKey(servers);
+          if (serverKey === null) {
+            serverKey =
+              !servers.keplr || typeof servers.keplr !== "object"
+                ? "keplr"
+                : "keplr-wallet-mcp";
+          }
+          if (!servers[serverKey] || typeof servers[serverKey] !== "object") {
+            servers[serverKey] = {
+              command: "npx",
+              args: ["@keplr-wallet/keplr-wallet-mcp"],
+            };
+          }
+          if (
+            !servers[serverKey].env ||
+            typeof servers[serverKey].env !== "object"
+          ) {
+            servers[serverKey].env = {};
+          }
+          (servers[serverKey].env as Record<string, string>).KEPLR_RPC_API_KEY =
+            apiKey;
+
+          mkdirSync(dirname(desktopConfigPath), { recursive: true });
+          writeFileSync(
+            desktopConfigPath,
+            `${JSON.stringify(config, null, 2)}\n`,
+            "utf-8",
+          );
+
           return {
             content: [
               {
@@ -288,14 +457,11 @@ const keplrRpcPlugin: KeplrPlugin = {
                 text: JSON.stringify(
                   {
                     status: "configured",
-                    message: `API key saved to ${scope === "user" ? "~/.claude.json (user scope)" : ".mcp.json (project scope)"}.`,
-                    configPath,
-                    scope,
+                    message: "API key saved to Claude Desktop config.",
+                    configPath: desktopConfigPath,
                     restartRequired: true,
                     restartGuide:
-                      "The API key will take effect after restarting the MCP server. " +
-                      "Please exit Claude Code (/exit) and start a new session. " +
-                      "Note: /mcp reconnect reuses the existing process and will NOT pick up the new environment variable.",
+                      "Quit and reopen Claude Desktop to apply the new API key.",
                     suggestedActions,
                   },
                   null,

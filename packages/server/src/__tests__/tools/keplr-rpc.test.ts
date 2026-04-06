@@ -1,3 +1,6 @@
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockMcpServer, MockStore } from "../helpers/mocks.js";
 import {
@@ -5,6 +8,24 @@ import {
   createMockStore,
   parseToolResponse,
 } from "../helpers/mocks.js";
+
+// Passthrough wrappers — by default these call the real implementations.
+// Individual describe blocks can override via mockImplementation/mockReturnValue;
+// vi.restoreAllMocks() in afterEach restores the passthrough.
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return {
+    ...actual,
+    readFileSync: vi.fn(actual.readFileSync),
+    writeFileSync: vi.fn(actual.writeFileSync),
+    mkdirSync: vi.fn(actual.mkdirSync),
+  };
+});
+
+vi.mock("node:os", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:os")>();
+  return { ...actual, homedir: vi.fn(actual.homedir) };
+});
 
 // Dynamic import to avoid hoisting issues
 let keplrRpcPlugin: typeof import("../../plugins/keplr-rpc.js").default;
@@ -34,7 +55,7 @@ let server: MockMcpServer;
 let store: MockStore;
 
 beforeEach(async () => {
-  server = createMockMcpServer();
+  server = createMockMcpServer({ clientName: "claude-code" });
   store = createMockStore({
     storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
   } as never);
@@ -121,6 +142,189 @@ describe("keplr_api_configure_key", () => {
         unlinkSync(configPath);
       } catch {}
     }
+  });
+});
+
+// ─── keplr_api_configure_key: multi-client ─────────────────────────────────
+describe("keplr_api_configure_key multi-client", () => {
+  const mockReadFileSync = vi.mocked(readFileSync);
+  const mockWriteFileSync = vi.mocked(writeFileSync);
+  const mockMkdirSync = vi.mocked(mkdirSync);
+  const mockHomedir = vi.mocked(homedir);
+
+  const desktopConfigPath = (() => {
+    const home = "/mock-home";
+    switch (process.platform) {
+      case "darwin":
+        return join(
+          home,
+          "Library",
+          "Application Support",
+          "Claude",
+          "claude_desktop_config.json",
+        );
+      case "win32":
+        return join(
+          process.env.APPDATA ?? join(home, "AppData", "Roaming"),
+          "Claude",
+          "claude_desktop_config.json",
+        );
+      default:
+        return join(home, ".config", "Claude", "claude_desktop_config.json");
+    }
+  })();
+
+  beforeEach(() => {
+    mockHomedir.mockReturnValue("/mock-home");
+    mockReadFileSync.mockImplementation(() => {
+      throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+    });
+    mockWriteFileSync.mockImplementation(() => undefined);
+    mockMkdirSync.mockReturnValue(undefined as unknown as string);
+  });
+
+  it("should use default scope 'user' when scope is not provided (Claude Code)", async () => {
+    const configPath = join("/mock-home", ".claude.json");
+
+    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
+    const tool = server.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({ apiKey: "keplr_defaultscope" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect(parsed).toHaveProperty("scope", "user");
+    expect((parsed as { configPath: string }).configPath).toBe(configPath);
+
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      configPath,
+      expect.any(String),
+      "utf-8",
+    );
+  });
+
+  it("should write to Desktop config for Claude Desktop client", async () => {
+    const desktopServer = createMockMcpServer({ clientName: "claude-ai" });
+    const desktopStore = createMockStore({
+      storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
+    } as never);
+    await keplrRpcPlugin.register(
+      desktopServer as never,
+      desktopStore as never,
+    );
+
+    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
+    const tool = desktopServer.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({ apiKey: "keplr_desktop123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect(parsed).toHaveProperty("configPath", desktopConfigPath);
+    expect(parsed).not.toHaveProperty("scope");
+    expect((parsed as { restartGuide: string }).restartGuide).toMatch(
+      /Claude Desktop/,
+    );
+
+    expect(mockWriteFileSync).toHaveBeenCalledWith(
+      desktopConfigPath,
+      expect.any(String),
+      "utf-8",
+    );
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+    expect(written.mcpServers.keplr.env.KEPLR_RPC_API_KEY).toBe(
+      "keplr_desktop123",
+    );
+  });
+
+  it("should ignore scope parameter for Claude Desktop", async () => {
+    const desktopServer = createMockMcpServer({ clientName: "claude-ai" });
+    const desktopStore = createMockStore({
+      storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
+    } as never);
+    await keplrRpcPlugin.register(
+      desktopServer as never,
+      desktopStore as never,
+    );
+
+    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
+    const tool = desktopServer.getTool("keplr_api_configure_key")!;
+    // Pass scope: "project" — should be ignored for Desktop
+    const result = await tool.handler({
+      apiKey: "keplr_desktop_scope",
+      scope: "project",
+    });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+    expect((parsed as { configPath: string }).configPath).toBe(
+      desktopConfigPath,
+    );
+  });
+
+  it("should use alternative key when 'keplr' key exists for another server (Desktop)", async () => {
+    const desktopServer = createMockMcpServer({ clientName: "claude-ai" });
+    const desktopStore = createMockStore({
+      storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
+    } as never);
+    await keplrRpcPlugin.register(
+      desktopServer as never,
+      desktopStore as never,
+    );
+
+    // Pre-seed: readFileSync returns existing config with a "keplr" key for another server
+    mockReadFileSync.mockReturnValueOnce(
+      JSON.stringify({
+        mcpServers: {
+          keplr: { command: "some-other-server", args: [] },
+        },
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce(okJson({ valid: true }));
+    const tool = desktopServer.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({ apiKey: "keplr_conflict123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "configured");
+
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+    // Original "keplr" key should be preserved
+    expect(written.mcpServers.keplr.command).toBe("some-other-server");
+    // New entry should use alternative key
+    expect(written.mcpServers["keplr-wallet-mcp"].env.KEPLR_RPC_API_KEY).toBe(
+      "keplr_conflict123",
+    );
+  });
+
+  it("should return unsupported_client for unknown client", async () => {
+    const unknownServer = createMockMcpServer({ clientName: "cursor-vscode" });
+    const unknownStore = createMockStore({
+      storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
+    } as never);
+    await keplrRpcPlugin.register(
+      unknownServer as never,
+      unknownStore as never,
+    );
+
+    const tool = unknownServer.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({ apiKey: "keplr_unknown123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "unsupported_client");
+    expect(parsed).not.toHaveProperty("configPath");
+    expect(parsed).not.toHaveProperty("manualSetup");
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("should return unsupported_client when no client info is available", async () => {
+    const noClientServer = createMockMcpServer();
+    const noClientStore = createMockStore({
+      storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
+    } as never);
+    await keplrRpcPlugin.register(
+      noClientServer as never,
+      noClientStore as never,
+    );
+
+    const tool = noClientServer.getTool("keplr_api_configure_key")!;
+    const result = await tool.handler({ apiKey: "keplr_noclient123" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "unsupported_client");
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
 
