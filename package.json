@@ -24,6 +24,9 @@
     ],
     "overrides": {
       "@noble/hashes": "1.8.0"
+    },
+    "patchedDependencies": {
+      "vocs": "patches/vocs.patch"
     }
   },
   "devDependencies": {

@@ -1,0 +1,13 @@
+diff --git a/_lib/app/index.server.js b/_lib/app/index.server.js
+index f74ee70a4bdd4e8f23bd891432553db7fa466234..543b8eaee7576e28e3b6b6cab1cd619cacfe439c 100644
+--- a/_lib/app/index.server.js
++++ b/_lib/app/index.server.js
+@@ -20,7 +20,7 @@ export async function prerender(location) {
+     }))).filter(Boolean);
+     const { config } = await resolveVocsConfig();
+     const { basePath } = config;
+-    return (_jsx(ConfigProvider, { config: config, children: _jsx(NuqsAdapter, { children: _jsx(StaticRouter, { location: location, basename: basePath, children: _jsx(Routes, { children: unwrappedRoutes.map((route) => (_jsx(Route, { path: route.path, element: route.element }, route.path))) }) }) }) }));
++    return (_jsx(ConfigProvider, { config: config, children: _jsx(NuqsAdapter, { children: _jsx(StaticRouter, { location: location, children: _jsx(Routes, { children: unwrappedRoutes.map((route) => (_jsx(Route, { path: route.path, element: route.element }, route.path))) }) }) }) }));
+ }
+ export async function render(req) {
+     const { config } = await resolveVocsConfig();

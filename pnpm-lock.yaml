@@ -7,6 +7,11 @@ settings:
 overrides:
   '@noble/hashes': 1.8.0
 
+patchedDependencies:
+  vocs:
+    hash: h5ppw4rgyexxzq53mkyjjjhdoe
+    path: patches/vocs.patch
+
 importers:
 
   .:
@@ -37,7 +42,7 @@ importers:
     devDependencies:
       vocs:
         specifier: ^1.0.0-alpha.62
-        version: 1.4.1(@types/node@22.19.7)(@types/react@19.2.10)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rollup@4.57.0)(tsx@4.21.0)(typescript@5.9.3)
+        version: 1.4.1(patch_hash=h5ppw4rgyexxzq53mkyjjjhdoe)(@types/node@22.19.7)(@types/react@19.2.10)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rollup@4.57.0)(tsx@4.21.0)(typescript@5.9.3)
 
   packages/biometric-darwin: {}
 
@@ -13326,7 +13331,7 @@ snapshots:
       - tsx
       - yaml
 
-  vocs@1.4.1(@types/node@22.19.7)(@types/react@19.2.10)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rollup@4.57.0)(tsx@4.21.0)(typescript@5.9.3):
+  vocs@1.4.1(patch_hash=h5ppw4rgyexxzq53mkyjjjhdoe)(@types/node@22.19.7)(@types/react@19.2.10)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rollup@4.57.0)(tsx@4.21.0)(typescript@5.9.3):
     dependencies:
       '@floating-ui/react': 0.27.17(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hono/node-server': 1.19.9(hono@4.11.7)
