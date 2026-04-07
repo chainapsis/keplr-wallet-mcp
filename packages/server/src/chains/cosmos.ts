@@ -2031,40 +2031,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: ["eth-address-gen", "eth-key-sign", "axelar-evm-bridge"],
   },
-  "union-1": {
-    rpc: "https://union-rpc.polkachu.com",
-    rest: "https://union-api.polkachu.com",
-    chainId: "union-1",
-    chainName: "Union",
-    stakeCurrency: {
-      coinDenom: "U",
-      coinMinimalDenom: "au",
-      coinDecimals: 18,
-      coinGeckoId: "union-2",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("union"),
-    currencies: [
-      {
-        coinDenom: "U",
-        coinMinimalDenom: "au",
-        coinDecimals: 18,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "U",
-        coinMinimalDenom: "au",
-        coinDecimals: 18,
-        gasPriceStep: {
-          low: 100000000,
-          average: 100000000,
-          high: 200000000,
-        },
-      },
-    ],
-    features: ["cosmwasm"],
-  },
   "lumera-mainnet-1": {
     rpc: "https://lumera-rpc.polkachu.com",
     rest: "https://lumera-api.polkachu.com",

@@ -260,7 +260,6 @@ export const DENOM_TO_COINGECKO: Record<string, string> = {
   SEDA: "seda-2",
   SOMM: "sommelier",
   STRD: "stride",
-  U: "union-2",
   UX: "umee",
   XION: "xion-2",
   XPLA: "xpla",

@@ -31,7 +31,7 @@
  */
 
 import { type ZodSchema, z } from "zod";
-import type { KeyProvider, KeyProviderConfig } from "./types.js";
+import type { KeyProvider } from "./types.js";
 import { KeyProviderError, KeyProviderErrorCode } from "./types.js";
 
 /**
