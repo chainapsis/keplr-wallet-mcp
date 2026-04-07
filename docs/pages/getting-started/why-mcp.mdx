@@ -1,0 +1,107 @@
+# Why Use an MCP Wallet?
+
+You already have Keplr. You already know how to stake, send, and vote. So why run your wallet through an AI assistant?
+
+The short answer: **automation, batching, and delegation** — things that are tedious or impossible in a traditional wallet UI.
+
+## Repetitive transactions at scale
+
+### Dust sweeping
+
+You've accumulated tiny balances across 15 chains — leftover rewards, airdrop remnants, forgotten IBC tokens. In a traditional wallet, you'd manually switch chains, claim, bridge, and swap dozens of times.
+
+With MCP:
+
+```
+You: "Check all my balances across every chain and find anything under $5"
+You: "Sweep all dust to Osmosis and swap everything to ATOM"
+```
+
+The AI figures out the IBC routes, builds the transactions, and walks you through confirming them.
+
+### Reward compounding
+
+Instead of logging in weekly to claim and restake:
+
+```
+You: "Claim all my staking rewards across Cosmos Hub, Osmosis, and Celestia, 
+      then restake everything to the same validators"
+```
+
+One conversation replaces what would be 10+ clicks per chain in a traditional wallet.
+
+### Batch operations
+
+Sending tokens to multiple recipients, voting on several proposals, redelegating across validators — anything you'd normally do one-by-one can be described in plain language and batched with [Multi-Action](/guides/cosmos/multi-action).
+
+## AI agent integration
+
+MCP isn't just for chatting with Claude manually. It's a **protocol** — any AI agent that speaks MCP can connect to your wallet.
+
+### Autonomous portfolio agents
+
+Connect an agent (like OpenClaw or your own custom agent) to manage your wallet on your behalf:
+- Rebalance staking positions across validators based on performance
+- Auto-compound rewards on a schedule
+- Monitor governance proposals and notify you when something relevant comes up
+
+The agent interacts with the same MCP tools you use in conversation, but programmatically.
+
+### Alerting and monitoring
+
+An agent can watch your wallet and flag things you'd normally miss:
+
+```
+You: "Monitor my staking positions and let me know if any of my validators 
+      drop below 95% uptime or raise their commission above 10%"
+```
+
+### Custom workflows
+
+Because MCP exposes structured tools (not just a UI), you can build workflows that chain together operations that don't have a button in any wallet:
+
+- "If my OSMO rewards exceed 100, claim and swap to ATOM"
+- "When proposal X goes to voting, vote Yes and notify me"
+- "Every Monday, check my portfolio and generate a summary"
+
+## Cross-chain operations without the tab-switching
+
+Traditional wallets make you pick a chain, do something, switch chains, do the next thing. MCP lets you work across chains in a single conversation:
+
+```
+You: "Show my staking positions across all chains, sorted by rewards"
+You: "Move 500 ATOM from Cosmos Hub to Osmosis and swap half for USDC"
+```
+
+The AI handles chain selection, IBC routing, and fee estimation behind the scenes. You describe the outcome you want.
+
+## Natural language over button-hunting
+
+Some operations are buried 3 menus deep in a wallet UI. With MCP, you describe what you want:
+
+```
+You: "What's the cheapest fee token I can use on Osmosis right now?"
+You: "Show me validators on Cosmos Hub with less than 5% commission and 
+      over 99% uptime"
+You: "Cancel all my pending unbondings"
+```
+
+No memorizing which screen, which dropdown, or which advanced settings panel to open.
+
+## When to stick with a traditional wallet
+
+MCP isn't a replacement for everything:
+
+- **Quick one-off transactions** — If you just need to send 10 ATOM, your Keplr extension is faster.
+- **dApp interactions** — MCP supports CosmWasm contracts directly, but complex dApp UIs (AMM position management, NFT marketplaces) are still better served by their native interfaces.
+- **Hardware wallet signing** — MCP currently uses software-based key management. If you require Ledger signing, use your traditional wallet for those transactions.
+
+The sweet spot for MCP is **anything repetitive, cross-chain, or complex enough that you'd rather describe it than click through it**.
+
+## A building block, not just a wallet
+
+MCP turns your wallet into a programmable interface. Traditional wallets are closed — you use the features they ship. With MCP, the wallet becomes a tool that other things can build on top of.
+
+Want to build a Telegram bot that manages your staking? An agent that rebalances your portfolio based on on-chain governance outcomes? A dashboard that auto-compounds rewards only when gas is cheap? MCP gives you the primitives — accounts, queries, transactions, signing — and you (or your agents) compose them however you want.
+
+The wallet stops being the end product and starts being infrastructure you can get creative with.

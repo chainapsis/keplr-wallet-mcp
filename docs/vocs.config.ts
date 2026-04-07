@@ -23,6 +23,7 @@ export default defineConfig({
       text: "Getting Started",
       items: [
         { text: "Introduction", link: "/" },
+        { text: "Why MCP?", link: "/getting-started/why-mcp" },
         { text: "Installation", link: "/getting-started/installation" },
         {
           text: "Create Your First Wallet",
@@ -48,6 +49,8 @@ export default defineConfig({
         { text: "Governance", link: "/guides/cosmos/governance" },
         { text: "CosmWasm", link: "/guides/cosmos/cosmwasm" },
         { text: "Osmosis Swap", link: "/guides/cosmos/osmosis-swap" },
+        { text: "Multi-Action", link: "/guides/cosmos/multi-action" },
+        { text: "Portfolio", link: "/guides/cosmos/portfolio" },
       ],
     },
     {

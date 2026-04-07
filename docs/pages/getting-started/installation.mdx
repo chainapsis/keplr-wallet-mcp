@@ -4,7 +4,7 @@ Set up Keplr Wallet MCP and connect it to your AI assistant.
 
 ## Prerequisites
 
-You need **Node.js 22 or later**. [Download here](https://nodejs.org).
+You need **Node.js 22 or later**. [Download here](https://nodejs.org) — choose the **LTS** version and run the installer.
 
 To check if you already have it, open your terminal and run:
 
@@ -13,6 +13,17 @@ node -v
 ```
 
 If you see `v22.x.x` or higher, you're good to go.
+
+:::details[How to open a terminal]
+- **macOS**: Press `Cmd + Space`, type **Terminal**, and hit Enter.
+- **Windows**: Press `Win + X` and select **Windows PowerShell**, or search for **PowerShell** in the Start menu.
+:::
+
+:::details[Troubleshooting Node.js]
+- **`command not found: node`** — Node.js isn't installed or isn't in your PATH. Try closing and reopening your terminal after installing, or restart your computer.
+- **Version is below 22** — Download the latest LTS from [nodejs.org](https://nodejs.org) and install it over your current version.
+- **macOS permission errors** — If you see `EACCES` errors, avoid using `sudo`. Instead, reinstall Node.js via the official installer or use [nvm](https://github.com/nvm-sh/nvm).
+:::
 
 ## Connect to your AI client
 
@@ -30,18 +41,40 @@ If you're already in a session, type `/mcp` and connect to Keplr — or start a 
 
 ### Claude Desktop Configuration
 
-**1. Find your config file:**
+**1. Find and open your config file:**
 
 | OS | Path |
 |----|------|
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 
-**2. Add the following to your config file:**
+:::details[How to open this file]
+**macOS**: Open Finder, press `Cmd + Shift + G`, paste the path above, and open the file with TextEdit or any text editor.
+
+**Windows**: Press `Win + R`, paste the path above, and hit Enter. If the file doesn't exist yet, create it with a text editor and save it as `claude_desktop_config.json`.
+:::
+
+**2. Add the Keplr server to your config file:**
+
+If the file is **empty or doesn't exist**, paste this entire block:
 
 ```json
 {
   "mcpServers": {
+    "keplr": {
+      "command": "npx",
+      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+    }
+  }
+}
+```
+
+If the file **already has other MCP servers**, add the `"keplr"` entry inside the existing `"mcpServers"` block:
+
+```json
+{
+  "mcpServers": {
+    "existing-server": { "..." : "..." },
     "keplr": {
       "command": "npx",
       "args": ["@keplr-wallet/keplr-wallet-mcp"]
@@ -91,7 +124,13 @@ After setup, restart your AI client and ask:
 
 > "What Keplr tools are available?"
 
-If everything is working, Claude will respond with a list of wallet tools.
+If everything is working, Claude will respond with a list of wallet tools (65+ tools across account management, staking, governance, and more).
+
+:::details[Not working?]
+- **Claude Code**: Run `claude mcp list` to check if Keplr appears. If not, try removing and re-adding: `claude mcp remove keplr` then re-run the add command.
+- **Claude Desktop**: Go to **Settings > Developer** and check **Local MCP servers**. You should see `keplr` listed with a **running** badge. If it shows an error or doesn't appear, double-check your config file — a missing comma or bracket will silently fail.
+- **"npx: command not found"** — Node.js isn't installed correctly. See the troubleshooting section above.
+:::
 
 ## Next Steps
 

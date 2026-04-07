@@ -6,11 +6,40 @@ Stake tokens to earn rewards.
 
 ```
 You: "Stake 100 ATOM to a good validator"
+You: "Stake 50 OSMO to Validator A"
+```
+
+When you say "a good validator," the AI evaluates validators by commission rate, uptime, and voting power, then recommends one for your confirmation. You can also name a specific validator.
+
+The AI shows you the validator details and expected APY before you confirm.
+
+## Check staking info
+
+```
 You: "Show my staking info on Cosmos Hub"
+You: "Show my delegations"
+```
+
+This shows your active delegations, pending rewards, and any unbonding tokens.
+
+## Claim rewards
+
+```
+You: "Claim my staking rewards on Cosmos Hub"
 You: "Claim all my staking rewards"
 ```
 
-The AI will suggest validators and show you the expected APY before you confirm.
+`claim-all-rewards` claims from every validator you've delegated to on a chain in a single transaction.
+
+## Compound rewards
+
+Claim and re-stake in one conversation:
+
+```
+You: "Claim my rewards and stake them to Validator A"
+```
+
+For true atomic compounding (one transaction), use [Multi-Action](/guides/cosmos/multi-action).
 
 ## Unstake
 
@@ -18,7 +47,11 @@ The AI will suggest validators and show you the expected APY before you confirm.
 You: "Unstake 50 ATOM from Validator A"
 ```
 
-## Cancel Unstake
+Unstaked tokens enter an **unbonding period** (typically 21 days on Cosmos Hub — varies by chain). During this time, tokens don't earn rewards and can't be transferred.
+
+## Cancel unstake
+
+If you change your mind during the unbonding period:
 
 ```
 You: "Cancel my unbonding from Validator A"
@@ -26,19 +59,18 @@ You: "Cancel my unbonding from Validator A"
 
 ## Redelegate
 
+Move your stake between validators without waiting for the unbonding period:
+
 ```
 You: "Move 100 ATOM from Validator A to Validator B"
 ```
 
-## Compound Rewards
-
-Claim and re-stake in one go:
-
-```
-You: "Claim my rewards and stake them to Validator A"
-```
+:::tip
+Use the `/stake` slash command for a guided staking flow that walks you through each step.
+:::
 
 ## Related
 
 - [Governance](/guides/cosmos/governance)
 - [Check Balances](/guides/cosmos/balances)
+- [Multi-Action](/guides/cosmos/multi-action)
