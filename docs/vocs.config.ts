@@ -6,6 +6,9 @@ export default defineConfig({
     "AI-powered wallet interface for Cosmos chains via Model Context Protocol",
   logoUrl: "/logo.svg",
   iconUrl: "/favicon.ico",
+  ogImageUrl: {
+    "/": "/og-mcp.png",
+  },
   rootDir: ".",
   basePath: process.env.VOCS_BASE_PATH || "/",
   ...(process.env.VOCS_BASE_URL && { baseUrl: process.env.VOCS_BASE_URL }),
