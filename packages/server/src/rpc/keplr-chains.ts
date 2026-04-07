@@ -30,7 +30,6 @@ export const KEPLR_CHAIN_MAP: Record<string, string> = {
   "seda-1": "seda",
   "stargaze-1": "stargaze",
   "stride-1": "stride",
-  "union-1": "union",
   "xrplevm_1440000-1": "xrplevm",
   "zetachain_7000-1": "zetachain",
   "zigchain-1": "zigchain",

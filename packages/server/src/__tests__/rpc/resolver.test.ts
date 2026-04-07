@@ -149,8 +149,8 @@ describe("RpcResolver", () => {
 });
 
 describe("KEPLR_CHAIN_MAP", () => {
-  it("should contain 31 supported chains", () => {
-    expect(Object.keys(KEPLR_CHAIN_MAP)).toHaveLength(31);
+  it("should contain 30 supported chains", () => {
+    expect(Object.keys(KEPLR_CHAIN_MAP)).toHaveLength(30);
   });
 
   it("should map all chain IDs to non-empty names", () => {
