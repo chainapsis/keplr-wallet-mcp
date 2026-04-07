@@ -70,6 +70,25 @@ const resolveRpc = (
     : resolved.url;
 };
 
+/** Check if an error is an out-of-gas broadcast failure (code 11) */
+const isOutOfGasError = (error: unknown): boolean => {
+  if (error instanceof Error) {
+    const msg = error.message;
+    // CosmJS BroadcastTxError format: "Broadcasting transaction failed with code 11"
+    return /code 11\b/.test(msg) && /out of gas/i.test(msg);
+  }
+  return false;
+};
+
+/** Extract gasUsed from CosmJS BroadcastTxError log: "gasWanted: X, gasUsed: Y" */
+const parseGasUsedFromError = (error: unknown): number | undefined => {
+  if (!(error instanceof Error)) return undefined;
+  const match = error.message.match(/gasUsed:\s*(\d+)/);
+  if (!match) return undefined;
+  const gasUsed = Number(match[1]);
+  return gasUsed > 0 ? gasUsed : undefined;
+};
+
 export interface BalanceResult {
   readonly denom: string;
   readonly amount: string;
@@ -537,12 +556,64 @@ export class CosmosClient implements EcosystemClient {
     const client = await this.getSigningClient(chain);
 
     if (!needsEthermintSigning(chain)) {
-      const result = await client.signAndBroadcast(address, messages, fee);
+      // Attempt broadcast. Out-of-gas (code 11) can surface in two ways:
+      // 1. CheckTx failure: CosmJS throws BroadcastTxError (gasUsed in error message)
+      // 2. DeliverTx failure: CosmJS returns result with code=11 (gasUsed in result)
+      // Both are retried once with gasUsed × 1.4.
+
+      let gasUsedForRetry: number | undefined;
+      try {
+        const result = await client.signAndBroadcast(address, messages, fee);
+
+        // DeliverTx out-of-gas: result returned with code 11
+        if (result.code === 11 && Number(result.gasUsed) > 0) {
+          gasUsedForRetry = Number(result.gasUsed);
+        } else {
+          return {
+            transactionHash: result.transactionHash,
+            code: result.code,
+            gasUsed: result.gasUsed.toString(),
+            gasWanted: result.gasWanted.toString(),
+          };
+        }
+      } catch (error) {
+        // CheckTx out-of-gas: CosmJS throws BroadcastTxError
+        if (!isOutOfGasError(error)) throw error;
+        gasUsedForRetry = parseGasUsedFromError(error);
+        if (!gasUsedForRetry) throw error;
+      }
+
+      const retryGas = Math.ceil(gasUsedForRetry * 1.4);
+      const originalDenom = fee !== "auto" ? fee.amount[0]?.denom : undefined;
+      const customGasPrice = originalDenom
+        ? getGasPriceForDenom(chain, originalDenom)
+        : undefined;
+      const parsedGasPrice = parseGasPrice(
+        customGasPrice ?? getGasPrice(chain),
+      );
+      const retryFee = {
+        gas: retryGas.toString(),
+        amount: [
+          {
+            denom: originalDenom ?? parsedGasPrice.denom,
+            amount: Math.ceil(retryGas * parsedGasPrice.amount).toString(),
+          },
+        ],
+      };
+      const originalGas = fee === "auto" ? "auto" : fee.gas;
+      console.error(
+        `[gas-retry] ${chain.chainId}: originalGas=${originalGas} gasUsed=${gasUsedForRetry} → retryGas=${retryGas}`,
+      );
+      const retryResult = await client.signAndBroadcast(
+        address,
+        messages,
+        retryFee,
+      );
       return {
-        transactionHash: result.transactionHash,
-        code: result.code,
-        gasUsed: result.gasUsed.toString(),
-        gasWanted: result.gasWanted.toString(),
+        transactionHash: retryResult.transactionHash,
+        code: retryResult.code,
+        gasUsed: retryResult.gasUsed.toString(),
+        gasWanted: retryResult.gasWanted.toString(),
       };
     }
 
@@ -644,9 +715,7 @@ export class CosmosClient implements EcosystemClient {
     chain: ChainInfo,
     messages: EncodeObject[],
     feeDenom?: string,
-  ): Promise<
-    { amount: { denom: string; amount: string }[]; gas: string } | "auto"
-  > {
+  ): Promise<{ amount: { denom: string; amount: string }[]; gas: string }> {
     // Ethermint chains: simulate() fails due to hardcoded pubkey encoding in CosmJS.
     // Use conservative gas estimate instead.
     if (needsEthermintSigning(chain)) {
@@ -656,30 +725,26 @@ export class CosmosClient implements EcosystemClient {
       return this.calculateEthermintFallbackFee(chain, messages, validFeeDenom);
     }
 
-    // If no custom feeDenom specified, use auto (default behavior)
-    if (!feeDenom) {
-      return "auto";
-    }
-
-    // Check if the feeDenom is valid for this chain
-    const gasPrice = getGasPriceForDenom(chain, feeDenom);
-    if (!gasPrice) {
-      // Invalid feeDenom, fall back to auto
-      return "auto";
-    }
+    // Resolve gas price: use custom feeDenom if valid, otherwise chain default
+    const customGasPrice =
+      feeDenom && getGasPriceForDenom(chain, feeDenom)
+        ? getGasPriceForDenom(chain, feeDenom)
+        : undefined;
+    const parsedGasPrice = parseGasPrice(customGasPrice ?? getGasPrice(chain));
+    const resolvedDenom =
+      customGasPrice && feeDenom ? feeDenom : parsedGasPrice.denom;
 
     // Simulate to get gas estimate
     const client = await this.getSigningClient(chain);
     const address = await this.getAddress(chain);
     const gasEstimate = await client.simulate(address, messages, undefined);
 
-    // Calculate fee with the specified denom
-    const parsedGasPrice = parseGasPrice(gasPrice);
+    // Apply gas adjustment matching Keplr Extension (1.4 standard, 1.6 feemarket)
     const gasWithBuffer = Math.ceil(gasEstimate * getGasAdjustment(chain));
     const feeAmount = Math.ceil(gasWithBuffer * parsedGasPrice.amount);
 
     return {
-      amount: [{ denom: feeDenom, amount: feeAmount.toString() }],
+      amount: [{ denom: resolvedDenom, amount: feeAmount.toString() }],
       gas: gasWithBuffer.toString(),
     };
   }

@@ -3,7 +3,7 @@
  *
  * Covers previously untested critical paths:
  * - signAndBroadcastSafe: standard vs ethermint broadcast
- * - simulateFee: 1.3x gas buffer
+ * - simulateFee: 1.4x gas buffer
  * - calculateEthermintFallbackFee: 1.5x buffer with BASE + PER_MSG formula
  * - calculateFeeForDenom: custom fee denom branch
  */
@@ -342,6 +342,178 @@ describe("CosmosClient broadcast & fee calculation", () => {
       ).rejects.toThrow("insufficient funds");
     });
 
+    it("should auto-retry on out-of-gas (code 11) and succeed", async () => {
+      // First call: CosmJS throws BroadcastTxError at CheckTx stage
+      mockSignAndBroadcast.mockRejectedValueOnce(
+        new Error(
+          "Broadcasting transaction failed with code 11 (codespace: sdk). Log: out of gas in location: WriteFlat; gasWanted: 90000, gasUsed: 95000: out of gas",
+        ),
+      );
+      // Retry call: success
+      mockSignAndBroadcast.mockResolvedValueOnce({
+        transactionHash: "RETRY_TX",
+        code: 0,
+        gasUsed: BigInt(95000),
+        gasWanted: BigInt(114000),
+      });
+
+      const result = (await (
+        client as never as Record<
+          string,
+          (...args: unknown[]) => Promise<unknown>
+        >
+      ).signAndBroadcastSafe(standardChain, "cosmos1test123", [makeMsgSend()], {
+        gas: "90000",
+        amount: [{ denom: "uatom", amount: "2250" }],
+      })) as { transactionHash: string; code: number };
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+      expect(result.transactionHash).toBe("RETRY_TX");
+      expect(result.code).toBe(0);
+      // retryGas = ceil(95000 * 1.4) = 133000
+      const retryFee = mockSignAndBroadcast.mock.calls[1][2] as {
+        gas: string;
+      };
+      expect(retryFee.gas).toBe("133000");
+    });
+
+    it("should auto-retry on DeliverTx out-of-gas (code 11 in result)", async () => {
+      // First call: DeliverTx returns code 11 (not thrown)
+      mockSignAndBroadcast.mockResolvedValueOnce({
+        transactionHash: "FAILED_TX",
+        code: 11,
+        gasUsed: BigInt(95000),
+        gasWanted: BigInt(90000),
+      });
+      // Retry: success
+      mockSignAndBroadcast.mockResolvedValueOnce({
+        transactionHash: "RETRY_TX",
+        code: 0,
+        gasUsed: BigInt(95000),
+        gasWanted: BigInt(133000),
+      });
+
+      const result = (await (
+        client as never as Record<
+          string,
+          (...args: unknown[]) => Promise<unknown>
+        >
+      ).signAndBroadcastSafe(standardChain, "cosmos1test123", [makeMsgSend()], {
+        gas: "90000",
+        amount: [{ denom: "uatom", amount: "2250" }],
+      })) as { transactionHash: string; code: number };
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+      expect(result.transactionHash).toBe("RETRY_TX");
+      expect(result.code).toBe(0);
+      // retryGas = ceil(95000 * 1.4) = 133000
+      const retryFee = mockSignAndBroadcast.mock.calls[1][2] as {
+        gas: string;
+      };
+      expect(retryFee.gas).toBe("133000");
+    });
+
+    it("should not retry DeliverTx code 11 when gasUsed is 0", async () => {
+      mockSignAndBroadcast.mockResolvedValueOnce({
+        transactionHash: "FAILED_TX",
+        code: 11,
+        gasUsed: BigInt(0),
+        gasWanted: BigInt(100000),
+      });
+
+      const result = (await (
+        client as never as Record<
+          string,
+          (...args: unknown[]) => Promise<unknown>
+        >
+      ).signAndBroadcastSafe(
+        standardChain,
+        "cosmos1test123",
+        [makeMsgSend()],
+        "auto",
+      )) as { code: number };
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+      expect(result.code).toBe(11);
+    });
+
+    it("should propagate retry failure when retry also throws", async () => {
+      mockSignAndBroadcast.mockRejectedValueOnce(
+        new Error(
+          "Broadcasting transaction failed with code 11 (codespace: sdk). Log: out of gas in location: WriteFlat; gasWanted: 90000, gasUsed: 95000: out of gas",
+        ),
+      );
+      mockSignAndBroadcast.mockRejectedValueOnce(
+        new Error(
+          "Broadcasting transaction failed with code 11 (codespace: sdk). Log: out of gas; gasWanted: 114000, gasUsed: 114500: out of gas",
+        ),
+      );
+
+      await expect(
+        (
+          client as never as Record<
+            string,
+            (...args: unknown[]) => Promise<unknown>
+          >
+        ).signAndBroadcastSafe(
+          standardChain,
+          "cosmos1test123",
+          [makeMsgSend()],
+          { gas: "90000", amount: [{ denom: "uatom", amount: "2250" }] },
+        ),
+      ).rejects.toThrow("code 11");
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+    });
+
+    it("should not retry on non-11 error codes", async () => {
+      mockSignAndBroadcast.mockRejectedValueOnce(
+        new Error(
+          "Broadcasting transaction failed with code 5. Log: insufficient funds",
+        ),
+      );
+
+      await expect(
+        (
+          client as never as Record<
+            string,
+            (...args: unknown[]) => Promise<unknown>
+          >
+        ).signAndBroadcastSafe(
+          standardChain,
+          "cosmos1test123",
+          [makeMsgSend()],
+          "auto",
+        ),
+      ).rejects.toThrow("code 5");
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not retry when gasUsed cannot be parsed from error", async () => {
+      mockSignAndBroadcast.mockRejectedValueOnce(
+        new Error(
+          "Broadcasting transaction failed with code 11 (codespace: sdk). Log: out of gas",
+        ),
+      );
+
+      await expect(
+        (
+          client as never as Record<
+            string,
+            (...args: unknown[]) => Promise<unknown>
+          >
+        ).signAndBroadcastSafe(
+          standardChain,
+          "cosmos1test123",
+          [makeMsgSend()],
+          "auto",
+        ),
+      ).rejects.toThrow("code 11");
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
     it("should throw raw_log when ethermint DeliverTx poll returns non-zero code", async () => {
       // SYNC success
       mockLcdFetch.mockResolvedValueOnce({ ok: true });
@@ -390,7 +562,7 @@ describe("CosmosClient broadcast & fee calculation", () => {
       expect(Number.parseInt(fee.gas)).toBeGreaterThan(0);
     });
 
-    it("should return 'auto' when no custom feeDenom", async () => {
+    it("should simulate with default gas price when no custom feeDenom", async () => {
       const result = await (
         client as never as Record<
           string,
@@ -398,10 +570,17 @@ describe("CosmosClient broadcast & fee calculation", () => {
         >
       ).calculateFeeForDenom(standardChain, [makeMsgSend()]);
 
-      expect(result).toBe("auto");
+      expect(mockSimulate).toHaveBeenCalled();
+      const fee = result as {
+        gas: string;
+        amount: { denom: string; amount: string }[];
+      };
+      // 100000 * 1.4 = 140000
+      expect(fee.gas).toBe("140000");
+      expect(fee.amount[0].denom).toBe("uatom");
     });
 
-    it("should return 'auto' for invalid feeDenom", async () => {
+    it("should use default gas price for invalid feeDenom", async () => {
       const result = await (
         client as never as Record<
           string,
@@ -409,7 +588,14 @@ describe("CosmosClient broadcast & fee calculation", () => {
         >
       ).calculateFeeForDenom(standardChain, [makeMsgSend()], "invalid-denom");
 
-      expect(result).toBe("auto");
+      expect(mockSimulate).toHaveBeenCalled();
+      const fee = result as {
+        gas: string;
+        amount: { denom: string; amount: string }[];
+      };
+      // Falls back to default gas price
+      expect(fee.gas).toBe("140000");
+      expect(fee.amount[0].denom).toBe("uatom");
     });
 
     it("should simulate and build fee for valid custom feeDenom", async () => {
