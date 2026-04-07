@@ -1,0 +1,72 @@
+# Connect to Keplr Infra
+
+Connect your wallet to Keplr's dedicated infrastructure for faster, more reliable chain queries.
+
+Without an API key, Keplr Wallet MCP uses public RPC/REST endpoints. These work fine for casual use, but can be slow or unreliable during peak traffic. With a Keplr Infra API key, all requests are routed through dedicated infrastructure across 28 Cosmos chains.
+
+## 1. Create an Account
+
+Go to [api.keplr.app](https://api.keplr.app) and sign up.
+
+After signing in, you'll see a green label at the top of the dashboard showing your API key:
+
+```
+API KEY  keplr_xxxxxxxxxxxx
+```
+
+Copy this key — you'll need it in the next step.
+
+## 2. Configure the API Key
+
+Tell Claude:
+
+> "Set up my Keplr Infra API key: `keplr_xxxxxxxxxxxx`"
+
+Claude validates the key and writes it to the right place automatically based on which client you're using:
+
+- **Claude Code** → saved to `~/.claude.json` (applies to all your projects)
+- **Claude Desktop** → saved to `claude_desktop_config.json` (platform-specific path)
+- **Other MCP clients** → the key is validated, but you'll need to set the `KEPLR_RPC_API_KEY` environment variable in your client's MCP config manually. Claude will show you the exact instructions.
+
+After the key is saved, restart your client for it to take effect:
+
+- **Claude Code**: Exit the current session and start a new one
+- **Claude Desktop**: Quit and reopen the app
+- **Other clients**: Restart the MCP server per your client's instructions
+
+## 3. Add Credits
+
+Keplr Infra uses credit-based billing. You can add credits in two ways:
+
+**Option A — Ask Claude:**
+
+> "I want to top up my Keplr Infra credits"
+
+Claude will provide a Stripe payment link.
+
+**Option B — From the dashboard:**
+
+On [api.keplr.app](https://api.keplr.app), click the **Top Up** button in the top-right corner. This opens a Stripe checkout page. After payment, check that the credit count next to the Top Up button has increased.
+
+## 4. Verify Everything Works
+
+Ask Claude to check your usage:
+
+> "Show my Keplr Infra API usage"
+
+You should see your credit balance and usage stats. If the balance matches what you topped up, the key is configured correctly.
+
+Now try a real query — for example, checking your balances:
+
+> "Show my balances on Cosmos Hub"
+
+Then check usage again:
+
+> "How much API credit did I use?"
+
+If the credit amount decreased, your requests are routing through Keplr Infra. You're all set.
+
+## Next Steps
+
+- [Check your balances](/guides/cosmos/balances)
+- [Keplr Infra API reference](/reference/tools/keplr-rpc) — detailed tool documentation

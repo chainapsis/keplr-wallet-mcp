@@ -34,7 +34,7 @@ Pick your AI client below and follow the steps.
 Run this in your terminal:
 
 ```bash
-claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp
+claude mcp add --scope user keplr -- npx @keplr-wallet/keplr-wallet-mcp@latest
 ```
 
 If you're already in a session, type `/mcp` and connect to Keplr — or start a new session.
@@ -63,7 +63,7 @@ If the file is **empty or doesn't exist**, paste this entire block:
   "mcpServers": {
     "keplr": {
       "command": "npx",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+      "args": ["@keplr-wallet/keplr-wallet-mcp@latest"]
     }
   }
 }
@@ -96,11 +96,11 @@ First, install the package:
 :::code-group
 
 ```bash [npm]
-npm install @keplr-wallet/keplr-wallet-mcp
+npm install @keplr-wallet/keplr-wallet-mcp@latest
 ```
 
 ```bash [pnpm]
-pnpm add @keplr-wallet/keplr-wallet-mcp
+pnpm add @keplr-wallet/keplr-wallet-mcp@latest
 ```
 
 :::
@@ -112,7 +112,7 @@ Then configure your MCP client to run the server. The command depends on your se
   "mcpServers": {
     "keplr": {
       "command": "npx",
-      "args": ["@keplr-wallet/keplr-wallet-mcp"]
+      "args": ["@keplr-wallet/keplr-wallet-mcp@latest"]
     }
   }
 }
@@ -144,7 +144,7 @@ If everything is working, Claude will respond with a list of wallet tools (65+ t
 ### Global Install
 
 ```bash
-pnpm add -g @keplr-wallet/keplr-wallet-mcp
+pnpm add -g @keplr-wallet/keplr-wallet-mcp@latest
 ```
 
 Then use `"command": "keplr-wallet-mcp"` in your MCP client config.

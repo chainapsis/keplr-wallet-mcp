@@ -23,7 +23,6 @@ const COSMWASM_CHAINS = new Set([
   "stargaze-1",
   "injective-1",
   "columbus-5",
-  "sei-pacific-1",
 ]);
 
 /**

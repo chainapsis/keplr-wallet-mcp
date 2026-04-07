@@ -292,15 +292,6 @@ export const TOOL_REGISTRY: ToolEntry[] = [
     risk: "safe",
     keywords: ["ibc", "channels", "list", "transfer", "cosmos"],
   },
-  {
-    name: "get-transaction-history",
-    description: "Query transaction history",
-    category: "cosmos-query",
-    ecosystem: "cosmos",
-    risk: "safe",
-    keywords: ["transaction", "history", "list", "recent"],
-  },
-
   // ─── Cosmos Transaction (cosmos) ─────────────────────────────
   {
     name: "send-tokens",
