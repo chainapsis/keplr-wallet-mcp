@@ -584,12 +584,18 @@ export class CosmosClient implements EcosystemClient {
       }
 
       const retryGas = Math.ceil(gasUsedForRetry * 1.4);
-      const parsedGasPrice = parseGasPrice(getGasPrice(chain));
+      const originalDenom = fee !== "auto" ? fee.amount[0]?.denom : undefined;
+      const customGasPrice = originalDenom
+        ? getGasPriceForDenom(chain, originalDenom)
+        : undefined;
+      const parsedGasPrice = parseGasPrice(
+        customGasPrice ?? getGasPrice(chain),
+      );
       const retryFee = {
         gas: retryGas.toString(),
         amount: [
           {
-            denom: parsedGasPrice.denom,
+            denom: originalDenom ?? parsedGasPrice.denom,
             amount: Math.ceil(retryGas * parsedGasPrice.amount).toString(),
           },
         ],
