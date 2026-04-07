@@ -22,16 +22,17 @@ Tell Claude:
 
 > "Set up my Keplr Infra API key: `keplr_xxxxxxxxxxxx`"
 
-Claude will validate the key and save it to `~/.claude.json`. This applies the key to all your projects.
+Claude validates the key and writes it to the right place automatically based on which client you're using:
 
-:::warning
-Make sure the key is saved to `~/.claude.json` (user scope). If Claude asks which scope to use, choose **user**.
-:::
+- **Claude Code** → saved to `~/.claude.json` (applies to all your projects)
+- **Claude Desktop** → saved to `claude_desktop_config.json` (platform-specific path)
+- **Other MCP clients** → the key is validated, but you'll need to set the `KEPLR_RPC_API_KEY` environment variable in your client's MCP config manually. Claude will show you the exact instructions.
 
-After the key is saved, restart your client for the key to take effect:
+After the key is saved, restart your client for it to take effect:
 
 - **Claude Code**: Exit the current session and start a new one
 - **Claude Desktop**: Quit and reopen the app
+- **Other clients**: Restart the MCP server per your client's instructions
 
 ## 3. Add Credits
 
