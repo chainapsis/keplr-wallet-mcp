@@ -7,7 +7,7 @@ export default defineConfig({
   logoUrl: "/logo.svg",
   iconUrl: "/favicon.ico",
   ogImageUrl: {
-    "/": "/og-mcp.png",
+    "/": "https://mcp.keplr.app/docs/og-mcp.png",
   },
   rootDir: ".",
   basePath: process.env.VOCS_BASE_PATH || "/",
