@@ -27,6 +27,11 @@ vi.mock("node:os", async (importOriginal) => {
   return { ...actual, homedir: vi.fn(actual.homedir) };
 });
 
+const mockGetRpcResolver = vi.fn();
+vi.mock("../../rpc/resolver.js", () => ({
+  getRpcResolver: (...args: unknown[]) => mockGetRpcResolver(...args),
+}));
+
 // Dynamic import to avoid hoisting issues
 let keplrRpcPlugin: typeof import("../../plugins/keplr-rpc.js").default;
 
@@ -60,6 +65,8 @@ beforeEach(async () => {
     storePendingAction: vi.fn().mockReturnValue("mock-confirmation-token"),
   } as never);
   mockFetch.mockReset();
+  // Default: no API key configured in resolver
+  mockGetRpcResolver.mockReturnValue({ apiKey: undefined, hasApiKey: false });
   await keplrRpcPlugin.register(server as never, store as never);
 });
 
@@ -642,5 +649,57 @@ describe("HTTP error mapping", () => {
     expect((parsed as { message: string }).message).toMatch(
       /server|500|error/i,
     );
+  });
+});
+
+// ─── API key auto-resolution ───────────────────────────────────────
+describe("API key auto-resolution", () => {
+  it("should auto-detect API key from resolver when not provided", async () => {
+    mockGetRpcResolver.mockReturnValue({
+      apiKey: "keplr_from_env",
+      hasApiKey: true,
+    });
+    mockFetch.mockResolvedValueOnce(
+      okJson({ balance: 1000000, usage: { last7Days: {}, byChain: [] } }),
+    );
+
+    const tool = server.getTool("keplr_api_get_usage_summary")!;
+    const result = await tool.handler({});
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("balance", 1000000);
+
+    // Verify the resolved key was used in the fetch URL
+    const fetchUrl = mockFetch.mock.calls[0][0] as string;
+    expect(fetchUrl).toContain("keplr_from_env");
+  });
+
+  it("should prefer explicit API key over configured key", async () => {
+    mockGetRpcResolver.mockReturnValue({
+      apiKey: "keplr_from_env",
+      hasApiKey: true,
+    });
+    mockFetch.mockResolvedValueOnce(
+      okJson({ balance: 500000, usage: { last7Days: {}, byChain: [] } }),
+    );
+
+    const tool = server.getTool("keplr_api_get_usage_summary")!;
+    const result = await tool.handler({ apiKey: "keplr_explicit" });
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("balance", 500000);
+
+    const fetchUrl = mockFetch.mock.calls[0][0] as string;
+    expect(fetchUrl).toContain("keplr_explicit");
+    expect(fetchUrl).not.toContain("keplr_from_env");
+  });
+
+  it("should return setup guide when no API key is available", async () => {
+    mockGetRpcResolver.mockReturnValue({ apiKey: undefined, hasApiKey: false });
+
+    const tool = server.getTool("keplr_api_get_usage_summary")!;
+    const result = await tool.handler({});
+    const parsed = parseToolResponse(result);
+    expect(parsed).toHaveProperty("status", "setup_required");
+    expect(parsed).toHaveProperty("setupGuide");
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
