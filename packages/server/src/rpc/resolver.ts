@@ -30,6 +30,11 @@ export class RpcResolver {
     return !!this.config.apiKey;
   }
 
+  /** The configured API key, if any. */
+  get apiKey(): string | undefined {
+    return this.config.apiKey;
+  }
+
   /**
    * Resolve the best RPC endpoint for a given chain ID.
    * Returns an object compatible with CosmJS HttpEndpoint interface.

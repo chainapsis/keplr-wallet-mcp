@@ -2,6 +2,7 @@ import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { z } from "zod";
 import type { SuggestedAction } from "../errors.js";
 import { classifyError, formatClassifiedError } from "../errors.js";
+import { getRpcResolver } from "../rpc/resolver.js";
 import type { KeplrPlugin } from "./types.js";
 
 // ─── HTTP Client ─────────────────────────────────────────────────────
@@ -193,17 +194,28 @@ const keplrRpcPlugin: KeplrPlugin = {
   name: "keplr-rpc",
 
   register(server, _store) {
+    /** Resolve API key: explicit param → configured key (env / config file). */
+    const resolveApiKey = (explicit?: string): string => {
+      const key = explicit || getRpcResolver().apiKey;
+      if (!key) {
+        throw new KeplrApiError(403, "No API key configured");
+      }
+      return key;
+    };
+
     // ── keplr_api_configure_key ────────────────────────────────────────
     server.registerTool(
       "keplr_api_configure_key",
       {
         description:
-          "Configure a Keplr Infra API key. Validates the key, then saves it to the MCP configuration file " +
+          "Configure a Keplr Infra API key (get one at https://api.keplr.app). Validates the key, then saves it to the MCP configuration file " +
           "based on the detected client. Restart required after configuration.",
         inputSchema: {
           apiKey: z
             .string()
-            .describe("Keplr Infra API key (starts with 'keplr_')"),
+            .describe(
+              "Keplr Infra API key from https://api.keplr.app (starts with 'keplr_')",
+            ),
           scope: z
             .enum(["user", "project"])
             .optional()
@@ -482,12 +494,18 @@ const keplrRpcPlugin: KeplrPlugin = {
       {
         description: "Validate an existing Keplr Infra API key",
         inputSchema: {
-          apiKey: z.string().describe("API key to validate"),
+          apiKey: z
+            .string()
+            .optional()
+            .describe(
+              "API key to validate (auto-detected from configured key if omitted)",
+            ),
         },
         annotations: { readOnlyHint: true },
       },
-      async ({ apiKey }) => {
+      async ({ apiKey: explicitKey }) => {
         try {
+          const apiKey = resolveApiKey(explicitKey);
           const data = await keplrApiFetch<Record<string, unknown>>({
             method: "POST",
             path: "/v1/keys/validate",
@@ -536,12 +554,16 @@ const keplrRpcPlugin: KeplrPlugin = {
       {
         description: "Get a Stripe payment link to add credits",
         inputSchema: {
-          apiKey: z.string().describe("API key"),
+          apiKey: z
+            .string()
+            .optional()
+            .describe("API key (auto-detected from configured key if omitted)"),
         },
         annotations: { readOnlyHint: true },
       },
-      async ({ apiKey }) => {
+      async ({ apiKey: explicitKey }) => {
         try {
+          const apiKey = resolveApiKey(explicitKey);
           const data = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: "/v1/credits/payment-link",
@@ -582,12 +604,16 @@ const keplrRpcPlugin: KeplrPlugin = {
         description:
           "Get usage summary (balance, requests, credits, per-chain breakdown)",
         inputSchema: {
-          apiKey: z.string().describe("API key"),
+          apiKey: z
+            .string()
+            .optional()
+            .describe("API key (auto-detected from configured key if omitted)"),
         },
         annotations: { readOnlyHint: true },
       },
-      async ({ apiKey }) => {
+      async ({ apiKey: explicitKey }) => {
         try {
+          const apiKey = resolveApiKey(explicitKey);
           const raw = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: `/v1/usage/${apiKey}/summary`,
@@ -633,7 +659,10 @@ const keplrRpcPlugin: KeplrPlugin = {
         description:
           "Get usage history with optional date/chain/endpoint filters",
         inputSchema: {
-          apiKey: z.string().describe("API key"),
+          apiKey: z
+            .string()
+            .optional()
+            .describe("API key (auto-detected from configured key if omitted)"),
           startDate: z.string().optional().describe("Start date (ISO format)"),
           endDate: z.string().optional().describe("End date (ISO format)"),
           chain: z.string().optional().describe("Filter by chain ID"),
@@ -644,8 +673,15 @@ const keplrRpcPlugin: KeplrPlugin = {
         },
         annotations: { readOnlyHint: true },
       },
-      async ({ apiKey, startDate, endDate, chain, endpointType }) => {
+      async ({
+        apiKey: explicitKey,
+        startDate,
+        endDate,
+        chain,
+        endpointType,
+      }) => {
         try {
+          const apiKey = resolveApiKey(explicitKey);
           const query: Record<string, string> = { clientType: "keplr-mcp" };
           if (startDate) query.startDate = startDate;
           if (endDate) query.endDate = endDate;
@@ -689,12 +725,16 @@ const keplrRpcPlugin: KeplrPlugin = {
           "Get Keplr Infra credit transaction history (top-ups, adjustments). " +
           "Use this after payment to verify the exact credit amount added instead of comparing usage summaries.",
         inputSchema: {
-          apiKey: z.string().describe("API key"),
+          apiKey: z
+            .string()
+            .optional()
+            .describe("API key (auto-detected from configured key if omitted)"),
         },
         annotations: { readOnlyHint: true },
       },
-      async ({ apiKey }) => {
+      async ({ apiKey: explicitKey }) => {
         try {
+          const apiKey = resolveApiKey(explicitKey);
           const raw = await keplrApiFetch<Record<string, unknown>>({
             method: "GET",
             path: `/v1/credits/${apiKey}/history`,
