@@ -3,6 +3,10 @@
   "version": "0.0.7",
   "license": "MIT",
   "description": "Keplr MCP Server — AI agents can interact with Cosmos chains via Model Context Protocol",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chainapsis/keplr-wallet-mcp"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
