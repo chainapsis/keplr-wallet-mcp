@@ -17,8 +17,6 @@ Tools for interacting with CosmWasm smart contracts.
 CosmWasm is supported on:
 
 - Osmosis (`osmosis-1`)
-- Neutron (`neutron-1`)
-- Juno (`juno-1`)
 - Stargaze (`stargaze-1`)
 - Injective (`injective-1`)
 - Terra Classic (`columbus-5`)
@@ -40,13 +38,13 @@ Query contract state (read-only).
 
 ```json
 {
-  "chainId": "juno-1",
-  "contractAddress": "juno1token...",
-  "query": { "balance": { "address": "juno1user..." } },
+  "chainId": "osmosis-1",
+  "contractAddress": "osmo1token...",
+  "query": { "balance": { "address": "osmo1user..." } },
   "result": { ... },
   "suggestedActions": [
-    { "tool": "cosmwasm-contract-info", "reason": "View contract metadata", "params": { "chain": "juno-1", "contractAddress": "juno1token..." }, "priority": 1 },
-    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "juno-1", "contractAddress": "juno1token..." }, "priority": 2 }
+    { "tool": "cosmwasm-contract-info", "reason": "View contract metadata", "params": { "chain": "osmosis-1", "contractAddress": "osmo1token..." }, "priority": 1 },
+    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "osmosis-1", "contractAddress": "osmo1token..." }, "priority": 2 }
   ]
 }
 ```
@@ -55,15 +53,15 @@ Query contract state (read-only).
 
 ```json
 Request: {
-  "chain": "juno-1",
-  "contractAddress": "juno1token...",
-  "queryMsg": "{\"balance\":{\"address\":\"juno1user...\"}}"
+  "chain": "osmosis-1",
+  "contractAddress": "osmo1token...",
+  "queryMsg": "{\"balance\":{\"address\":\"osmo1user...\"}}"
 }
 
 Response: {
-  "chainId": "juno-1",
-  "contractAddress": "juno1token...",
-  "query": { "balance": { "address": "juno1user..." } },
+  "chainId": "osmosis-1",
+  "contractAddress": "osmo1token...",
+  "query": { "balance": { "address": "osmo1user..." } },
   "result": {
     "balance": "1000000"
   },
@@ -108,18 +106,18 @@ Get contract metadata including code ID, admin, and label.
 
 ```json
 {
-  "chainId": "juno-1",
+  "chainId": "osmosis-1",
   "contract": {
-    "address": "juno1...",
+    "address": "osmo1...",
     "codeId": "123",
-    "creator": "juno1...",
-    "admin": "juno1...",
+    "creator": "osmo1...",
+    "admin": "osmo1...",
     "label": "My Token Contract",
     "ibcPortId": null
   },
   "suggestedActions": [
-    { "tool": "cosmwasm-query", "reason": "Query the contract state", "params": { "chain": "juno-1", "contractAddress": "juno1..." }, "priority": 1 },
-    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "juno-1", "contractAddress": "juno1..." }, "priority": 2 }
+    { "tool": "cosmwasm-query", "reason": "Query the contract state", "params": { "chain": "osmosis-1", "contractAddress": "osmo1..." }, "priority": 1 },
+    { "tool": "cosmwasm-execute", "reason": "Execute a contract action", "params": { "chain": "osmosis-1", "contractAddress": "osmo1..." }, "priority": 2 }
   ]
 }
 ```
@@ -133,19 +131,19 @@ List CosmWasm contract addresses by code ID. Use this to discover contracts depl
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `chain` | `string` | Yes | Chain ID or name (e.g., 'osmosis-1', 'neutron-1', 'juno-1') |
+| `chain` | `string` | Yes | Chain ID or name (e.g., 'osmosis-1', 'stargaze-1', 'injective-1') |
 | `codeId` | `string` | Yes | Code ID to search contracts for (numeric, e.g., '1', '100') |
 
 ### Response
 
 ```json
 {
-  "chainId": "neutron-1",
+  "chainId": "osmosis-1",
   "codeId": "100",
   "totalContracts": 5,
   "contracts": [
-    "neutron1contract1...",
-    "neutron1contract2..."
+    "osmo1contract1...",
+    "osmo1contract2..."
   ],
   "suggestedActions": [
     { "tool": "cosmwasm-contract-info", "reason": "View metadata for a discovered contract", "priority": 1 }
@@ -176,13 +174,13 @@ Execute a contract function (requires confirmation).
   "confirmationToken": "...",
   "preview": {
     "action": "Execute CosmWasm Contract",
-    "chain": "juno-1",
-    "chainName": "Juno",
-    "contract": "juno1token...",
+    "chain": "osmosis-1",
+    "chainName": "Osmosis",
+    "contract": "osmo1token...",
     "message": "transfer",
-    "messageDetails": { "transfer": { "recipient": "juno1recipient...", "amount": "1000000" } },
+    "messageDetails": { "transfer": { "recipient": "osmo1recipient...", "amount": "1000000" } },
     "funds": [],
-    "sender": "juno1sender..."
+    "sender": "osmo1sender..."
   },
   "instructions": "To execute this contract action, call the confirm-action tool with confirmationToken: \"...\"",
   "warnings": [
@@ -196,9 +194,9 @@ Execute a contract function (requires confirmation).
 
 ```json
 Request: {
-  "chain": "juno-1",
-  "contractAddress": "juno1token...",
-  "executeMsg": "{\"transfer\":{\"recipient\":\"juno1recipient...\",\"amount\":\"1000000\"}}"
+  "chain": "osmosis-1",
+  "contractAddress": "osmo1token...",
+  "executeMsg": "{\"transfer\":{\"recipient\":\"osmo1recipient...\",\"amount\":\"1000000\"}}"
 }
 ```
 
@@ -206,9 +204,9 @@ Request: {
 
 ```json
 Request: {
-  "chain": "juno-1",
-  "contractAddress": "juno1token...",
-  "executeMsg": "{\"send\":{\"contract\":\"juno1staking...\",\"amount\":\"1000000\",\"msg\":\"eyJzdGFrZSI6e319\"}}"
+  "chain": "osmosis-1",
+  "contractAddress": "osmo1token...",
+  "executeMsg": "{\"send\":{\"contract\":\"osmo1staking...\",\"amount\":\"1000000\",\"msg\":\"eyJzdGFrZSI6e319\"}}"
 }
 ```
 
@@ -248,14 +246,14 @@ Deploy a new instance of an uploaded contract.
   "confirmationToken": "...",
   "preview": {
     "action": "Instantiate CosmWasm Contract",
-    "chain": "juno-1",
-    "chainName": "Juno",
+    "chain": "osmosis-1",
+    "chainName": "Osmosis",
     "codeId": "123",
     "label": "My New Token",
-    "admin": "juno1...",
+    "admin": "osmo1...",
     "instantiateMsg": { "name": "My Token", "symbol": "MYT", "decimals": 6 },
     "funds": [],
-    "sender": "juno1sender..."
+    "sender": "osmo1sender..."
   },
   "instructions": "To instantiate this contract, call the confirm-action tool with confirmationToken: \"...\"",
   "warnings": [
@@ -274,11 +272,11 @@ Deploy a new instance of an uploaded contract.
   "gasUsed": "250000",
   "gasWanted": "400000",
   "events": [...],
-  "contractAddress": "juno1newcontract...",
+  "contractAddress": "osmo1newcontract...",
   "suggestedActions": [
-    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "params": { "chain": "juno-1", "txHash": "ABC123..." }, "priority": 1 },
-    { "tool": "get-balances", "reason": "Check updated token balances", "params": { "chain": "juno-1" }, "priority": 2 },
-    { "tool": "get-staking-info", "reason": "Check updated staking positions and rewards", "params": { "chain": "juno-1" }, "priority": 3 }
+    { "tool": "get-transaction-status", "reason": "Check transaction confirmation status", "params": { "chain": "osmosis-1", "txHash": "ABC123..." }, "priority": 1 },
+    { "tool": "get-balances", "reason": "Check updated token balances", "params": { "chain": "osmosis-1" }, "priority": 2 },
+    { "tool": "get-staking-info", "reason": "Check updated staking positions and rewards", "params": { "chain": "osmosis-1" }, "priority": 3 }
   ]
 }
 ```
@@ -287,11 +285,11 @@ Deploy a new instance of an uploaded contract.
 
 ```json
 Request: {
-  "chain": "juno-1",
+  "chain": "osmosis-1",
   "codeId": "1",
-  "instantiateMsg": "{\"name\":\"My Token\",\"symbol\":\"MYT\",\"decimals\":6,\"initial_balances\":[{\"address\":\"juno1...\",\"amount\":\"1000000000000\"}],\"mint\":{\"minter\":\"juno1...\"}}",
+  "instantiateMsg": "{\"name\":\"My Token\",\"symbol\":\"MYT\",\"decimals\":6,\"initial_balances\":[{\"address\":\"osmo1...\",\"amount\":\"1000000000000\"}],\"mint\":{\"minter\":\"osmo1...\"}}",
   "label": "My Token Contract",
-  "admin": "juno1..."
+  "admin": "osmo1..."
 }
 ```
 

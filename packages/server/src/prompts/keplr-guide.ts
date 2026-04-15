@@ -68,7 +68,6 @@ export const registerKeplrGuidePrompt = (server: McpServer): void => {
                 "## Chain ID Resolution",
                 "",
                 "Do NOT guess chain IDs — they change across upgrades and are often non-obvious:",
-                '- Nym → chain ID is "nyx"',
                 '- Terra → chain ID is "phoenix-1"',
                 '- Terra Classic → chain ID is "columbus-5"',
                 "",

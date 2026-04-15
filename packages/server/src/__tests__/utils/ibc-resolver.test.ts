@@ -12,7 +12,6 @@ vi.mock("../../chains/cosmos.js", () => ({
     const chains: Record<string, { chainId: string; chainName: string }> = {
       "osmosis-1": { chainId: "osmosis-1", chainName: "Osmosis" },
       "cosmoshub-4": { chainId: "cosmoshub-4", chainName: "Cosmos Hub" },
-      "juno-1": { chainId: "juno-1", chainName: "Juno" },
       "stargaze-1": { chainId: "stargaze-1", chainName: "Stargaze" },
     };
     return chains[chainId] ?? null;
@@ -108,7 +107,7 @@ const mockIbcChannels: IbcChannelResult[] = [
     counterpartyPortId: "transfer",
     connectionId: "connection-207",
     ordering: "UNORDERED",
-    counterpartyChainId: "juno-1",
+    counterpartyChainId: "stargaze-1",
   },
   {
     channelId: "channel-500",
@@ -303,7 +302,9 @@ describe("IBC Resolver", () => {
         "channel-207",
         "cosmoshub-4",
       );
-      expect(result).toBe("IBC transfer 100.5 OSMO to Juno (via channel-207)");
+      expect(result).toBe(
+        "IBC transfer 100.5 OSMO to Stargaze (via channel-207)",
+      );
     });
   });
 

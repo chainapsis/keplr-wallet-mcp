@@ -219,53 +219,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: [],
   },
-  "juno-1": {
-    rpc: "https://juno-rpc.polkachu.com",
-    rest: "https://juno-api.polkachu.com",
-    chainId: "juno-1",
-    chainName: "Juno",
-    stakeCurrency: {
-      coinDenom: "JUNO",
-      coinMinimalDenom: "ujuno",
-      coinDecimals: 6,
-      coinGeckoId: "juno-network",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("juno"),
-    currencies: [
-      {
-        coinDenom: "JUNO",
-        coinMinimalDenom: "ujuno",
-        coinDecimals: 6,
-        coinGeckoId: "juno-network",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "JUNO",
-        coinMinimalDenom: "ujuno",
-        coinDecimals: 6,
-        coinGeckoId: "juno-network",
-        gasPriceStep: {
-          low: 0.075,
-          average: 0.075,
-          high: 0.075,
-        },
-      },
-      {
-        coinDenom: "ATOM",
-        coinMinimalDenom:
-          "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
-        coinDecimals: 6,
-        gasPriceStep: {
-          low: 0.003,
-          average: 0.003,
-          high: 0.003,
-        },
-      },
-    ],
-    features: ["cosmwasm"],
-  },
   "noble-1": {
     rpc: "https://noble-rpc.polkachu.com",
     rest: "https://noble-api.polkachu.com",
@@ -359,96 +312,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
           low: 0.02,
           average: 0.02,
           high: 0.02,
-        },
-      },
-    ],
-    features: [],
-  },
-  "stride-1": {
-    rpc: "https://stride-rpc.polkachu.com",
-    rest: "https://stride-api.polkachu.com",
-    chainId: "stride-1",
-    chainName: "Stride",
-    stakeCurrency: {
-      coinDenom: "STRD",
-      coinMinimalDenom: "ustrd",
-      coinDecimals: 6,
-      coinGeckoId: "stride",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("stride"),
-    currencies: [
-      {
-        coinDenom: "STRD",
-        coinMinimalDenom: "ustrd",
-        coinDecimals: 6,
-        coinGeckoId: "stride",
-      },
-      {
-        coinDenom: "stATOM",
-        coinMinimalDenom: "stuatom",
-        coinDecimals: 6,
-        coinGeckoId: "stride-staked-atom",
-      },
-      {
-        coinDenom: "stOSMO",
-        coinMinimalDenom: "stuosmo",
-        coinDecimals: 6,
-        coinGeckoId: "stride-staked-osmo",
-      },
-      {
-        coinDenom: "stTIA",
-        coinMinimalDenom: "stutia",
-        coinDecimals: 6,
-        coinGeckoId: "stride-staked-tia",
-      },
-      {
-        coinDenom: "stDYDX",
-        coinMinimalDenom: "stadydx",
-        coinDecimals: 18,
-        coinGeckoId: "stride-staked-dydx",
-      },
-      {
-        coinDenom: "stINJ",
-        coinMinimalDenom: "stinj",
-        coinDecimals: 18,
-        coinGeckoId: "stride-staked-injective",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "STRD",
-        coinMinimalDenom: "ustrd",
-        coinDecimals: 6,
-        coinGeckoId: "stride",
-        gasPriceStep: {
-          low: 0.005,
-          average: 0.005,
-          high: 0.05,
-        },
-      },
-      {
-        coinDenom: "ATOM",
-        coinMinimalDenom:
-          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-        coinDecimals: 6,
-        coinGeckoId: "cosmos",
-        gasPriceStep: {
-          low: 0.0001,
-          average: 0.001,
-          high: 0.01,
-        },
-      },
-      {
-        coinDenom: "TIA",
-        coinMinimalDenom:
-          "ibc/BF3B4F53F3694B66E13C23107C84B6485BD2B96296BB7EC680EA77BBA75B4801",
-        coinDecimals: 6,
-        coinGeckoId: "celestia",
-        gasPriceStep: {
-          low: 0.01,
-          average: 0.01,
-          high: 0.01,
         },
       },
     ],
@@ -667,49 +530,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
       },
     ],
     features: ["secretwasm", "ibc-go", "ibc-transfer"],
-  },
-  "crypto-org-chain-mainnet-1": {
-    rpc: "https://rpc.cosmos.directory/cryptoorgchain",
-    rest: "https://rest.cosmos.directory/cryptoorgchain",
-    chainId: "crypto-org-chain-mainnet-1",
-    chainName: "Crypto.org",
-    stakeCurrency: {
-      coinDenom: "CRO",
-      coinMinimalDenom: "basecro",
-      coinDecimals: 8,
-      coinGeckoId: "crypto-com-chain",
-    },
-    bip44: { coinType: 394 },
-    bech32Config: {
-      bech32PrefixAccAddr: "cro",
-      bech32PrefixAccPub: "cropub",
-      bech32PrefixValAddr: "crocncl",
-      bech32PrefixValPub: "crocnclpub",
-      bech32PrefixConsAddr: "crocnclcons",
-      bech32PrefixConsPub: "crocnclconspub",
-    },
-    currencies: [
-      {
-        coinDenom: "CRO",
-        coinMinimalDenom: "basecro",
-        coinDecimals: 8,
-        coinGeckoId: "crypto-com-chain",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "CRO",
-        coinMinimalDenom: "basecro",
-        coinDecimals: 8,
-        coinGeckoId: "crypto-com-chain",
-        gasPriceStep: {
-          low: 0.025,
-          average: 0.03,
-          high: 0.04,
-        },
-      },
-    ],
-    features: [],
   },
   "irishub-1": {
     rpc: "https://rpc.cosmos.directory/irisnet",
@@ -1132,79 +952,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: [],
   },
-  "kava_2222-10": {
-    rpc: "https://kava-rpc.polkachu.com",
-    rest: "https://kava-api.polkachu.com",
-    chainId: "kava_2222-10",
-    chainName: "Kava",
-    stakeCurrency: {
-      coinDenom: "KAVA",
-      coinMinimalDenom: "ukava",
-      coinDecimals: 6,
-      coinGeckoId: "kava",
-    },
-    bip44: { coinType: 459 },
-    bech32Config: Bech32Address.defaultBech32Config("kava"),
-    currencies: [
-      {
-        coinDenom: "KAVA",
-        coinMinimalDenom: "ukava",
-        coinDecimals: 6,
-        coinGeckoId: "kava",
-      },
-      {
-        coinDenom: "SWP",
-        coinMinimalDenom: "swp",
-        coinDecimals: 6,
-        coinGeckoId: "kava-swap",
-      },
-      {
-        coinDenom: "USDX",
-        coinMinimalDenom: "usdx",
-        coinDecimals: 6,
-        coinGeckoId: "usdx",
-      },
-      {
-        coinDenom: "HARD",
-        coinMinimalDenom: "hard",
-        coinDecimals: 6,
-      },
-      {
-        coinDenom: "BNB",
-        coinMinimalDenom: "bnb",
-        coinDecimals: 8,
-      },
-      {
-        coinDenom: "BTCB",
-        coinMinimalDenom: "btcb",
-        coinDecimals: 8,
-      },
-      {
-        coinDenom: "BUSD",
-        coinMinimalDenom: "busd",
-        coinDecimals: 8,
-      },
-      {
-        coinDenom: "XRPB",
-        coinMinimalDenom: "xrpb",
-        coinDecimals: 8,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "KAVA",
-        coinMinimalDenom: "ukava",
-        coinDecimals: 6,
-        coinGeckoId: "kava",
-        gasPriceStep: {
-          low: 0.05,
-          average: 0.1,
-          high: 0.25,
-        },
-      },
-    ],
-    features: [],
-  },
   "quicksilver-2": {
     rpc: "https://quicksilver-rpc.polkachu.com",
     rest: "https://quicksilver-api.polkachu.com",
@@ -1272,76 +1019,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
           low: 0.02,
           average: 0.02,
           high: 0.04,
-        },
-      },
-    ],
-    features: [],
-  },
-  "kyve-1": {
-    rpc: "https://kyve-rpc.polkachu.com",
-    rest: "https://kyve-api.polkachu.com",
-    chainId: "kyve-1",
-    chainName: "KYVE",
-    stakeCurrency: {
-      coinDenom: "KYVE",
-      coinMinimalDenom: "ukyve",
-      coinDecimals: 6,
-      coinGeckoId: "kyve-network",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("kyve"),
-    currencies: [
-      {
-        coinDenom: "KYVE",
-        coinMinimalDenom: "ukyve",
-        coinDecimals: 6,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "KYVE",
-        coinMinimalDenom: "ukyve",
-        coinDecimals: 6,
-        gasPriceStep: {
-          low: 62.5,
-          average: 80,
-          high: 125,
-        },
-      },
-    ],
-    features: [],
-  },
-  "neutron-1": {
-    rpc: "https://neutron-rpc.polkachu.com",
-    rest: "https://neutron-api.polkachu.com",
-    chainId: "neutron-1",
-    chainName: "Neutron",
-    stakeCurrency: {
-      coinDenom: "NTRN",
-      coinMinimalDenom: "untrn",
-      coinDecimals: 6,
-      coinGeckoId: "neutron-3",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("neutron"),
-    currencies: [
-      {
-        coinDenom: "NTRN",
-        coinMinimalDenom: "untrn",
-        coinDecimals: 6,
-        coinGeckoId: "neutron-3",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "NTRN",
-        coinMinimalDenom: "untrn",
-        coinDecimals: 6,
-        coinGeckoId: "neutron-3",
-        gasPriceStep: {
-          low: 0.0053,
-          average: 0.0053,
-          high: 0.0053,
         },
       },
     ],
@@ -1452,40 +1129,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
       },
     ],
     features: ["cosmwasm"],
-  },
-  "ssc-1": {
-    rpc: "https://saga-rpc.polkachu.com",
-    rest: "https://saga-api.polkachu.com",
-    chainId: "ssc-1",
-    chainName: "Saga",
-    stakeCurrency: {
-      coinDenom: "SAGA",
-      coinMinimalDenom: "usaga",
-      coinDecimals: 6,
-      coinGeckoId: "saga-2",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("saga"),
-    currencies: [
-      {
-        coinDenom: "SAGA",
-        coinMinimalDenom: "usaga",
-        coinDecimals: 6,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "SAGA",
-        coinMinimalDenom: "usaga",
-        coinDecimals: 6,
-        gasPriceStep: {
-          low: 0.01,
-          average: 0.025,
-          high: 0.04,
-        },
-      },
-    ],
-    features: [],
   },
   "seda-1": {
     rpc: "https://seda-rpc.polkachu.com",
@@ -1598,44 +1241,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: ["eth-address-gen", "eth-key-sign"],
   },
-  "lava-mainnet-1": {
-    rpc: "https://lava.tendermintrpc.lava.build",
-    rest: "https://lava.rest.lava.build",
-    chainId: "lava-mainnet-1",
-    chainName: "Lava",
-    stakeCurrency: {
-      coinDenom: "LAVA",
-      coinMinimalDenom: "ulava",
-      coinDecimals: 6,
-      coinGeckoId: "lava-network",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("lava@"),
-    currencies: [
-      {
-        coinDenom: "LAVA",
-        coinMinimalDenom: "ulava",
-        coinDecimals: 6,
-        coinGeckoId: "lava-network",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "LAVA",
-        coinMinimalDenom: "ulava",
-        coinDecimals: 6,
-        coinGeckoId: "lava-network",
-        gasPriceStep: {
-          low: 0.00002,
-          average: 0.025,
-          high: 0.05,
-        },
-      },
-    ],
-    features: [],
-  },
-  // TODO: Need a mechanism to dynamically sync chain config (currency, fee denom, etc.) from an external registry.
-  // Currently hardcoded, so denom migrations (e.g., uom → amantra) require manual updates.
   "mantra-1": {
     rpc: "https://mantra-rpc.polkachu.com",
     rest: "https://mantra-api.polkachu.com",
@@ -1988,49 +1593,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
     ],
     features: [],
   },
-  "xrplevm_1440000-1": {
-    rpc: "https://rpc-xrplevm.keplr.app",
-    rest: "https://lcd-xrplevm.keplr.app",
-    chainId: "xrplevm_1440000-1",
-    chainName: "XRPL EVM",
-    stakeCurrency: {
-      coinDenom: "XRP",
-      coinMinimalDenom: "axrp",
-      coinDecimals: 18,
-      coinGeckoId: "ripple",
-    },
-    bip44: { coinType: 60 },
-    bech32Config: {
-      bech32PrefixAccAddr: "ethm",
-      bech32PrefixAccPub: "ethmpub",
-      bech32PrefixValAddr: "ethmvaloper",
-      bech32PrefixValPub: "ethmvaloperpub",
-      bech32PrefixConsAddr: "ethmvalcons",
-      bech32PrefixConsPub: "ethmvalcons",
-    },
-    currencies: [
-      {
-        coinDenom: "XRP",
-        coinMinimalDenom: "axrp",
-        coinDecimals: 18,
-        coinGeckoId: "ripple",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "XRP",
-        coinMinimalDenom: "axrp",
-        coinDecimals: 18,
-        coinGeckoId: "ripple",
-        gasPriceStep: {
-          low: 200000000000,
-          average: 250000000000,
-          high: 400000000000,
-        },
-      },
-    ],
-    features: ["eth-address-gen", "eth-key-sign", "axelar-evm-bridge"],
-  },
   "lumera-mainnet-1": {
     rpc: "https://lumera-rpc.polkachu.com",
     rest: "https://lumera-api.polkachu.com",
@@ -2060,48 +1622,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
           low: 0.025,
           average: 0.025,
           high: 0.025,
-        },
-      },
-    ],
-    features: ["cosmwasm"],
-  },
-  "zigchain-1": {
-    rpc: "https://zigchain-rpc.polkachu.com",
-    rest: "https://zigchain-api.polkachu.com",
-    chainId: "zigchain-1",
-    chainName: "ZIGChain",
-    stakeCurrency: {
-      coinDenom: "ZIG",
-      coinMinimalDenom: "uzig",
-      coinDecimals: 6,
-      coinGeckoId: "zignaly",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("zig"),
-    currencies: [
-      {
-        coinDenom: "ZIG",
-        coinMinimalDenom: "uzig",
-        coinDecimals: 6,
-        coinGeckoId: "zignaly",
-      },
-      {
-        coinDenom: "stzig",
-        coinMinimalDenom:
-          "coin.zig109f7g2rzl2aqee7z6gffn8kfe9cpqx0mjkk7ethmx8m2hq4xpe9snmaam2.stzig",
-        coinDecimals: 6,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "ZIG",
-        coinMinimalDenom: "uzig",
-        coinDecimals: 6,
-        coinGeckoId: "zignaly",
-        gasPriceStep: {
-          low: 0.0025,
-          average: 0.025,
-          high: 0.05,
         },
       },
     ],
@@ -2138,57 +1658,6 @@ export const BUILTIN_CHAINS: Record<string, ChainInfo> = {
           low: 1,
           average: 1,
           high: 1,
-        },
-      },
-    ],
-    features: ["cosmwasm"],
-  },
-  nyx: {
-    rpc: "https://rpc.cosmos.directory/nyx",
-    rest: "https://rest.cosmos.directory/nyx",
-    chainId: "nyx",
-    chainName: "Nym",
-    stakeCurrency: {
-      coinDenom: "NYM",
-      coinMinimalDenom: "unym",
-      coinDecimals: 6,
-      coinGeckoId: "nym",
-    },
-    bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("n"),
-    currencies: [
-      {
-        coinDenom: "NYM",
-        coinMinimalDenom: "unym",
-        coinDecimals: 6,
-        coinGeckoId: "nym",
-      },
-      {
-        coinDenom: "NYX",
-        coinMinimalDenom: "unyx",
-        coinDecimals: 6,
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "NYM",
-        coinMinimalDenom: "unym",
-        coinDecimals: 6,
-        coinGeckoId: "nym",
-        gasPriceStep: {
-          low: 0.025,
-          average: 0.025,
-          high: 0.04,
-        },
-      },
-      {
-        coinDenom: "NYX",
-        coinMinimalDenom: "unyx",
-        coinDecimals: 6,
-        gasPriceStep: {
-          low: 0.025,
-          average: 0.025,
-          high: 0.04,
         },
       },
     ],

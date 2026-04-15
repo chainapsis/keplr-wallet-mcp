@@ -70,16 +70,6 @@ describe("E2E: CosmosClient address derivation by chain", () => {
     expect(address).toBe("inj1npvwllfr9dqr8erajqqr6s0vxnk2ak55re90dz");
   });
 
-  it("XRPL EVM — coinType 60, eth-address-gen", async () => {
-    const chain = getChainConfig("xrplevm_1440000-1");
-    expect(chain?.bip44.coinType).toBe(60);
-    expect(chain?.features).toContain("eth-address-gen");
-
-    const address = await deriveAddress("xrplevm_1440000-1");
-    console.log(`  xrplevm_1440000-1: ${address}`);
-    expect(address).toBe("ethm1npvwllfr9dqr8erajqqr6s0vxnk2ak55j7ufuc");
-  });
-
   it("Dymension — coinType 60, eth-address-gen", async () => {
     const chain = getChainConfig("dymension_1100-1");
     expect(chain?.bip44.coinType).toBe(60);

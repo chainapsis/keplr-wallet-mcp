@@ -38,10 +38,10 @@ const SAMPLE_ASSETS: SkipAsset[] = [
     recommended_symbol: "allBTC",
   },
   {
-    denom: "ibc/JUNO_NETA_IBC_HASH",
+    denom: "ibc/STARS_NETA_IBC_HASH",
     chain_id: "osmosis-1",
-    origin_denom: "cw20:juno1...",
-    origin_chain_id: "juno-1",
+    origin_denom: "cw20:stars1...",
+    origin_chain_id: "stargaze-1",
     symbol: "NETA",
     decimals: 6,
     recommended_symbol: "NETA",
@@ -103,10 +103,10 @@ describe("enrichOsmosisBalances", () => {
 
     const balances = [
       {
-        denom: "ibc/JUNO_NETA_IBC_HASH",
+        denom: "ibc/STARS_NETA_IBC_HASH",
         amount: "5000000",
         displayAmount: "5000000",
-        displayDenom: "ibc/JUNO_NETA_IBC_HASH",
+        displayDenom: "ibc/STARS_NETA_IBC_HASH",
       },
     ];
 

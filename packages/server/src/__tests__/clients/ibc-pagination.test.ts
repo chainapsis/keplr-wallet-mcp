@@ -307,7 +307,7 @@ describe("IBC Channel Pagination", () => {
             },
             {
               client_id: "07-tendermint-99",
-              client_state: { chain_id: "juno-1" },
+              client_state: { chain_id: "stargaze-1" },
             },
           ],
           pagination: { next_key: null },

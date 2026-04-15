@@ -58,41 +58,41 @@ const osmosisChain: ChainInfo = {
   ],
 };
 
-const junoChain: ChainInfo = {
-  chainId: "juno-1",
-  chainName: "Juno",
-  rpc: "https://rpc.juno.zone",
-  rest: "https://lcd.juno.zone",
+const stargazeChain: ChainInfo = {
+  chainId: "stargaze-1",
+  chainName: "Stargaze",
+  rpc: "https://rpc.stargaze-apis.com",
+  rest: "https://rest.stargaze-apis.com",
   stakeCurrency: {
-    coinDenom: "JUNO",
-    coinMinimalDenom: "ujuno",
+    coinDenom: "STARS",
+    coinMinimalDenom: "ustars",
     coinDecimals: 6,
-    coinGeckoId: "juno-network",
+    coinGeckoId: "stargaze",
   },
   bip44: { coinType: 118 },
   bech32Config: {
-    bech32PrefixAccAddr: "juno",
-    bech32PrefixAccPub: "junopub",
-    bech32PrefixValAddr: "junovaloper",
-    bech32PrefixValPub: "junovaloperpub",
-    bech32PrefixConsAddr: "junovalcons",
-    bech32PrefixConsPub: "junovalconspub",
+    bech32PrefixAccAddr: "stars",
+    bech32PrefixAccPub: "starspub",
+    bech32PrefixValAddr: "starsvaloper",
+    bech32PrefixValPub: "starsvaloperpub",
+    bech32PrefixConsAddr: "starsvalcons",
+    bech32PrefixConsPub: "starsvalconspub",
   },
   currencies: [
     {
-      coinDenom: "JUNO",
-      coinMinimalDenom: "ujuno",
+      coinDenom: "STARS",
+      coinMinimalDenom: "ustars",
       coinDecimals: 6,
-      coinGeckoId: "juno-network",
+      coinGeckoId: "stargaze",
     },
   ],
   feeCurrencies: [
     {
-      coinDenom: "JUNO",
-      coinMinimalDenom: "ujuno",
+      coinDenom: "STARS",
+      coinMinimalDenom: "ustars",
       coinDecimals: 6,
-      coinGeckoId: "juno-network",
-      gasPriceStep: { low: 0.075, average: 0.1, high: 0.125 },
+      coinGeckoId: "stargaze",
+      gasPriceStep: { low: 1, average: 1.1, high: 1.2 },
     },
     {
       coinDenom: "ATOM",
@@ -139,9 +139,9 @@ describe("resolveChainDenom", () => {
     });
   });
 
-  it("should resolve IBC ATOM denom from feeCurrencies on Juno", () => {
+  it("should resolve IBC ATOM denom from feeCurrencies on Stargaze", () => {
     const result = resolveChainDenom(
-      junoChain,
+      stargazeChain,
       "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
     );
     expect(result).toEqual({

@@ -31,7 +31,7 @@ import {
 } from "./well-known-vaults.js";
 
 /** Error patterns indicating the chain lacks a native staking module
- *  (e.g. ICS consumer chains like Neutron). */
+ *  (e.g. ICS consumer chains that rely on provider-chain staking). */
 const STAKING_NOT_SUPPORTED_PATTERNS = [
   "unknown query path",
   "unknown service cosmos.staking",

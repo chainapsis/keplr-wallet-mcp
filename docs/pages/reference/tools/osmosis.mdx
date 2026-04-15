@@ -72,7 +72,6 @@ Any Osmosis-listed token can be used by symbol or denom:
 | `"OSMO"` | `uosmo` |
 | `"ATOM"` | `ibc/27394F...` |
 | `"milkTIA"` | `factory/osmo1.../umilkTIA` |
-| `"NTRN"` | IBC denom for Neutron |
 | `"allBTC"` | Alloyed factory denom |
 | Full IBC denom | Used as-is |
 | Factory denom | Used as-is |
@@ -183,9 +182,9 @@ milkTIA → USDC (multi-hop via Skip)
 ├─ milkTIA → OSMO (factory pool)
 └─ OSMO → USDC (concentrated liquidity)
 
-stATOM → NTRN (multi-hop)
+stATOM → TIA (multi-hop)
 ├─ stATOM → OSMO
-└─ OSMO → NTRN
+└─ OSMO → TIA
 ```
 
 

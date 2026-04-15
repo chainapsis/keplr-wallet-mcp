@@ -14,7 +14,7 @@ import type { SuggestedAction } from "../../errors.js";
 // ---------------------------------------------------------------------------
 
 export interface VaultDefinition {
-  /** Protocol name (e.g. "Neutron DAO") */
+  /** Protocol name (e.g. "DAO governance vault") */
   protocol: string;
   /** Human-readable description */
   description: string;
@@ -47,26 +47,7 @@ export interface VaultPosition {
 // Registry
 // ---------------------------------------------------------------------------
 
-const WELL_KNOWN_VAULTS: Record<string, VaultDefinition[]> = {
-  "neutron-1": [
-    {
-      protocol: "Neutron DAO",
-      description:
-        "NTRN governance vault — bonded NTRN for on-chain voting power",
-      contractAddress:
-        "neutron1qeyjez6a9dwlghf9d6cy44fxmsajztw257586akk6xn6k88x0gus5djz4e",
-      bondDenom: "untrn",
-      buildPositionQuery: (address) => ({
-        voting_power_at_height: { address },
-      }),
-      extractBondedAmount: (data) => {
-        const r = data as { power?: string } | undefined;
-        return r?.power ?? "0";
-      },
-      buildUnbondMsg: (amount) => JSON.stringify({ unbond: { amount } }),
-    },
-  ],
-};
+const WELL_KNOWN_VAULTS: Record<string, VaultDefinition[]> = {};
 
 /** Get vault definitions for a chain. Returns `[]` when none are registered. */
 export const getWellKnownVaults = (chainId: string): VaultDefinition[] =>
