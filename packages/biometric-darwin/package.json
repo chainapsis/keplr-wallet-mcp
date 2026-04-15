@@ -1,6 +1,6 @@
 {
   "name": "@keplr-wallet/biometric-darwin",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "license": "MIT",
   "description": "macOS biometric authentication binary for Keplr MCP Server",
