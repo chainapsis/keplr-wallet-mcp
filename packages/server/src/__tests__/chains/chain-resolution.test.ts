@@ -3,13 +3,6 @@ import { findAllChainsByName, findChainByName } from "../../chains/cosmos.js";
 import { resolveChain } from "../../plugins/shared.js";
 
 describe("findChainByName", () => {
-  it("resolves 'nym' to the nyx chain (chainName 'Nym')", () => {
-    const chain = findChainByName("nym");
-    expect(chain).toBeDefined();
-    expect(chain!.chainId).toBe("nyx");
-    expect(chain!.chainName).toBe("Nym");
-  });
-
   it("resolves 'terra' to the first matching chain", () => {
     const chain = findChainByName("terra");
     expect(chain).toBeDefined();
@@ -24,23 +17,12 @@ describe("findAllChainsByName", () => {
     expect(chainIds).toContain("phoenix-1");
     expect(matches.length).toBe(2);
   });
-
-  it("returns only nyx for 'nym'", () => {
-    const matches = findAllChainsByName("nym");
-    expect(matches).toHaveLength(1);
-    expect(matches[0].chainId).toBe("nyx");
-  });
 });
 
 describe("resolveChain", () => {
   it("returns exact match for chain ID 'phoenix-1'", () => {
     const chain = resolveChain("phoenix-1");
     expect(chain.chainId).toBe("phoenix-1");
-  });
-
-  it("returns the chain for single-match name 'nym'", () => {
-    const chain = resolveChain("nym");
-    expect(chain.chainId).toBe("nyx");
   });
 
   it("throws Ambiguous chain error for 'terra'", () => {

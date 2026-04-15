@@ -1,6 +1,6 @@
 /**
  * Keplr infrastructure chain ID → endpoint name mapping.
- * These 31 chains are served via api.keplr.app when an API key is configured.
+ * These chains are served via api.keplr.app when an API key is configured.
  */
 export const KEPLR_CHAIN_MAP: Record<string, string> = {
   "atomone-1": "atomone",
@@ -9,28 +9,17 @@ export const KEPLR_CHAIN_MAP: Record<string, string> = {
   celestia: "celestia",
   "columbus-5": "terra-classic",
   "cosmoshub-4": "cosmoshub",
-  "crypto-org-chain-mainnet-1": "cronos-pos",
   "dimension_37-1": "xpla",
   "dydx-mainnet-1": "dydx",
   "interwoven-1": "initia",
   "injective-1": "injective",
-  "juno-1": "juno",
-  "kava_2222-10": "kava",
-  "kyve-1": "kyve",
-  "lava-mainnet-1": "lava",
   "lumera-mainnet-1": "lumera",
   "mantra-1": "mantra",
-  "neutron-1": "neutron",
   "noble-1": "noble",
-  nyx: "nym",
   "osmosis-1": "osmosis",
   "phoenix-1": "terra",
   "pio-mainnet-1": "provenance",
-  "ssc-1": "saga",
   "seda-1": "seda",
   "stargaze-1": "stargaze",
-  "stride-1": "stride",
-  "xrplevm_1440000-1": "xrplevm",
   "zetachain_7000-1": "zetachain",
-  "zigchain-1": "zigchain",
 };

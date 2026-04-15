@@ -28,14 +28,6 @@ describe("needsEthermintSigning", () => {
     ).toBe(true);
   });
 
-  it("returns true for xrplevm_1440000-1", () => {
-    expect(
-      needsEthermintSigning(
-        makeChain("xrplevm_1440000-1", ["eth-address-gen", "eth-key-sign"]),
-      ),
-    ).toBe(true);
-  });
-
   it("returns true for zetachain", () => {
     expect(
       needsEthermintSigning(
@@ -76,12 +68,6 @@ describe("getEthermintPubkeyTypeUrl", () => {
 
   it("returns default ethermint pubkey typeUrl for dymension", () => {
     expect(getEthermintPubkeyTypeUrl(makeChain("dymension_1100-1"))).toBe(
-      "/ethermint.crypto.v1.ethsecp256k1.PubKey",
-    );
-  });
-
-  it("returns default ethermint pubkey typeUrl for xrplevm", () => {
-    expect(getEthermintPubkeyTypeUrl(makeChain("xrplevm_1440000-1"))).toBe(
       "/ethermint.crypto.v1.ethsecp256k1.PubKey",
     );
   });

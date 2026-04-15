@@ -62,34 +62,6 @@ export const mockOsmosisChain = {
   ],
 };
 
-export const mockNeutronChain = {
-  chainId: "neutron-1",
-  chainName: "Neutron",
-  rpc: "https://rpc.neutron.org",
-  rest: "https://lcd.neutron.org",
-  stakeCurrency: {
-    coinDenom: "NTRN",
-    coinMinimalDenom: "untrn",
-    coinDecimals: 6,
-  },
-  bech32Config: {
-    bech32PrefixAccAddr: "neutron",
-    bech32PrefixAccPub: "neutronpub",
-    bech32PrefixValAddr: "neutronvaloper",
-    bech32PrefixValPub: "neutronvaloperpub",
-    bech32PrefixConsAddr: "neutronvalcons",
-    bech32PrefixConsPub: "neutronvalconspub",
-  },
-  feeCurrencies: [
-    {
-      coinDenom: "NTRN",
-      coinMinimalDenom: "untrn",
-      coinDecimals: 6,
-      gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
-    },
-  ],
-};
-
 type ChainConfig = typeof mockCosmosChain;
 
 /**

@@ -18,8 +18,6 @@ import type { KeplrPlugin } from "../types.js";
  */
 const COSMWASM_CHAINS = new Set([
   "osmosis-1",
-  "neutron-1",
-  "juno-1",
   "stargaze-1",
   "injective-1",
   "columbus-5",
@@ -345,7 +343,7 @@ const cosmwasmPlugin: KeplrPlugin = {
           chain: z
             .string()
             .describe(
-              "Chain ID or name (e.g., 'osmosis-1', 'neutron-1', 'juno-1')",
+              "Chain ID or name (e.g., 'osmosis-1', 'stargaze-1', 'injective-1')",
             ),
           codeId: z
             .string()
@@ -835,7 +833,7 @@ const cosmwasmPlugin: KeplrPlugin = {
         argsSchema: {
           chain: z
             .string()
-            .describe("Chain name (e.g., 'osmosis', 'neutron', 'juno')"),
+            .describe("Chain name (e.g., 'osmosis', 'stargaze', 'injective')"),
           contractAddress: z
             .string()
             .optional()

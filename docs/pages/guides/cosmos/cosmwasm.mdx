@@ -7,13 +7,13 @@ Interact with smart contracts on Cosmos chains.
 Read contract state without spending gas:
 
 ```
-You: "What's my balance on CW20 token juno1abc...?"
-You: "Show info about contract juno1abc... on Juno"
-You: "Query juno1abc... with {"token_info": {}}"
+You: "What's my balance on CW20 token osmo1abc...?"
+You: "Show info about contract osmo1abc... on Osmosis"
+You: "Query osmo1abc... with {"token_info": {}}"
 ```
 
 :::tip
-Start with `"Show info about contract juno1abc..."` to get the contract's label and code ID before querying — this helps you understand what messages the contract accepts.
+Start with `"Show info about contract osmo1abc..."` to get the contract's label and code ID before querying — this helps you understand what messages the contract accepts.
 :::
 
 ## Execute a contract
@@ -21,8 +21,8 @@ Start with `"Show info about contract juno1abc..."` to get the contract's label 
 Call a contract function (requires confirmation):
 
 ```
-You: "Transfer 100 tokens on CW20 juno1abc... to juno1def..."
-You: "Execute juno1abc... with {"increment": {}} on Neutron"
+You: "Transfer 100 tokens on CW20 osmo1abc... to osmo1def..."
+You: "Execute osmo1abc... with {"increment": {}} on Osmosis"
 ```
 
 The AI shows the contract address, message, and estimated fee before you confirm.
@@ -32,12 +32,12 @@ The AI shows the contract address, message, and estimated fee before you confirm
 Deploy a new contract instance from an uploaded code ID:
 
 ```
-You: "Instantiate code 42 on Juno with label 'my-counter' and message {"count": 0}"
+You: "Instantiate code 42 on Osmosis with label 'my-counter' and message {"count": 0}"
 ```
 
 ## Which chains support CosmWasm?
 
-Most Cosmos chains with smart contract support, including **Juno**, **Neutron**, **Osmosis**, **Stargaze**, and others. If a chain doesn't support CosmWasm, the AI will let you know.
+Most Cosmos chains with smart contract support, including **Osmosis**, **Stargaze**, **Injective**, and others. If a chain doesn't support CosmWasm, the AI will let you know.
 
 ## Troubleshooting
 

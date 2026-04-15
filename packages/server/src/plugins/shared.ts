@@ -6,7 +6,7 @@ export const VALID_WORD_COUNTS = [12, 15, 18, 21, 24];
 export const CHAIN_PARAM_DESC =
   "Chain ID or chain name. " +
   "IMPORTANT: If unsure of the exact chain ID, call list-cosmos-chains first. " +
-  "Do NOT guess — chain IDs are often non-obvious (e.g., 'nyx' not 'nym-1', 'phoenix-1' not 'terra-2').";
+  "Do NOT guess — chain IDs are often non-obvious (e.g., 'phoenix-1' not 'terra-2', 'columbus-5' not 'terra-1').";
 
 export const resolveChain = (chainIdOrName: string): ChainInfo => {
   const exact = getChainConfig(chainIdOrName);

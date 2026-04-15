@@ -73,8 +73,6 @@ const cosmosSigningPlugin: KeplrPlugin = {
             cosmos: "cosmos",
             "osmosis-1": "osmo",
             osmosis: "osmo",
-            "juno-1": "juno",
-            juno: "juno",
             "stargaze-1": "stars",
             stargaze: "stars",
             "akashnet-2": "akash",
