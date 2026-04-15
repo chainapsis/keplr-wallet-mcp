@@ -4,6 +4,16 @@ Complete list of supported blockchains.
 
 Chains marked with ✦ use [Keplr Infra](/getting-started/keplr-infra) dedicated endpoints when an API key is configured. All other chains use public chain-registry endpoints.
 
+## Deprecated Chains
+
+:::warning
+As of **2026-04-15**, the following chains have been removed from `api.keplr.app` and are no longer supported by the MCP server:
+
+`cronos-pos`, `juno`, `kava`, `kyve`, `lava`, `neutron`, `nym`, `saga`, `stride`, `union`, `xrplevm`, `zigchain`
+
+Any MCP tool call targeting these chains (e.g. `get-balances`, `get-staking-info`) will fail — the server does **not** automatically fall back to public endpoints. To keep using these chains, configure a custom RPC/LCD endpoint manually in your MCP config.
+:::
+
 ## Cosmos Ecosystem
 
 | Chain | Chain ID | Token | Bech32 Prefix | Features | Infra |
